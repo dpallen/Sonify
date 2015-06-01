@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="swt">
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/resources/jfreechart-1.0.19/swt" />
+      <root url="file://$PROJECT_DIR$/resources/jfreechart-1.0.19/tests" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,6 +1,7 @@
 package sonifiedspectra.model;
 
 import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -12,7 +13,6 @@ public class Phrase extends jm.music.data.Phrase {
     private int instrument;
     private int minPitch;
     private int maxPitch;
-    private int numMeasures;
 
     private double x1;
     private double x2;
@@ -22,30 +22,38 @@ public class Phrase extends jm.music.data.Phrase {
     private boolean quantized;
     private boolean selected;
 
-    private Color color;
+    private String color;
     private String key;
     private String quality;
+    private String qRhythm;
+
+    private Color unselectedColor;
+    private Color borderColor;
+    private Color selectedColor;
 
     private Compound compound;
 
     private ArrayList<Note> notesArray;
 
-    public Phrase(int id, Compound compound, double x1, double x2) {
+    private File midiFile;
+
+    public Phrase(int id, Compound compound, String color, double x1, double x2) {
         this.id = id;
         this.instrument = 0;
         this.minPitch = 36;
         this.maxPitch = 84;
-        this.numMeasures = 4;
         this.x1 = x1;
         this.x2 = x2;
         this.quantized = true;
-        this.color = Color.RED;
-        this.key = null;
-        this.quality = null;
+        this.color = color;
+        this.key = "C";
+        this.quality = "Major";
+        this.qRhythm = "1/4";
         this.compound = compound;
         this.selected = false;
         this.notesArray = new ArrayList<Note>();
 
+        setBackgroundCol(color);
     }
 
     public void initialize() {
@@ -69,6 +77,8 @@ public class Phrase extends jm.music.data.Phrase {
                 System.out.println("    Last peak index: " + endIndex);
             }
         }
+
+        notesArray = new ArrayList<Note>();
 
         int noteID = 0;
         System.out.println("    Adding notes:");
@@ -106,6 +116,14 @@ public class Phrase extends jm.music.data.Phrase {
 
     }
 
+    public double getBeatLength2() {
+        double length = 0;
+
+        for (Note n : notesArray) length += n.getRhythmValue();
+
+        return length;
+    }
+
     public ArrayList<Note> getSelectedNotes() {
         ArrayList<Note> selectedNotes = new ArrayList<Note>();
 
@@ -114,6 +132,14 @@ public class Phrase extends jm.music.data.Phrase {
         }
 
         return selectedNotes;
+    }
+
+    public void setSelectedNotes(ArrayList<Note> selectedNotes) {
+        for (Note n : selectedNotes){
+            for (Note note : notesArray) {
+                if (note.getPeak().getId() == n.getPeak().getId()) note.setSelected(true);
+            }
+        }
     }
 
     public void transposeSelectedNotesUp() {
@@ -176,8 +202,68 @@ public class Phrase extends jm.music.data.Phrase {
 
     }
 
+    public int getNumMeasures() {
+        double number = 0;
+
+        for (Note n : notesArray) number += n.getRhythmValue();
+
+        int num = (int) Math.ceil(number / 4);
+
+        return num;
+    }
+
     public void toggleSelected() {
         selected = !selected;
+    }
+
+
+
+    public void setBackgroundCol( String colorString ) {
+
+        if (colorString.equals("Red")) {
+            unselectedColor = new Color(255, 204, 204);
+            borderColor = new Color(204, 0, 0);
+            selectedColor = new Color(255, 102, 102);
+
+        } else if (colorString.equals("Orange")) {
+            unselectedColor = new Color(255, 229, 204);
+            borderColor = new Color(204, 102, 0);
+            selectedColor = new Color(255, 178, 102);
+
+        } else if (colorString.equals("Yellow")) {
+            unselectedColor = new Color(255, 255, 204);
+            borderColor = new Color(204, 204, 0);
+            selectedColor = new Color(255, 255, 102);
+
+        } else if (colorString.equals("Green")) {
+            unselectedColor = new Color(204, 255, 204);
+            borderColor = new Color(0, 204, 0);
+            selectedColor = new Color(102, 255, 102);
+
+        } else if (colorString.equals("Blue")) {
+            unselectedColor = new Color(204, 229, 255);
+            borderColor = new Color(0, 102, 204);
+            selectedColor = new Color(102, 178, 255);
+
+        } else if (colorString.equals("Magenta")) {
+            unselectedColor = new Color(255, 204, 204);
+            borderColor = new Color(204, 0, 204);
+            selectedColor = new Color(255, 102, 255);
+
+        } else if (colorString.equals("Cyan")) {
+            unselectedColor = new Color(204, 255, 255);
+            borderColor = new Color(0, 204, 204);
+            selectedColor = new Color(102, 255, 255);
+
+        } else if (colorString.equals("Pink")) {
+            unselectedColor = new Color(255, 204, 229);
+            borderColor = new Color(204, 0, 102);
+            selectedColor = new Color(255, 102, 178);
+
+        } else {
+            unselectedColor = new Color(0, 0, 0);
+            borderColor = new Color(0, 0, 0);
+        }
     }
 
     @Override
@@ -187,7 +273,6 @@ public class Phrase extends jm.music.data.Phrase {
                 ", instrument=" + instrument +
                 ", minPitch=" + minPitch +
                 ", maxPitch=" + maxPitch +
-                ", numMeasures=" + numMeasures +
                 ", x1=" + x1 +
                 ", x2=" + x2 +
                 ", quantized=" + quantized +
@@ -233,14 +318,6 @@ public class Phrase extends jm.music.data.Phrase {
         this.maxPitch = maxPitch;
     }
 
-    public int getNumMeasures() {
-        return numMeasures;
-    }
-
-    public void setNumMeasures(int numMeasures) {
-        this.numMeasures = numMeasures;
-    }
-
     public double getX1() {
         return x1;
     }
@@ -265,11 +342,11 @@ public class Phrase extends jm.music.data.Phrase {
         this.quantized = quantized;
     }
 
-    public Color getColor() {
+    public String getColor() {
         return color;
     }
 
-    public void setColor(Color color) {
+    public void setColor(String color) {
         this.color = color;
     }
 
@@ -327,5 +404,53 @@ public class Phrase extends jm.music.data.Phrase {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public String getQRhythm() {
+        return qRhythm;
+    }
+
+    public void setQRhythm(String qRhythm) {
+        this.qRhythm = qRhythm;
+    }
+
+    public File getMidiFile() {
+        return midiFile;
+    }
+
+    public void setMidiFile(File midiFile) {
+        this.midiFile = midiFile;
+    }
+
+    public String getqRhythm() {
+        return qRhythm;
+    }
+
+    public void setqRhythm(String qRhythm) {
+        this.qRhythm = qRhythm;
+    }
+
+    public Color getUnselectedColor() {
+        return unselectedColor;
+    }
+
+    public void setUnselectedColor(Color unselectedColor) {
+        this.unselectedColor = unselectedColor;
+    }
+
+    public Color getBorderColor() {
+        return borderColor;
+    }
+
+    public void setBorderColor(Color borderColor) {
+        this.borderColor = borderColor;
+    }
+
+    public Color getSelectedColor() {
+        return selectedColor;
+    }
+
+    public void setSelectedColor(Color selectedColor) {
+        this.selectedColor = selectedColor;
     }
 }

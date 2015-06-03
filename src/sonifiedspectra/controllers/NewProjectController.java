@@ -1,6 +1,6 @@
 package sonifiedspectra.controllers;
 
-import sonifiedspectra.model.Model;
+import sonifiedspectra.model.Project;
 import sonifiedspectra.view.SonifiedSpectra;
 
 import java.awt.event.ActionEvent;
@@ -14,11 +14,11 @@ import java.awt.event.MouseListener;
 public class NewProjectController implements ActionListener, MouseListener {
 
     private SonifiedSpectra app;
-    private Model model;
+    private Project project;
     private boolean visible;
 
-    public NewProjectController(SonifiedSpectra app, Model model) {
-        this.model = model;
+    public NewProjectController(SonifiedSpectra app, Project project) {
+        this.project = project;
         this.app = app;
         this.visible = false;
     }
@@ -36,17 +36,19 @@ public class NewProjectController implements ActionListener, MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+        app.getNewButton().setCol(app.getActivePhrase().getSelectedColor());
+        app.getNewButton().repaint();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        app.getNewButton().setCol(app.getActivePhrase().getUnselectedColor());
+        app.getNewButton().repaint();
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        app.getNewButton().setCol(app.getButtonHighlightColor());
+        app.getNewButton().setCol(app.getActivePhrase().getUnselectedColor());
         app.getNewButton().repaint();
         app.getFrame().pack();
     }

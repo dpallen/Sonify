@@ -1,9 +1,7 @@
 package sonifiedspectra.controllers;
 
 import org.jfree.chart.ChartPanel;
-import sonifiedspectra.model.Model;
-import sonifiedspectra.model.Phrase;
-import sonifiedspectra.view.NoteView;
+import sonifiedspectra.model.Project;
 import sonifiedspectra.view.PhraseView;
 import sonifiedspectra.view.SonifiedSpectra;
 
@@ -16,12 +14,12 @@ import java.awt.event.MouseListener;
  */
 public class PhraseController implements MouseListener {
 
-    private Model model;
+    private Project project;
     private SonifiedSpectra app;
     private PhraseView phraseView;
 
-    public PhraseController(Model model, SonifiedSpectra app, PhraseView phraseView) {
-        this.model = model;
+    public PhraseController(Project project, SonifiedSpectra app, PhraseView phraseView) {
+        this.project = project;
         this.app = app;
         this.phraseView = phraseView;
     }
@@ -33,21 +31,22 @@ public class PhraseController implements MouseListener {
             phraseView.getPhrase().setSelected(true);
             app.updateActivePhrase(phraseView.getPhrase());
 
-            app.getColorButton().setCol(app.getActivePhrase().getCompound().getUnselectedColor());
+            app.getColorButton().setCol(app.getActivePhrase().getUnselectedColor());
             app.getColorButton().repaint();
 
             app.getSpectrumLabel().setText(app.getActivePhrase().getCompound().getSpectrumType());
             app.getSpectrumLabel().repaint();
 
-            final ChartPanel chPanel = new ChartPanel(app.getActivePhrase().getCompound().getDataChart().getDataChart());
-            chPanel.setPreferredSize(new Dimension(500, 500));
-            chPanel.setVisible(true);
-            chPanel.setBounds(0, 0, 500, 400);
-            chPanel.setDomainZoomable(true);
+            app.setChPanel(new ChartPanel(app.getActivePhrase().getCompound().getDataChart().getDataChart()));
+            app.getChPanel().setPreferredSize(new Dimension(500, 500));
+            app.getChPanel().setVisible(true);
+            app.getChPanel().setBounds(0, 0, 500, 400);
+            app.getChPanel().setDomainZoomable(true);
+            app.getChPanel().addChartMouseListener(new GraphController(app, project));
             app.getGraphPanel().setLayout(new BorderLayout());
             app.getGraphPanel().setBounds(20, 52, 500, 400);
             app.getGraphPanel().removeAll();
-            app.getGraphPanel().add(chPanel, BorderLayout.CENTER);
+            app.getGraphPanel().add(app.getChPanel(), BorderLayout.CENTER);
             app.getGraphPanel().repaint();
             app.updateIntervalMarker();
         }
@@ -74,7 +73,7 @@ public class PhraseController implements MouseListener {
     @Override
     public void mouseEntered(MouseEvent e) {
         if (!phraseView.getPhrase().isSelected()) {
-            phraseView.setBackground(phraseView.getPhrase().getCompound().getSelectedColor());
+            phraseView.setBackground(phraseView.getPhrase().getSelectedColor());
             phraseView.repaint();
             app.getFrame().pack();
         }
@@ -83,7 +82,7 @@ public class PhraseController implements MouseListener {
     @Override
     public void mouseExited(MouseEvent e) {
         if (!phraseView.getPhrase().isSelected()) {
-            phraseView.setBackground(phraseView.getPhrase().getCompound().getUnselectedColor());
+            phraseView.setBackground(phraseView.getPhrase().getUnselectedColor());
             phraseView.repaint();
             app.getFrame().pack();
         }

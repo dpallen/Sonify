@@ -1,7 +1,6 @@
 package sonifiedspectra.controllers;
 
-import sonifiedspectra.model.Model;
-import sonifiedspectra.view.BetterButton;
+import sonifiedspectra.model.Project;
 import sonifiedspectra.view.SonifiedSpectra;
 
 import java.awt.*;
@@ -16,11 +15,11 @@ import java.awt.event.MouseListener;
 public class TransposeButtonController implements ActionListener, MouseListener {
 
     private SonifiedSpectra app;
-    private Model model;
+    private Project project;
     private int type;
 
-    public TransposeButtonController(SonifiedSpectra app, Model model, int type) {
-        this.model = model;
+    public TransposeButtonController(SonifiedSpectra app, Project project, int type) {
+        this.project = project;
         this.app = app;
         this.type = type;
     }
@@ -36,6 +35,7 @@ public class TransposeButtonController implements ActionListener, MouseListener 
         }
         else app.getTransposeTextField().setText("-");
         app.refreshSelectedNotes();
+        app.getSoundPlayer().updateSoundPlayer();
         app.getFrame().pack();
     }
 
@@ -46,23 +46,37 @@ public class TransposeButtonController implements ActionListener, MouseListener 
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+        if (type == 0) {
+            app.getTransposeUpButton().setCol(app.getActivePhrase().getSelectedColor());
+            app.getTransposeUpButton().repaint();
+        }
+        else if (type == 1) {
+            app.getTransposeDownButton().setCol(app.getActivePhrase().getSelectedColor());
+            app.getTransposeDownButton().repaint();
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        if (type == 0) {
+            app.getTransposeUpButton().setCol(app.getActivePhrase().getUnselectedColor());
+            app.getTransposeUpButton().repaint();
+        }
+        else if (type == 1) {
+            app.getTransposeDownButton().setCol(app.getActivePhrase().getUnselectedColor());
+            app.getTransposeDownButton().repaint();
+        }
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
 
         if (type == 0) {
-            app.getTransposeUpButton().setCol(app.getButtonHighlightColor());
+            app.getTransposeUpButton().setCol(app.getActivePhrase().getUnselectedColor());
             app.getTransposeUpButton().repaint();
         }
         else if (type == 1) {
-            app.getTransposeDownButton().setCol(app.getButtonHighlightColor());
+            app.getTransposeDownButton().setCol(app.getActivePhrase().getUnselectedColor());
             app.getTransposeDownButton().repaint();
         }
 

@@ -133,15 +133,15 @@ public class DataChart {
         );
 
         // NOW DO SOME OPTIONAL CUSTOMISATION OF THE CHART...
-        chart.setBackgroundPaint(Color.white);
+        chart.setBackgroundPaint(Color.decode("#F5F5F5"));
 
         // get a reference to the plot for further customisation...
         XYPlot plot = chart.getXYPlot();
         plot.setDomainCrosshairVisible(true);
         plot.setRangeCrosshairVisible(false);
-        plot.setBackgroundPaint(Color.lightGray);
-        plot.setDomainGridlinePaint(Color.white);
-        plot.setRangeGridlinePaint(Color.white);
+        plot.setBackgroundPaint(Color.decode("#E5E5E5"));
+        plot.setDomainGridlinePaint(Color.BLACK);
+        plot.setRangeGridlinePaint(Color.BLACK);
 
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         renderer.setSeriesLinesVisible(0, true);

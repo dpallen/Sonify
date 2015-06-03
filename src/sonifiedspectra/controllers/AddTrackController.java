@@ -9,15 +9,15 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 /**
- * Created by Hvandenberg on 5/31/15.
+ * Created by Hvandenberg on 6/2/15.
  */
-public class OpenProjectController implements ActionListener, MouseListener {
+public class AddTrackController implements ActionListener, MouseListener {
 
     private SonifiedSpectra app;
     private Project project;
     private boolean visible;
 
-    public OpenProjectController(SonifiedSpectra app, Project project) {
+    public AddTrackController(SonifiedSpectra app, Project project) {
         this.project = project;
         this.app = app;
         this.visible = false;
@@ -36,27 +36,27 @@ public class OpenProjectController implements ActionListener, MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        app.getOpenButton().setCol(app.getActivePhrase().getSelectedColor());
-        app.getOpenButton().repaint();
+        app.getAddTrackButton().setCol(app.getActivePhrase().getSelectedColor());
+        app.getAddTrackButton().repaint();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        app.getOpenButton().setCol(app.getActivePhrase().getUnselectedColor());
-        app.getOpenButton().repaint();
+        app.getAddTrackButton().setCol(app.getActivePhrase().getUnselectedColor());
+        app.getAddTrackButton().repaint();
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        app.getOpenButton().setCol(app.getActivePhrase().getUnselectedColor());
-        app.getOpenButton().repaint();
+        app.getAddTrackButton().setCol(app.getActivePhrase().getUnselectedColor());
+        app.getAddTrackButton().repaint();
         app.getFrame().pack();
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        app.getOpenButton().setCol(app.getButtonBackgroundColor());
-        app.getOpenButton().repaint();
+        app.getAddTrackButton().setCol(app.getButtonBackgroundColor());
+        app.getAddTrackButton().repaint();
         app.getFrame().pack();
     }
 

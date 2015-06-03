@@ -39,12 +39,12 @@ public class NoteView extends JPanel {
         dynamicLabel.setText(String.valueOf(note.getDynamic()));
 
         if (note.isSelected()) {
-            setBackground(note.getPhrase().getCompound().getUnselectedColor());
-            setBorder(BorderFactory.createLineBorder(note.getPhrase().getCompound().getBorderColor(), 2, true));
+            setBackground(note.getPhrase().getUnselectedColor());
+            setBorder(BorderFactory.createLineBorder(note.getPhrase().getBorderColor(), 2, true));
         }
         else {
             setBackground(Color.decode("#F5F5F5"));
-            setBorder(BorderFactory.createLineBorder(note.getPhrase().getCompound().getBorderColor(), 1, true));
+            setBorder(BorderFactory.createLineBorder(note.getPhrase().getBorderColor(), 1, true));
         }
         repaint();
     }

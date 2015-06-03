@@ -3,37 +3,40 @@ package sonifiedspectra.controllers;
 import org.jfree.chart.plot.XYPlot;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.NoteView;
+import sonifiedspectra.view.PhraseInTrackView;
 import sonifiedspectra.view.SonifiedSpectra;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 /**
- * Created by Hvandenberg on 5/31/15.
+ * Created by Hvandenberg on 6/2/15.
  */
-public class NoteController implements MouseListener {
+public class PhraseInTrackController implements MouseListener {
 
-    private Project project;
     private SonifiedSpectra app;
-    private NoteView noteView;
+    private Project project;
+    private PhraseInTrackView pitv;
 
-    public NoteController(Project project, SonifiedSpectra app, NoteView noteView) {
-        this.project = project;
+    public PhraseInTrackController(SonifiedSpectra app, Project project, PhraseInTrackView pitv) {
         this.app = app;
-        this.noteView = noteView;
+        this.project = project;
+        this.pitv = pitv;
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
 
-        noteView.getNote().toggleSelected();
+        pitv.getPhrase().toggleSelected();
 
-        app.updateActivePhrase(noteView.getNote().getPhrase());
+        app.updateActivePhrase(pitv.getPhrase());
 
         if (!project.isNotesPanelMultipleSelection()) {
             for (NoteView nv : app.getNoteViewArray()) {
-                if (nv.getNote().getId() != noteView.getNote().getId()) nv.getNote().setSelected(false);
+                if (nv.getNote().getId() != pitv.getPhrase().getId()) nv.getNote().setSelected(false);
                 nv.updatePanel();
             }
         }
@@ -66,29 +69,15 @@ public class NoteController implements MouseListener {
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        if (!noteView.getNote().isSelected()) {
-            noteView.setBackground(app.getActivePhrase().getUnselectedColor());
-            noteView.repaint();
-            if (app.getActivePhrase() != null) {
-                XYPlot plot = app.getActivePhrase().getCompound().getDataChart().getDataChart().getXYPlot();
-                plot.addDomainMarker(app.addNoteMarker(noteView.getNote()));
-            }
-            app.getFrame().pack();
-        }
+        pitv.setBackground(pitv.getPhrase().getSelectedColor());
+        pitv.repaint();
+        app.getFrame().pack();
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        if (!noteView.getNote().isSelected()) {
-            noteView.setBackground(app.getButtonBackgroundColor());
-            noteView.repaint();
-
-            if (app.getActivePhrase() != null) {
-                XYPlot plot = app.getActivePhrase().getCompound().getDataChart().getDataChart().getXYPlot();
-                plot.removeDomainMarker(app.addNoteMarker(noteView.getNote()));
-            }
-
-            app.getFrame().pack();
-        }
+        pitv.setBackground(pitv.getPhrase().getUnselectedColor());
+        pitv.repaint();
+        app.getFrame().pack();
     }
 }

@@ -15,25 +15,26 @@ public class EditCompoundView extends JPanel {
     private BetterButton selectFileButton;
 
     public EditCompoundView(Compound compound) {
+
         setLayout(null);
-        setBounds(220, 45, 400, 47);
+        setBounds(440, 45, 285, 40);
         setBackground(Color.decode("#F5F5F5"));
         setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
 
         nameTextField = new JTextField();
         nameTextField.setText(compound.getName());
-        nameTextField.setBounds(10, 5, 75, 20);
+        nameTextField.setBounds(10, 10, 75, 20);
         add(nameTextField);
 
         typeTextField = new JTextField();
         typeTextField.setText(compound.getSpectrumType());
-        typeTextField.setBounds(95, 5, 75, 20);
+        typeTextField.setBounds(95, 10, 75, 20);
         add(typeTextField);
 
-        selectFileButton = new BetterButton(Color.decode("#F5F5F5"), 100, 32, 5);
+        selectFileButton = new BetterButton(Color.decode("#F5F5F5"), 100, 20, 5);
         selectFileButton.setBorderPainted(true);
         selectFileButton.setFocusPainted(false);
-        selectFileButton.setBounds(180, 5, 100, 32);
+        selectFileButton.setBounds(175, 10, 100, 20);
         selectFileButton.setText(compound.getDataFile().getName() + ".ss");
         add(selectFileButton);
 
@@ -42,4 +43,13 @@ public class EditCompoundView extends JPanel {
         repaint();
 
     }
+
+    public void updatePanel(Compound compound) {
+
+        nameTextField.setText(compound.getName());
+        typeTextField.setText(compound.getSpectrumType());
+        selectFileButton.setText(compound.getDataFile().getName() + ".ss");
+
+    }
+
 }

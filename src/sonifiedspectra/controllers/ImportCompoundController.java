@@ -1,10 +1,9 @@
 package sonifiedspectra.controllers;
 
-import sonifiedspectra.model.Model;
+import sonifiedspectra.model.Project;
 import sonifiedspectra.view.SonifiedSpectra;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -16,12 +15,12 @@ import java.io.File;
  */
 public class ImportCompoundController implements ActionListener, MouseListener {
 
-    private Model model;
+    private Project project;
     private SonifiedSpectra app;
 
-    public ImportCompoundController(SonifiedSpectra app, Model model) {
+    public ImportCompoundController(SonifiedSpectra app, Project project) {
         this.app = app;
-        this.model = model;
+        this.project = project;
     }
 
     @Override
@@ -64,17 +63,19 @@ public class ImportCompoundController implements ActionListener, MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+        app.getImportCompoundButton().setCol(app.getActivePhrase().getSelectedColor());
+        app.getImportCompoundButton().repaint();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        app.getImportCompoundButton().setCol(app.getActivePhrase().getUnselectedColor());
+        app.getImportCompoundButton().repaint();
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        app.getImportCompoundButton().setCol(app.getButtonHighlightColor());
+        app.getImportCompoundButton().setCol(app.getActivePhrase().getUnselectedColor());
         app.getImportCompoundButton().repaint();
         app.getFrame().pack();
     }

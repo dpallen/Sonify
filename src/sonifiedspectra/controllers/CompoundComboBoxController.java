@@ -2,7 +2,8 @@ package sonifiedspectra.controllers;
 
 import org.jfree.chart.ChartPanel;
 import sonifiedspectra.model.Compound;
-import sonifiedspectra.model.Model;
+import sonifiedspectra.model.Phrase;
+import sonifiedspectra.model.Project;
 import sonifiedspectra.view.SonifiedSpectra;
 
 import javax.swing.*;
@@ -16,12 +17,12 @@ import java.awt.event.ItemListener;
 public class CompoundComboBoxController implements ItemListener {
 
     private SonifiedSpectra app;
-    private Model model;
+    private Project project;
     private JComboBox compoundComboBox;
 
-    public CompoundComboBoxController(SonifiedSpectra app, Model model, JComboBox compoundComboBox) {
+    public CompoundComboBoxController(SonifiedSpectra app, Project project, JComboBox compoundComboBox) {
         this.app = app;
-        this.model = model;
+        this.project = project;
         this.compoundComboBox = compoundComboBox;
     }
 
@@ -30,14 +31,11 @@ public class CompoundComboBoxController implements ItemListener {
 
         Compound compound = null;
 
-        for (Compound c : model.getCompoundsArray()) {
+        for (Compound c : project.getCompoundsArray()) {
 
             if (String.valueOf(compoundComboBox.getSelectedItem()).equals(c.getName())) compound = c;
 
         }
-
-        app.getColorButton().setCol(compound.getUnselectedColor());
-        app.getColorButton().repaint();
 
         app.getSpectrumLabel().setText(compound.getSpectrumType());
         app.getSpectrumLabel().repaint();
@@ -52,7 +50,22 @@ public class CompoundComboBoxController implements ItemListener {
         app.getGraphPanel().setBounds(20, 52, 500, 400);
         app.getGraphPanel().removeAll();
         app.getGraphPanel().add(chPanel, BorderLayout.CENTER);
+        app.getGraphPanel().setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         app.getGraphPanel().repaint();
+
+        if (app.isTemp()) {
+
+            for (Phrase p : app.getActiveProject().getPhrasesArray()) {
+                if (p.getCompound().getId() == compound.getId()) {
+                    app.updateActivePhrase(p);
+                    app.updateIntervalMarker();
+                    break;
+                }
+            }
+
+        }
+
+        app.getFrame().pack();
 
     }
 }

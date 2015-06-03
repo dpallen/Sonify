@@ -1,12 +1,27 @@
 package sonifiedspectra.controllers;
 
-import sonifiedspectra.model.Model;
+import jm.constants.Scales;
+import jm.music.data.Part;
+import jm.music.data.Phrase;
+import jm.music.data.Score;
+import jm.music.tools.Mod;
+import jm.util.Write;
+import sonifiedspectra.model.Note;
+import sonifiedspectra.model.Project;
+import sonifiedspectra.model.SoundPlayer;
+import sonifiedspectra.model.Track;
 import sonifiedspectra.view.SonifiedSpectra;
 
+import javax.sound.midi.*;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by Hvandenberg on 5/31/15.
@@ -14,19 +29,22 @@ import java.awt.event.MouseListener;
 public class SaveProjectController implements ActionListener, MouseListener {
 
     private SonifiedSpectra app;
-    private Model model;
-    private boolean visible;
+    private Project project;
 
-    public SaveProjectController(SonifiedSpectra app, Model model) {
-        this.model = model;
+    public SaveProjectController(SonifiedSpectra app, Project project) {
+        this.project = project;
         this.app = app;
-        this.visible = false;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        visible = !visible;
-        app.getFrame().pack();
+        app.getActivePhrase().setKey((String) app.getKeyComboBox().getSelectedItem());
+        app.getActivePhrase().setQuality((String) app.getQualityComboBox().getSelectedItem());
+        app.getActivePhrase().setQRhythm((String) app.getQrhythmComboBox().getSelectedItem());
+        app.getActiveProject().setName(app.getTitleTextField().getText());
+
+        app.getSoundPlayer().updateSoundPlayer();
+
     }
 
     @Override
@@ -36,17 +54,19 @@ public class SaveProjectController implements ActionListener, MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+        app.getSaveButton().setCol(app.getActivePhrase().getSelectedColor());
+        app.getSaveButton().repaint();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        app.getSaveButton().setCol(app.getActivePhrase().getUnselectedColor());
+        app.getSaveButton().repaint();
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        app.getSaveButton().setCol(app.getButtonHighlightColor());
+        app.getSaveButton().setCol(app.getActivePhrase().getUnselectedColor());
         app.getSaveButton().repaint();
         app.getFrame().pack();
     }

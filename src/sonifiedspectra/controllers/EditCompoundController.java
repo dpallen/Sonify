@@ -1,12 +1,10 @@
 package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Compound;
-import sonifiedspectra.model.Model;
+import sonifiedspectra.model.Project;
 import sonifiedspectra.view.EditCompoundView;
 import sonifiedspectra.view.SonifiedSpectra;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -18,11 +16,11 @@ import java.awt.event.MouseListener;
 public class EditCompoundController implements ActionListener, MouseListener {
 
     private SonifiedSpectra app;
-    private Model model;
+    private Project project;
     private boolean visible;
 
-    public EditCompoundController(SonifiedSpectra app, Model model) {
-        this.model = model;
+    public EditCompoundController(SonifiedSpectra app, Project project) {
+        this.project = project;
         this.app = app;
         this.visible = false;
     }
@@ -32,7 +30,7 @@ public class EditCompoundController implements ActionListener, MouseListener {
         visible = !visible;
         Compound compound = null;
 
-        for (Compound c : model.getCompoundsArray()) {
+        for (Compound c : project.getCompoundsArray()) {
 
             if (String.valueOf(app.getCompoundComboBox().getSelectedItem()).equals(c.getName())) compound = c;
 
@@ -44,13 +42,20 @@ public class EditCompoundController implements ActionListener, MouseListener {
             app.getFrame().getContentPane().add(editCompoundView);
         }
         app.getEditCompoundView().repaint();
-        editCompoundView.setVisible(visible);
+        app.getEditCompoundView().setVisible(visible);
         app.getFrame().pack();
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-
+        if (visible) {
+            app.getEditCompoundButton().setCol(app.getActivePhrase().getSelectedColor());
+            app.getEditCompoundButton().repaint();
+        }
+        else {
+            app.getEditCompoundButton().setCol(app.getActivePhrase().getUnselectedColor());
+            app.getEditCompoundButton().repaint();
+        }
     }
 
     @Override
@@ -65,15 +70,19 @@ public class EditCompoundController implements ActionListener, MouseListener {
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        app.getEditCompoundButton().setCol(app.getButtonHighlightColor());
-        app.getEditCompoundButton().repaint();
-        app.getFrame().pack();
+        if (!visible) {
+            app.getEditCompoundButton().setCol(app.getActivePhrase().getUnselectedColor());
+            app.getEditCompoundButton().repaint();
+            app.getFrame().pack();
+        }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        app.getEditCompoundButton().setCol(app.getButtonBackgroundColor());
-        app.getEditCompoundButton().repaint();
-        app.getFrame().pack();
+        if (!visible) {
+            app.getEditCompoundButton().setCol(app.getButtonBackgroundColor());
+            app.getEditCompoundButton().repaint();
+            app.getFrame().pack();
+        }
     }
 }

@@ -2,8 +2,10 @@ package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Compound;
 import sonifiedspectra.model.Project;
-import sonifiedspectra.view.EditCompoundView;
+import sonifiedspectra.model.Track;
+import sonifiedspectra.view.PhraseInTrackView;
 import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.TrackView;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,23 +29,12 @@ public class EditCompoundController implements ActionListener, MouseListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        visible = !visible;
-        Compound compound = null;
 
-        for (Compound c : project.getCompoundsArray()) {
+        app.getEditCompoundDialog().getNameTextField().setText(app.getActivePhrase().getCompound().getName());
+        app.getEditCompoundDialog().getTypeTextField().setText(app.getActivePhrase().getCompound().getSpectrumType());
+        app.getEditCompoundDialog().getDataLabel().setText(app.getActivePhrase().getCompound().getDataFile().getName() + ".ss");
 
-            if (String.valueOf(app.getCompoundComboBox().getSelectedItem()).equals(c.getName())) compound = c;
-
-        }
-
-        EditCompoundView editCompoundView = new EditCompoundView(compound);
-        if (visible) {
-            app.setEditCompoundView(editCompoundView);
-            app.getFrame().getContentPane().add(editCompoundView);
-        }
-        app.getEditCompoundView().repaint();
-        app.getEditCompoundView().setVisible(visible);
-        app.getFrame().pack();
+        app.getEditCompoundDialog().setVisible(!app.getEditCompoundDialog().isVisible());
     }
 
     @Override

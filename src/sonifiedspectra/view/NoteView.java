@@ -3,6 +3,9 @@ package sonifiedspectra.view;
 import sonifiedspectra.model.Note;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 /**
@@ -29,23 +32,39 @@ public class NoteView extends JPanel {
     public void updatePanel() {
 
         nameLabel.setText(note.convertPitchToString());
-        if (note.getTranspose() == 0) {
-            nameLabel.setForeground(Color.BLACK);
-        }
-        else {
-            nameLabel.setForeground(Color.RED);
-        }
         rhythmLabel.setText(String.valueOf(note.getRhythmValue()));
         dynamicLabel.setText(String.valueOf(note.getDynamic()));
 
         if (note.isSelected()) {
             setBackground(note.getPhrase().getUnselectedColor());
-            setBorder(BorderFactory.createLineBorder(note.getPhrase().getBorderColor(), 2, true));
+            if (note.isFiller()) {
+                /*Border out = BorderFactory.createLineBorder(note.getPhrase().getBorderColor(), 2, true);
+                Border in = new EmptyBorder(10,10,10,10);
+                setBorder(new CompoundBorder(out, in));*/
+                setBorder(BorderFactory.createLineBorder(note.getPhrase().getBorderColor(), 3, true));
+                setBackground(Color.BLACK);
+            }
+            else setBorder(BorderFactory.createLineBorder(note.getPhrase().getBorderColor(), 2, true));
         }
         else {
-            setBackground(Color.decode("#F5F5F5"));
+            if (!note.isFiller()) setBackground(Color.decode("#F5F5F5"));
+            else setBackground(Color.BLACK);
             setBorder(BorderFactory.createLineBorder(note.getPhrase().getBorderColor(), 1, true));
         }
+
+        if (note.isFiller()) {
+            rhythmLabel.setForeground(Color.WHITE);
+            dynamicLabel.setForeground(Color.WHITE);
+        }
+
+        if (note.getTranspose() == 0) {
+            if (note.isFiller()) nameLabel.setForeground(Color.WHITE);
+            else nameLabel.setForeground(Color.BLACK);
+        }
+        else {
+            nameLabel.setForeground(Color.RED);
+        }
+
         repaint();
     }
 

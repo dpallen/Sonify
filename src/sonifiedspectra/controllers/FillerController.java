@@ -1,5 +1,7 @@
 package sonifiedspectra.controllers;
 
+import sonifiedspectra.model.Note;
+import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.SonifiedSpectra;
 
@@ -25,10 +27,21 @@ public class FillerController implements ActionListener, MouseListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        visible = !visible;
 
+        int numFiller = 0;
+        int numNonFiller = 0;
 
-        app.getFrame().pack();
+        for (Note n : app.getActivePhrase().getNotesArray()) {
+            if (n.isSelected()) {
+                if (n.isFiller()) numFiller++;
+                else numNonFiller++;
+            }
+        }
+
+        app.getFillerDialog().getSelectedLabel().setText("Selected: " + numFiller + " filler, " + numNonFiller + " non-filler");
+
+        app.getFillerDialog().setVisible(!app.getFillerDialog().isVisible());
+
     }
 
     @Override
@@ -60,6 +73,22 @@ public class FillerController implements ActionListener, MouseListener {
         app.getFillerButton().setCol(app.getButtonBackgroundColor());
         app.getFillerButton().repaint();
         app.getFrame().pack();
+    }
+
+    /**
+     * Translates Rhythm Values
+     *
+     * @param value string representing rhythm value
+     * @return double representing rhythm value
+     */
+    public double getQuantizeRhythmValue(String value) {
+
+        if (value.equals("1")) return 4.0;
+        if (value.equals("1/2")) return 2.0;
+        if (value.equals("1/4")) return 1.0;
+        if (value.equals("1/8")) return 0.5;
+        else return 0.25;
+
     }
 
 }

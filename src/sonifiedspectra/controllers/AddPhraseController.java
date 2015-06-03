@@ -1,8 +1,12 @@
 package sonifiedspectra.controllers;
 
+import sonifiedspectra.model.HelpStrings;
+import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
+import sonifiedspectra.view.PhraseView;
 import sonifiedspectra.view.SonifiedSpectra;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -15,17 +19,35 @@ public class AddPhraseController implements ActionListener, MouseListener {
 
     private SonifiedSpectra app;
     private Project project;
-    private boolean visible;
 
     public AddPhraseController(SonifiedSpectra app, Project project) {
         this.project = project;
         this.app = app;
-        this.visible = false;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        visible = !visible;
+
+        Phrase newPhrase = new Phrase(app.getActiveProject().getCurrentPhraseId(), app.getActivePhrase().getCompound(), app.getColorsArray().get(app.getCurrentColorIndex()), 2500, 1000);
+        app.incrementColorIndex();
+        app.getActiveProject().incrementPhraseId();
+        newPhrase.initialize();
+
+        PhraseView phraseView = new PhraseView(newPhrase);
+        phraseView.setBackground(phraseView.getPhrase().getUnselectedColor());
+        phraseView.updatePanel();
+        phraseView.setBounds(10 + 110 * (app.getPhraseViewArray().size()), 5, 100, 70);
+        phraseView.addMouseListener(new HelpTextController(app, HelpStrings.PHRASE_VIEW));
+        phraseView.addMouseListener(new PhraseController(app.getActiveProject(), app, phraseView));
+
+        app.getPhraseViewArray().add(phraseView);
+        app.getPhrasesPanel().add(phraseView);
+        app.getActiveProject().getPhrasesArray().add(newPhrase);
+        app.getPhrasesPanel().setPreferredSize(new Dimension(10 + 110 * app.getActiveProject().getPhrasesArray().size(), 100));
+        app.updateActivePhrase(newPhrase);
+        app.updateIntervalMarker();
+        app.getSoundPlayer().reset();
+        app.getSoundPlayer().updateSoundPlayer();
         app.getFrame().pack();
     }
 

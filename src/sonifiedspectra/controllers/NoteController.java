@@ -69,7 +69,7 @@ public class NoteController implements MouseListener {
         if (!noteView.getNote().isSelected()) {
             noteView.setBackground(app.getActivePhrase().getUnselectedColor());
             noteView.repaint();
-            if (app.getActivePhrase() != null) {
+            if (app.getActivePhrase() != null && !noteView.getNote().isFiller()) {
                 XYPlot plot = app.getActivePhrase().getCompound().getDataChart().getDataChart().getXYPlot();
                 plot.addDomainMarker(app.addNoteMarker(noteView.getNote()));
             }
@@ -80,10 +80,11 @@ public class NoteController implements MouseListener {
     @Override
     public void mouseExited(MouseEvent e) {
         if (!noteView.getNote().isSelected()) {
-            noteView.setBackground(app.getButtonBackgroundColor());
+            if (noteView.getNote().isFiller()) noteView.setBackground(Color.BLACK);
+            else noteView.setBackground(app.getButtonBackgroundColor());
             noteView.repaint();
 
-            if (app.getActivePhrase() != null) {
+            if (app.getActivePhrase() != null && !noteView.getNote().isFiller()) {
                 XYPlot plot = app.getActivePhrase().getCompound().getDataChart().getDataChart().getXYPlot();
                 plot.removeDomainMarker(app.addNoteMarker(noteView.getNote()));
             }

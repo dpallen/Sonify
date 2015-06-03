@@ -44,10 +44,10 @@ public class GraphController implements ChartMouseListener {
 
                 System.out.println("Active phrase x1: " + app.getActivePhrase().getX1() + ", x2: " + app.getActivePhrase().getX2());
 
-                if (!app.getLeftOrRightCheckbox().isSelected() && x > app.getActivePhrase().getX1()) {
-                    app.getActivePhrase().setX2(x);
+                if (!app.getLeftOrRightCheckbox().isSelected() && x > app.getActivePhrase().getX2()) {
+                    app.getActivePhrase().setX1(x);
                 }
-                else if (app.getLeftOrRightCheckbox().isSelected() && x < app.getActivePhrase().getX2()) app.getActivePhrase().setX1(x);
+                else if (app.getLeftOrRightCheckbox().isSelected() && x < app.getActivePhrase().getX1()) app.getActivePhrase().setX2(x);
 
                 app.getActivePhrase().initialize();
                 app.getActivePhrase().setSelectedNotes(selectedNotes);

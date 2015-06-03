@@ -13,6 +13,7 @@ public class Phrase extends jm.music.data.Phrase {
     private int instrument;
     private int minPitch;
     private int maxPitch;
+    private int currentFillerId;
 
     private double x1;
     private double x2;
@@ -50,6 +51,7 @@ public class Phrase extends jm.music.data.Phrase {
         this.quality = "Major";
         this.qRhythm = "1/4";
         this.compound = compound;
+        this.currentFillerId = 0;
         this.selected = false;
         this.notesArray = new ArrayList<Note>();
 
@@ -68,11 +70,11 @@ public class Phrase extends jm.music.data.Phrase {
         int endIndex = 0;
 
         for (Peak p : compound.getDataChart().getPeaksArray()) {
-            if (x2 < p.getX1() && x2 > p.getX2() ) {
+            if (x1 < p.getX1() && x1 > p.getX2() ) {
                 startIndex = compound.getDataChart().getPeaksArray().indexOf(p);
                 System.out.println("    First peak index: " + startIndex);
             }
-            if (x1 < p.getX1() && x1 > p.getX2() ) {
+            if (x2 < p.getX1() && x2 > p.getX2() ) {
                 endIndex = compound.getDataChart().getPeaksArray().indexOf(p);
                 System.out.println("    Last peak index: " + endIndex);
             }
@@ -114,6 +116,16 @@ public class Phrase extends jm.music.data.Phrase {
         System.out.println();
         System.out.println("Phrase initialized.");
 
+    }
+
+    public void addFillerNote(Note fillerNote) {
+        for (Note n : getSelectedNotes()) {
+            notesArray.add(notesArray.indexOf(n) + 1, fillerNote);
+        }
+    }
+
+    public void incrementCurrentFillerId() {
+        currentFillerId++;
     }
 
     public double getBeatLength2() {
@@ -452,5 +464,13 @@ public class Phrase extends jm.music.data.Phrase {
 
     public void setSelectedColor(Color selectedColor) {
         this.selectedColor = selectedColor;
+    }
+
+    public int getCurrentFillerId() {
+        return currentFillerId;
+    }
+
+    public void setCurrentFillerId(int currentFillerId) {
+        this.currentFillerId = currentFillerId;
     }
 }

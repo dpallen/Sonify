@@ -117,9 +117,9 @@ public class SonifiedSpectra {
     private Project activeProject;
 
     private JPanel mainView;
-    private EditCompoundView editCompoundView;
-    private JPanel fillerNotesView;
-    private JPanel loopPanel;
+
+    private FillerNotesDialog fillerDialog;
+    private EditCompoundDialog editCompoundDialog;
 
     private ArrayList<NoteView> noteViewArray;
     private ArrayList<PhraseView> phraseViewArray;
@@ -131,6 +131,8 @@ public class SonifiedSpectra {
     private ArrayList<String> keysArray;
     private ArrayList<String> qualityArray;
     private ArrayList<String> rhythmArray;
+
+    private int currentColorIndex;
 
     private SoundPlayer soundPlayer;
     private boolean isProject;
@@ -216,15 +218,21 @@ public class SonifiedSpectra {
         } else {
         }
 
-        Phrase phrase = new Phrase(0, activeProject.getCompoundsArray().get(0), colorsArray.get(0), 600, 1500);
+        currentColorIndex = 0;
+
+        Phrase phrase = new Phrase(activeProject.getCurrentPhraseId(), activeProject.getCompoundsArray().get(0), colorsArray.get(currentColorIndex), 1500, 600);
         phrase.initialize();
+        activeProject.incrementPhraseId();
         activeProject.getPhrasesArray().add(phrase);
+        currentColorIndex++;
         activePhrase = phrase;
 
-        Phrase phrase2 = new Phrase(1, activeProject.getCompoundsArray().get(1), colorsArray.get(1), 1234, 2558);
+        Phrase phrase2 = new Phrase(activeProject.getCurrentPhraseId(), activeProject.getCompoundsArray().get(1), colorsArray.get(currentColorIndex), 2558, 2015);
         phrase2.initialize();
         phrase2.setInstrument(47);
+        activeProject.incrementPhraseId();
         phrase2.setStartTime(5);
+        currentColorIndex++;
         activeProject.getPhrasesArray().add(phrase2);
 
         Track track1 = new Track(0);
@@ -851,9 +859,24 @@ public class SonifiedSpectra {
         bpmLabel.setBounds(638, 57, 40, 17);
         playbackPanel.add(bpmLabel);
 
-        editCompoundView = new EditCompoundView(activePhrase.getCompound());
-        editCompoundView.setVisible(false);
-        frame.getContentPane().add(editCompoundView);
+        fillerDialog = new FillerNotesDialog(this);
+        fillerDialog.pack();
+        final int width = fillerDialog.getWidth();
+        final int height = fillerDialog.getHeight();
+        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (screenSize.width / 2) - (width / 2);
+        int y = (screenSize.height / 2) - (height / 2);
+        fillerDialog.setLocation( x, y );
+        fillerDialog.setVisible(false);
+
+        editCompoundDialog = new EditCompoundDialog(this);
+        editCompoundDialog.pack();
+        final int width2 = editCompoundDialog.getWidth();
+        final int height2 = editCompoundDialog.getHeight();
+        int x2 = (screenSize.width / 2) - (width2 / 2);
+        int y2 = (screenSize.height / 2) - (height2 / 2);
+        editCompoundDialog.setLocation( x2, y2 );
+        editCompoundDialog.setVisible(false);
 
     }
 
@@ -1034,7 +1057,8 @@ public class SonifiedSpectra {
             noteView.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 1, true));
             noteView.updatePanel();
             i++;
-            noteView.addMouseListener(new HelpTextController(this, HelpStrings.NOTE_VIEW));
+            if (!noteView.getNote().isFiller()) noteView.addMouseListener(new HelpTextController(this, HelpStrings.NOTE_VIEW));
+            else noteView.addMouseListener(new HelpTextController(this, HelpStrings.FILLER_NOTE_VIEW));
             noteView.addMouseListener(new NoteController(activeProject, this, noteView));
             noteViewArray.add(noteView);
             notesPanel.add(noteView);
@@ -1049,11 +1073,17 @@ public class SonifiedSpectra {
         colorButton.setCol(activePhrase.getUnselectedColor());
         colorButton.repaint();
 
+        activePhrase.getCompound().getDataChart().getDataChart().getTitle().setText(
+                activePhrase.getCompound().getName());
+        phraseViewArray.get(activeProject.getPhrasesArray().indexOf(
+                activePhrase)).getNameLabel().setText(activePhrase.getCompound().getName());
+
         int j4 = 0;
         for (TrackView tv : trackViewArray) {
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                 pitv.adjustSize(j4);
                 if (activePhrase.getId() == pitv.getPhrase().getId()) {
+                    pitv.getNameLabel().setText(activePhrase.getCompound().getName());
                     pitv.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 2, false));
                     pitv.repaint();
                 }
@@ -1095,7 +1125,7 @@ public class SonifiedSpectra {
 
         if (activePhrase.getX2() != 0.0 && activePhrase.getX1() != 0.0) {
 
-            marker = new IntervalMarker(activePhrase.getX1(), activePhrase.getX2());
+            marker = new IntervalMarker(activePhrase.getX2(), activePhrase.getX1());
 
         } else {
 
@@ -1119,7 +1149,7 @@ public class SonifiedSpectra {
 
             for ( Note n : activePhrase.getSelectedNotes() ) {
 
-                plot.addDomainMarker(addNoteMarker(n));
+                if (!n.isFiller()) plot.addDomainMarker(addNoteMarker(n));
 
             }
 
@@ -1155,6 +1185,11 @@ public class SonifiedSpectra {
             nv.updatePanel();
             nv.repaint();
         }
+    }
+
+    public void incrementColorIndex() {
+        currentColorIndex++;
+        if (currentColorIndex >= 8) currentColorIndex = 0;
     }
 
     public static void main( String[] args ) throws FileNotFoundException, FontFormatException, IOException,
@@ -1518,30 +1553,6 @@ public class SonifiedSpectra {
 
     public void setMainView(JPanel mainView) {
         this.mainView = mainView;
-    }
-
-    public EditCompoundView getEditCompoundView() {
-        return editCompoundView;
-    }
-
-    public void setEditCompoundView(EditCompoundView editCompoundView) {
-        this.editCompoundView = editCompoundView;
-    }
-
-    public JPanel getFillerNotesView() {
-        return fillerNotesView;
-    }
-
-    public void setFillerNotesView(JPanel fillerNotesView) {
-        this.fillerNotesView = fillerNotesView;
-    }
-
-    public JPanel getLoopPanel() {
-        return loopPanel;
-    }
-
-    public void setLoopPanel(JPanel loopPanel) {
-        this.loopPanel = loopPanel;
     }
 
     public ArrayList<NoteView> getNoteViewArray() {
@@ -1938,5 +1949,29 @@ public class SonifiedSpectra {
 
     public void setMeasureHeadViewArray(ArrayList<MeasureHeadView> measureHeadViewArray) {
         this.measureHeadViewArray = measureHeadViewArray;
+    }
+
+    public FillerNotesDialog getFillerDialog() {
+        return fillerDialog;
+    }
+
+    public void setFillerDialog(FillerNotesDialog fillerDialog) {
+        this.fillerDialog = fillerDialog;
+    }
+
+    public EditCompoundDialog getEditCompoundDialog() {
+        return editCompoundDialog;
+    }
+
+    public void setEditCompoundDialog(EditCompoundDialog editCompoundDialog) {
+        this.editCompoundDialog = editCompoundDialog;
+    }
+
+    public int getCurrentColorIndex() {
+        return currentColorIndex;
+    }
+
+    public void setCurrentColorIndex(int currentColorIndex) {
+        this.currentColorIndex = currentColorIndex;
     }
 }

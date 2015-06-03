@@ -32,4 +32,5 @@ public interface HelpStrings {
     String TRACK_HEAD = "Select entire track.";
     String MEASURE_HEAD = "Select entire measure.";
     String GRAPH_PANEL = "Click on the graph to adjust the x values or the active phrase. Use the || button in the compound menu to select the right or left x value marker.";
+    String FILLER_NOTE_VIEW = "Filler note object. Represents a filler note in the active phrase.";
 }

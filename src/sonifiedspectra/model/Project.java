@@ -12,6 +12,7 @@ public class Project {
     private ArrayList<Track> tracksArray;
     private String name;
     private int tempo;
+    private int currentPhraseId;
 
     private boolean notesPanelMultipleSelection;
 
@@ -21,6 +22,7 @@ public class Project {
         tracksArray = new ArrayList<Track>();
         notesPanelMultipleSelection = true;
         this.tempo = 120;
+        currentPhraseId = 0;
     }
 
     public Project(ArrayList<Compound> compoundsArray, ArrayList<Phrase> phrasesArray, ArrayList<Track> tracksArray) {
@@ -46,6 +48,10 @@ public class Project {
 
     public int getNumMeasures() {
         return 10;
+    }
+
+    public void incrementPhraseId() {
+        currentPhraseId++;
     }
 
     public void setCompoundsArray(ArrayList<Compound> compoundsArray) {
@@ -94,5 +100,13 @@ public class Project {
 
     public void setTempo(int tempo) {
         this.tempo = tempo;
+    }
+
+    public int getCurrentPhraseId() {
+        return currentPhraseId;
+    }
+
+    public void setCurrentPhraseId(int currentPhraseId) {
+        this.currentPhraseId = currentPhraseId;
     }
 }

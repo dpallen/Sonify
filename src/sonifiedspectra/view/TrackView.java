@@ -20,14 +20,16 @@ public class TrackView extends JPanel {
 
     public TrackView(Track track) {
         this.track = track;
+        initialize();
+    }
+
+    public void initialize() {
         setLayout(null);
         this.phraseInTrackViewArray = new ArrayList<PhraseInTrackView>();
 
-        /*this.nameLabel = new JLabel("Track 1");
-        nameLabel.setBounds(10, 10, 100, 20);
-        add(nameLabel);*/
-
         int i = 0;
+
+        removeAll();
 
         for (Phrase phrase : track.getPhrases()) {
             PhraseInTrackView pitv = new PhraseInTrackView(phrase);
@@ -39,6 +41,7 @@ public class TrackView extends JPanel {
         }
 
         setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
+        setPreferredSize(new Dimension(getX(), getY()));
     }
 
     public JLabel getNameLabel() {

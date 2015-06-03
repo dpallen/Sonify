@@ -62,6 +62,7 @@ public class SonifiedSpectra {
     private BetterButton loopButton;
     private BetterButton addTrackButton;
     private BetterButton removeTrackButton;
+    private BetterButton addPhraseToTrackButton;
 
     private Color buttonHighlightColor;
     private Color buttonBackgroundColor;
@@ -517,7 +518,7 @@ public class SonifiedSpectra {
                 .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         phrasesScrollPane
                 .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-        phrasesScrollPane.setBounds(20, 639, 500, 100);
+        phrasesScrollPane.setBounds(20, 639, 450, 100);
         frame.getContentPane().add(phrasesScrollPane);
 
         phraseViewArray = new ArrayList<PhraseView>();
@@ -535,6 +536,15 @@ public class SonifiedSpectra {
         }
 
         phrasesPanel.setPreferredSize(new Dimension(10 + 110 * activeProject.getPhrasesArray().size(), 100));
+
+        Icon addphrasetotrackicon = new ImageIcon("resources/icons/addphrasetotrackicon.png");
+        addPhraseToTrackButton = new BetterButton(Color.decode("#F5F5F5"), 40, 40, 6);
+        addPhraseToTrackButton.setIcon(addphrasetotrackicon);
+        addPhraseToTrackButton.setBounds(475, 669, 40, 40);
+        addPhraseToTrackButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+        addPhraseToTrackButton.setBorderPainted(true);
+        addPhraseToTrackButton.setFocusPainted(false);
+        frame.getContentPane().add(addPhraseToTrackButton);
 
         projectLabel = new JLabel("Project:");
         projectLabel.setFont(hnt20);
@@ -943,6 +953,11 @@ public class SonifiedSpectra {
             phraseView.addMouseListener(new PhraseController(activeProject, this, phraseView));
         }
 
+        AddPhraseToTrackController addPhraseToTrackController = new AddPhraseToTrackController(this, activeProject);
+        addPhraseToTrackButton.addMouseListener(new HelpTextController(this, HelpStrings.ADD_PHRASE_TO_TRACK));
+        addPhraseToTrackButton.addActionListener(addPhraseToTrackController);
+        addPhraseToTrackButton.addMouseListener(addPhraseToTrackController);
+
         for (TrackHeadView thv : trackHeadViewArray) {
             thv.addMouseListener(new HelpTextController(this, HelpStrings.TRACK_HEAD));
             thv.addMouseListener(new TrackHeadController(this, activeProject, thv));
@@ -962,6 +977,10 @@ public class SonifiedSpectra {
         for (TrackView tv : trackViewArray) {
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                 pitv.addMouseListener(new PhraseInTrackController(this, activeProject, pitv));
+                RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(this, activeProject, pitv.getRemoveButton());
+                pitv.getRemoveButton().addMouseListener(new HelpTextController(this, HelpStrings.REMOVE_PHRASE_FROM_TRACK));
+                pitv.getRemoveButton().addActionListener(removePhraseFromTrackController);
+                pitv.getRemoveButton().addMouseListener(removePhraseFromTrackController);
             }
         }
 
@@ -1973,5 +1992,13 @@ public class SonifiedSpectra {
 
     public void setCurrentColorIndex(int currentColorIndex) {
         this.currentColorIndex = currentColorIndex;
+    }
+
+    public BetterButton getAddPhraseToTrackButton() {
+        return addPhraseToTrackButton;
+    }
+
+    public void setAddPhraseToTrackButton(BetterButton addPhraseToTrackButton) {
+        this.addPhraseToTrackButton = addPhraseToTrackButton;
     }
 }

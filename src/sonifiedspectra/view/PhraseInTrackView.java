@@ -1,5 +1,6 @@
 package sonifiedspectra.view;
 
+import sonifiedspectra.controllers.RemovePhraseFromTrackController;
 import sonifiedspectra.model.Phrase;
 
 import javax.swing.*;
@@ -10,8 +11,9 @@ import java.awt.*;
  */
 public class PhraseInTrackView extends JPanel {
 
-    public JLabel nameLabel;
-    public Phrase phrase;
+    private JLabel nameLabel;
+    private Phrase phrase;
+    private BetterButton removeButton;
 
     public PhraseInTrackView(Phrase phrase) {
         this.phrase = phrase;
@@ -24,10 +26,20 @@ public class PhraseInTrackView extends JPanel {
         nameLabel.setBounds(2, 0, 75, 15);
         add(nameLabel);
 
+        Icon removephrasefromtrackicon = new ImageIcon("resources/icons/removephrasefromtrackicon.png");
+        removeButton = new BetterButton(Color.decode("#F5F5F5"), 10, 10, 0);
+        removeButton.setIcon(removephrasefromtrackicon);
+        removeButton.setBounds(50, 2, 10, 10);
+        removeButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+        removeButton.setBorderPainted(true);
+        removeButton.setFocusPainted(false);
+        add(removeButton);
+
     }
 
     public void adjustSize(int j4) {
         setBounds((int) ((phrase.getStartTime() * 4) * 25), j4 * 15, getAdjustedWidth(), 15);
+        removeButton.setBounds(getAdjustedWidth() - 15, removeButton.getY(), removeButton.getWidth(), removeButton.getHeight());
     }
 
     public int getAdjustedWidth() {
@@ -48,5 +60,13 @@ public class PhraseInTrackView extends JPanel {
 
     public void setPhrase(Phrase phrase) {
         this.phrase = phrase;
+    }
+
+    public BetterButton getRemoveButton() {
+        return removeButton;
+    }
+
+    public void setRemoveButton(BetterButton removeButton) {
+        this.removeButton = removeButton;
     }
 }

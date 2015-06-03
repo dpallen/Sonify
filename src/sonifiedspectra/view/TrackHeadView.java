@@ -53,7 +53,10 @@ public class TrackHeadView extends JPanel {
     }
 
     public int getExpandedHeight() {
-        return 140;
+
+        int expandedHeight = 15 * track.getPhrases().size();
+        if (expandedHeight > 70) return expandedHeight;
+        else return 70;
     }
 
     public JComboBox getInstrumentComboBox() {

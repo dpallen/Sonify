@@ -46,6 +46,7 @@ public class MultipleNoteSelectionController implements ActionListener {
 
         updateIcon();
         checkBox.repaint();
+        app.getFrame().pack();
     }
 
     public void updateIcon() {

@@ -23,6 +23,19 @@ public class MeasureHeadView extends JPanel {
         setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
     }
 
+    public void updatePanel() {
+        if (selected) {
+            setBackground(Color.decode("#C9C9C9"));
+            setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, true));
+            repaint();
+        }
+        else {
+            setBackground(Color.decode("#F5F5F5"));
+            setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
+            repaint();
+        }
+    }
+
     public void toggleSelected() {
         selected = !selected;
     }

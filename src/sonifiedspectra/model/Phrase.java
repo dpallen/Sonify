@@ -33,6 +33,7 @@ public class Phrase extends jm.music.data.Phrase {
     private Color selectedColor;
 
     private Compound compound;
+    private Phrase parentPhrase;
 
     private ArrayList<Note> notesArray;
 
@@ -56,6 +57,21 @@ public class Phrase extends jm.music.data.Phrase {
         this.notesArray = new ArrayList<Note>();
 
         setBackgroundCol(color);
+    }
+
+    public Phrase copy() {
+        Phrase newPhrase = new Phrase(id, compound, color, x1, x2);
+        newPhrase.setParentPhrase(this);
+        newPhrase.setMinPitch(minPitch);
+        newPhrase.setMaxPitch(maxPitch);
+        newPhrase.setQuantized(quantized);
+        newPhrase.setInstrument(instrument);
+        newPhrase.setKey(key);
+        newPhrase.setQuality(quality);
+        newPhrase.setQRhythm(qRhythm);
+        newPhrase.setBackgroundCol(color);
+        newPhrase.initialize();
+        return newPhrase;
     }
 
     public void initialize() {
@@ -472,5 +488,13 @@ public class Phrase extends jm.music.data.Phrase {
 
     public void setCurrentFillerId(int currentFillerId) {
         this.currentFillerId = currentFillerId;
+    }
+
+    public Phrase getParentPhrase() {
+        return parentPhrase;
+    }
+
+    public void setParentPhrase(Phrase parentPhrase) {
+        this.parentPhrase = parentPhrase;
     }
 }

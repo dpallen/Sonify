@@ -1,10 +1,8 @@
 package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Project;
-import sonifiedspectra.view.BetterButton;
-import sonifiedspectra.view.PhraseInTrackView;
-import sonifiedspectra.view.SonifiedSpectra;
-import sonifiedspectra.view.TrackView;
+import sonifiedspectra.model.Track;
+import sonifiedspectra.view.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -19,27 +17,32 @@ public class RemovePhraseFromTrackController implements ActionListener, MouseLis
 
     private SonifiedSpectra app;
     private Project project;
-    private BetterButton button;
+    private PhraseInTrackView pitv;
+    private TrackView tv;
 
-    public RemovePhraseFromTrackController(SonifiedSpectra app, Project project, BetterButton button) {
+    public RemovePhraseFromTrackController(SonifiedSpectra app, Project project, PhraseInTrackView pitv, TrackView tv) {
         this.project = project;
         this.app = app;
-        this.button = button;
+        this.pitv = pitv;
+        this.tv = tv;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        for (TrackView tv : app.getTrackViewArray()) {
-            if (tv.getTrack().getInstrument() == app.getActivePhrase().getInstrument()) {
-                tv.getTrack().getPhrases().add(app.getActivePhrase());
-                tv.initialize();
-                for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray())
-                    pitv.addMouseListener(new PhraseInTrackController(app, app.getActiveProject(), pitv));
-                tv.repaint();
-            }
+        int index = tv.getTrack().getPhrases().indexOf(pitv.getPhrase());
+
+        tv.getTrack().getPhrases().remove(index);
+        tv.getPhraseInTrackViewArray().remove(index);
+        tv.remove(index);
+
+        for (int i = index; i < tv.getPhraseInTrackViewArray().size(); i++) {
+            PhraseInTrackView pitv2 = tv.getPhraseInTrackViewArray().get(i);
+            pitv2.setBounds(pitv2.getX(), pitv2.getY() - 15, pitv2.getWidth(), pitv2.getHeight());
+            pitv2.repaint();
         }
 
+        app.getInTracksPanel().repaint();
         app.updateActivePhrase(app.getActivePhrase());
         app.updateIntervalMarker();
         app.getSoundPlayer().reset();
@@ -54,26 +57,26 @@ public class RemovePhraseFromTrackController implements ActionListener, MouseLis
 
     @Override
     public void mousePressed(MouseEvent e) {
-        button.setCol(Color.BLACK);
-        button.repaint();
+        pitv.getRemoveButton().setCol(Color.BLACK);
+        pitv.getRemoveButton().repaint();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        button.setCol(Color.decode("#747474"));
-        button.repaint();
+        pitv.getRemoveButton().setCol(Color.decode("#747474"));
+        pitv.getRemoveButton().repaint();
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        button.setCol(Color.decode("#747474"));
-        button.repaint();
+        pitv.getRemoveButton().setCol(Color.decode("#747474"));
+        pitv.getRemoveButton().repaint();
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        button.setCol(app.getButtonBackgroundColor());
-        button.repaint();
+        pitv.getRemoveButton().setCol(app.getButtonBackgroundColor());
+        pitv.getRemoveButton().repaint();
     }
 
 }

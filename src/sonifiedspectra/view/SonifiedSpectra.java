@@ -63,6 +63,8 @@ public class SonifiedSpectra {
     private BetterButton addTrackButton;
     private BetterButton removeTrackButton;
     private BetterButton addPhraseToTrackButton;
+    private BetterButton movePitvRightButton;
+    private BetterButton movePitvLeftButton;
 
     private Color buttonHighlightColor;
     private Color buttonBackgroundColor;
@@ -94,11 +96,13 @@ public class SonifiedSpectra {
     private JTextField minTextField;
     private JTextField maxTextField;
     private JTextField tempoTextField;
+    private JTextField movePitvTextField;
 
     private JSlider playbackSlider;
 
     private JCheckBox quantizeCheckBox;
     private JCheckBox multipleSelectionCheckBox;
+    private JCheckBox tracksMultSelectCheckbox;
     private JCheckBox leftOrRightCheckbox;
 
     private JLabel spectrumLabel;
@@ -232,22 +236,25 @@ public class SonifiedSpectra {
         phrase2.initialize();
         phrase2.setInstrument(47);
         activeProject.incrementPhraseId();
-        phrase2.setStartTime(5);
+        phrase2.setStartTime(2.5);
         currentColorIndex++;
         activeProject.getPhrasesArray().add(phrase2);
 
-        Track track1 = new Track(0);
+        Track track1 = new Track(activeProject.getCurrentTrackId());
         track1.setInstrument(0);
+        activeProject.incrementTrackId();
         activeProject.getTracksArray().add(track1);
         track1.getPhrases().add(phrase);
 
-        Track track2 = new Track(1);
+        Track track2 = new Track(activeProject.getCurrentTrackId());
         track2.setInstrument(47);
+        activeProject.incrementTrackId();
         track2.setLive(false);
         track2.getPhrases().add(phrase2);
         activeProject.getTracksArray().add(track2);
 
-        Track track3 = new Track(2);
+        Track track3 = new Track(activeProject.getCurrentTrackId());
+        activeProject.incrementTrackId();
         track3.setInstrument(2);
         activeProject.getTracksArray().add(track3);
 
@@ -607,6 +614,34 @@ public class SonifiedSpectra {
         helpTextPane.setBounds(924, 11, 320, 32);
         frame.getContentPane().add(helpTextPane);
 
+        Icon movepitvrighticon = new ImageIcon("resources/icons/movepitvrighticon.png");
+        movePitvRightButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
+        movePitvRightButton.setIcon(movepitvrighticon);
+        movePitvRightButton.setBounds(1240, 52, 32, 32);
+        movePitvRightButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+        movePitvRightButton.setBorderPainted(true);
+        movePitvRightButton.setFocusPainted(false);
+        frame.getContentPane().add(movePitvRightButton);
+
+        movePitvTextField = new JTextField();
+        movePitvTextField.setHorizontalAlignment(SwingConstants.CENTER);
+        movePitvTextField.setBackground(Color.decode("#F5F5F5"));
+        //movePitvTextField.setFont(hnt10);
+        movePitvTextField.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+        movePitvTextField.setBounds(1240, 85, 32, 32);
+        movePitvTextField.setText(String.valueOf(activeProject.getMovePitvFactor()));
+        movePitvTextField.setHorizontalAlignment(SwingConstants.HORIZONTAL);
+        frame.getContentPane().add(movePitvTextField);
+
+        Icon movepitvlefticon = new ImageIcon("resources/icons/movepitvlefticon.png");
+        movePitvLeftButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
+        movePitvLeftButton.setIcon(movepitvlefticon);
+        movePitvLeftButton.setBounds(1240, 119, 32, 32);
+        movePitvLeftButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+        movePitvLeftButton.setBorderPainted(true);
+        movePitvLeftButton.setFocusPainted(false);
+        frame.getContentPane().add(movePitvLeftButton);
+
         outTracksPanel = new JPanel();
         outTracksPanel.setLayout(null);
         outTracksPanel.setBorder(null);
@@ -616,13 +651,23 @@ public class SonifiedSpectra {
         frame.getContentPane().add(outTracksPanel);
 
         JLabel trackOptionsLabel = new JLabel("Tracks:");
-        trackOptionsLabel.setBounds(8, 8, 50, 14);
+        trackOptionsLabel.setBounds(2, 8, 50, 14);
         outTracksPanel.add(trackOptionsLabel);
+
+        Icon tracksmultselecticon;
+        tracksMultSelectCheckbox = new JCheckBox();
+        if (activeProject.isTracksPanelMultipleSelection()) tracksmultselecticon = new ImageIcon("resources/icons/tracksmultselected.png");
+        else tracksmultselecticon = new ImageIcon("resources/icons/tracksmultselecticon.png");
+        tracksMultSelectCheckbox.setIcon(tracksmultselecticon);
+        tracksMultSelectCheckbox.setSelected(activeProject.isTracksPanelMultipleSelection());
+        tracksMultSelectCheckbox.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+        tracksMultSelectCheckbox.setBounds(49, 5, 21, 21);
+        outTracksPanel.add(tracksMultSelectCheckbox);
 
         Icon loopicon = new ImageIcon("resources/icons/loopicon.png");
         loopButton = new BetterButton(Color.decode("#F5F5F5"), 21, 21, 6);
         loopButton.setIcon(loopicon);
-        loopButton.setBounds(72, 5, 21, 21);
+        loopButton.setBounds(74, 5, 21, 21);
         loopButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         loopButton.setBorderPainted(true);
         loopButton.setFocusPainted(false);
@@ -631,7 +676,7 @@ public class SonifiedSpectra {
         Icon addtrackicon = new ImageIcon("resources/icons/addtrackicon.png");
         addTrackButton = new BetterButton(Color.decode("#F5F5F5"), 21, 21, 6);
         addTrackButton.setIcon(addtrackicon);
-        addTrackButton.setBounds(98, 5, 21, 21);
+        addTrackButton.setBounds(100, 5, 21, 21);
         addTrackButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         addTrackButton.setBorderPainted(true);
         addTrackButton.setFocusPainted(false);
@@ -640,7 +685,7 @@ public class SonifiedSpectra {
         Icon removetrackicon = new ImageIcon("resources/icons/removetrackicon.png");
         removeTrackButton = new BetterButton(Color.decode("#F5F5F5"), 21, 21, 6);
         removeTrackButton.setIcon(removetrackicon);
-        removeTrackButton.setBounds(123, 5, 21, 21);
+        removeTrackButton.setBounds(125, 5, 21, 21);
         removeTrackButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         removeTrackButton.setBorderPainted(true);
         removeTrackButton.setFocusPainted(false);
@@ -977,7 +1022,7 @@ public class SonifiedSpectra {
         for (TrackView tv : trackViewArray) {
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                 pitv.addMouseListener(new PhraseInTrackController(this, activeProject, pitv));
-                RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(this, activeProject, pitv.getRemoveButton());
+                RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(this, activeProject, pitv, tv);
                 pitv.getRemoveButton().addMouseListener(new HelpTextController(this, HelpStrings.REMOVE_PHRASE_FROM_TRACK));
                 pitv.getRemoveButton().addActionListener(removePhraseFromTrackController);
                 pitv.getRemoveButton().addMouseListener(removePhraseFromTrackController);
@@ -1012,6 +1057,19 @@ public class SonifiedSpectra {
         settingsButton.addMouseListener(new HelpTextController(this, HelpStrings.SETTINGS));
         settingsButton.addActionListener(settingsController);
         settingsButton.addMouseListener(settingsController);
+
+        MovePitvController movePitvRightController = new MovePitvController(this, activeProject, 0);
+        movePitvRightButton.addMouseListener(new HelpTextController(this, HelpStrings.MOVE_PITV_RIGHT));
+        movePitvRightButton.addActionListener(movePitvRightController);
+        movePitvRightButton.addMouseListener(movePitvRightController);
+
+        MovePitvController movePitvLeftController = new MovePitvController(this, activeProject, 1);
+        movePitvLeftButton.addMouseListener(new HelpTextController(this, HelpStrings.MOVE_PITV_LEFT));
+        movePitvLeftButton.addActionListener(movePitvLeftController);
+        movePitvLeftButton.addMouseListener(movePitvLeftController);
+
+        tracksMultSelectCheckbox.addActionListener(new TrackMultSelectController(this, activeProject, tracksMultSelectCheckbox));
+        tracksMultSelectCheckbox.addMouseListener(new HelpTextController(this, HelpStrings.TRACKS_MULT_SELECT));
 
         LoopController loopController = new LoopController(this, activeProject);
         loopButton.addMouseListener(new HelpTextController(this, HelpStrings.LOOP));
@@ -1053,13 +1111,14 @@ public class SonifiedSpectra {
     public void updateActivePhrase(Phrase phrase) {
 
         activePhrase = phrase;
+
         temp = false;
         compoundComboBox.setSelectedIndex(activePhrase.getCompound().getId());
         temp = true;
 
         for (PhraseView pv : phraseViewArray) {
-            if (pv.getPhrase().getId() != phrase.getId()) pv.getPhrase().setSelected(false);
-            else phrase.setSelected(true);
+            if (pv.getPhrase().getId() != activePhrase.getId()) pv.getPhrase().setSelected(false);
+            else activePhrase.setSelected(true);
             pv.updatePanel();
         }
 
@@ -1070,7 +1129,7 @@ public class SonifiedSpectra {
 
         int i = 0;
 
-        for (Note note : phrase.getNotesArray()) {
+        for (Note note : activePhrase.getNotesArray()) {
             NoteView noteView = new NoteView(note);
             noteView.setBounds(10 + 44 * i, 10, 34, 67);
             noteView.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 1, true));
@@ -1101,7 +1160,7 @@ public class SonifiedSpectra {
         for (TrackView tv : trackViewArray) {
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                 pitv.adjustSize(j4);
-                if (activePhrase.getId() == pitv.getPhrase().getId()) {
+                if (activePhrase.getId() == pitv.getPhrase().getId() || (pitv.getPhrase().getParentPhrase() != null && activePhrase.getId() == pitv.getPhrase().getParentPhrase().getId())) {
                     pitv.getNameLabel().setText(activePhrase.getCompound().getName());
                     pitv.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 2, false));
                     pitv.repaint();
@@ -1209,6 +1268,18 @@ public class SonifiedSpectra {
     public void incrementColorIndex() {
         currentColorIndex++;
         if (currentColorIndex >= 8) currentColorIndex = 0;
+    }
+
+    public ArrayList<Integer> getSelectedMeasures() {
+
+        ArrayList<Integer> selectedMeasures = new ArrayList<Integer>();
+
+        for (MeasureHeadView mhv : measureHeadViewArray) {
+            if (mhv.isSelected()) selectedMeasures.add(mhv.getMeasureNumber());
+        }
+
+        return selectedMeasures;
+
     }
 
     public static void main( String[] args ) throws FileNotFoundException, FontFormatException, IOException,
@@ -2000,5 +2071,37 @@ public class SonifiedSpectra {
 
     public void setAddPhraseToTrackButton(BetterButton addPhraseToTrackButton) {
         this.addPhraseToTrackButton = addPhraseToTrackButton;
+    }
+
+    public BetterButton getMovePitvRightButton() {
+        return movePitvRightButton;
+    }
+
+    public void setMovePitvRightButton(BetterButton movePitvRightButton) {
+        this.movePitvRightButton = movePitvRightButton;
+    }
+
+    public BetterButton getMovePitvLeftButton() {
+        return movePitvLeftButton;
+    }
+
+    public void setMovePitvLeftButton(BetterButton movePitvLeftButton) {
+        this.movePitvLeftButton = movePitvLeftButton;
+    }
+
+    public JTextField getMovePitvTextField() {
+        return movePitvTextField;
+    }
+
+    public void setMovePitvTextField(JTextField movePitvTextField) {
+        this.movePitvTextField = movePitvTextField;
+    }
+
+    public JCheckBox getTracksMultSelectCheckbox() {
+        return tracksMultSelectCheckbox;
+    }
+
+    public void setTracksMultSelectCheckbox(JCheckBox tracksMultSelectCheckbox) {
+        this.tracksMultSelectCheckbox = tracksMultSelectCheckbox;
     }
 }

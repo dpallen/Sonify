@@ -3,7 +3,9 @@ package sonifiedspectra.controllers;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.MeasureHeadView;
 import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.TrackHeadView;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -27,8 +29,23 @@ public class MeasureHeadController implements MouseListener {
     public void mouseClicked(MouseEvent e) {
 
         mhv.toggleSelected();
-        if (mhv.isSelected()) mhv.setBackground(app.getActivePhrase().getSelectedColor());
-        else mhv.setBackground(app.getButtonBackgroundColor());
+
+        if (!project.isTracksPanelMultipleSelection()) {
+            for (MeasureHeadView mhv2 : app.getMeasureHeadViewArray()) {
+                if (mhv.getMeasureNumber() != mhv2.getMeasureNumber()) mhv2.setSelected(false);
+                mhv2.updatePanel();
+            }
+        }
+
+        if (mhv.isSelected()) {
+            mhv.setBackground(Color.decode("#C9C9C9"));
+            mhv.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
+            mhv.repaint();
+        }
+        else {
+            mhv.setBackground(app.getButtonBackgroundColor());
+            mhv.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
+        }
         app.getFrame().pack();
 
     }

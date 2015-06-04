@@ -35,4 +35,7 @@ public interface HelpStrings {
     String FILLER_NOTE_VIEW = "Filler note object. Represents a filler note in the active phrase.";
     String ADD_PHRASE_TO_TRACK = "Click to add active phrase to track with same instrument. If a track with the correct instrument does not exist, will add a new one.";
     String REMOVE_PHRASE_FROM_TRACK = "Remove phrase from track.";
+    String TRACKS_MULT_SELECT = "Toggle multiple selection mode. When checked, you can select more than one track or measure at a time.";
+    String MOVE_PITV_RIGHT = "Move selected phrase in tracks panel to the right by the amount shown in the text field in quarter notes.";
+    String MOVE_PITV_LEFT = "Move selected phrase in tracks panel to the left by the amount shown in the text field in quarter notes.";
 }

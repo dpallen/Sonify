@@ -14,9 +14,11 @@ public class PhraseInTrackView extends JPanel {
     private JLabel nameLabel;
     private Phrase phrase;
     private BetterButton removeButton;
+    private boolean selected;
 
     public PhraseInTrackView(Phrase phrase) {
         this.phrase = phrase;
+        selected = false;
         setLayout(null);
         setBackground(phrase.getUnselectedColor());
         setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
@@ -35,6 +37,10 @@ public class PhraseInTrackView extends JPanel {
         removeButton.setFocusPainted(false);
         add(removeButton);
 
+    }
+
+    public void toggleSelected() {
+        selected = !selected;
     }
 
     public void adjustSize(int j4) {
@@ -68,5 +74,13 @@ public class PhraseInTrackView extends JPanel {
 
     public void setRemoveButton(BetterButton removeButton) {
         this.removeButton = removeButton;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

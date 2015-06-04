@@ -33,11 +33,17 @@ public class AddPhraseToTrackController implements ActionListener, MouseListener
 
         for (TrackView tv : app.getTrackViewArray()) {
             if (tv.getTrack().getInstrument() == app.getActivePhrase().getInstrument()) {
-                tv.getTrack().getPhrases().add(app.getActivePhrase());
+                for (int j = 0; j < app.getSelectedMeasures().size(); j++) {
+                    Phrase newPhrase = app.getActivePhrase().copy();
+                    newPhrase.setId(app.getActiveProject().getCurrentPhraseId());
+                    newPhrase.setStartTime(app.getSelectedMeasures().get(j));
+                    app.getActiveProject().incrementPhraseId();
+                    tv.getTrack().getPhrases().add(newPhrase);
+                }
                 tv.initialize();
                 for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                     pitv.addMouseListener(new PhraseInTrackController(app, app.getActiveProject(), pitv));
-                    RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(app, app.getActiveProject(), pitv.getRemoveButton());
+                    RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(app, app.getActiveProject(), pitv, tv);
                     pitv.getRemoveButton().addMouseListener(new HelpTextController(app, HelpStrings.REMOVE_PHRASE_FROM_TRACK));
                     pitv.getRemoveButton().addActionListener(removePhraseFromTrackController);
                     pitv.getRemoveButton().addMouseListener(removePhraseFromTrackController);

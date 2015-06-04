@@ -44,6 +44,16 @@ public class TrackView extends JPanel {
         setPreferredSize(new Dimension(getX(), getY()));
     }
 
+    public ArrayList<PhraseInTrackView> getSelectedPitvs() {
+        ArrayList<PhraseInTrackView> selectedPitvs = new ArrayList<PhraseInTrackView>();
+
+        for (PhraseInTrackView pitv : phraseInTrackViewArray) {
+            if (pitv.isSelected()) selectedPitvs.add(pitv);
+        }
+
+        return selectedPitvs;
+    }
+
     public JLabel getNameLabel() {
         return nameLabel;
     }

@@ -6,6 +6,7 @@ import sonifiedspectra.view.NoteView;
 import sonifiedspectra.view.SonifiedSpectra;
 import sonifiedspectra.view.TrackHeadView;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -29,8 +30,22 @@ public class TrackHeadController implements MouseListener {
     public void mouseClicked(MouseEvent e) {
 
         trackHeadView.getTrack().toggleSelected();
-        if (trackHeadView.getTrack().isSelected()) trackHeadView.setBackground(app.getActivePhrase().getSelectedColor());
-        else trackHeadView.setBackground(app.getButtonBackgroundColor());
+
+        if (!project.isTracksPanelMultipleSelection()) {
+            for (TrackHeadView thv : app.getTrackHeadViewArray()) {
+                if (thv.getTrack().getId() != trackHeadView.getTrack().getId()) thv.getTrack().setSelected(false);
+                thv.updatePanel();
+            }
+        }
+        if (trackHeadView.getTrack().isSelected()) {
+            trackHeadView.setBackground(Color.decode("#C9C9C9"));
+            trackHeadView.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
+            trackHeadView.repaint();
+        }
+        else {
+            trackHeadView.setBackground(app.getButtonBackgroundColor());
+            trackHeadView.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
+        }
         app.getFrame().pack();
 
     }
@@ -48,7 +63,7 @@ public class TrackHeadController implements MouseListener {
     @Override
     public void mouseEntered(MouseEvent e) {
         if (!trackHeadView.getTrack().isSelected()) {
-            trackHeadView.setBackground(app.getActivePhrase().getUnselectedColor());
+            trackHeadView.setBackground(Color.decode("#C9C9C9"));
             trackHeadView.repaint();
             app.getFrame().pack();
         }

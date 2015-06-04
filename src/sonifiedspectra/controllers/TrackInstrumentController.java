@@ -33,14 +33,7 @@ public class TrackInstrumentController implements ItemListener {
     public void itemStateChanged(ItemEvent e) {
 
         int instrument = thv.getInstrumentComboBox().getSelectedIndex();
-
         thv.getTrack().setInstrument(instrument);
-
-        for (Phrase p : thv.getTrack().getPhrases()) p.setInstrument(instrument);
-
-        app.updateActivePhrase(app.getActivePhrase());
-        app.updateIntervalMarker();
-        app.getFrame().pack();
 
     }
 

@@ -1,10 +1,13 @@
 package sonifiedspectra.controllers;
 
+import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.XYPlot;
+import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.NoteView;
 import sonifiedspectra.view.PhraseInTrackView;
 import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.TrackView;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -30,30 +33,57 @@ public class PhraseInTrackController implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
 
-        pitv.getPhrase().toggleSelected();
-
-        app.updateActivePhrase(pitv.getPhrase());
-
-        if (!project.isNotesPanelMultipleSelection()) {
-            for (NoteView nv : app.getNoteViewArray()) {
-                if (nv.getNote().getId() != pitv.getPhrase().getId()) nv.getNote().setSelected(false);
-                nv.updatePanel();
+        for (TrackView tv : app.getTrackViewArray()) {
+            for (PhraseInTrackView pitv2 : tv.getPhraseInTrackViewArray()) {
+                pitv2.setSelected(false);
+                pitv2.setBackground(pitv2.getPhrase().getUnselectedColor());
+                pitv2.repaint();
             }
         }
 
-        if (app.getActivePhrase().isValidTransposeSelection()) {
-            app.getTransposeTextField().setText(String.valueOf(app.getActivePhrase().getSelectedNotes().get(0).getTranspose()));
-            if (app.getActivePhrase().getSelectedNotes().get(0).getTranspose() == 0)
-                app.getTransposeTextField().setForeground(Color.BLACK);
-            else app.getTransposeTextField().setForeground(Color.RED);
-        } else {
-            app.getTransposeTextField().setText("-");
-            app.getTransposeTextField().setForeground(Color.BLACK);
+        pitv.toggleSelected();
+
+        if (pitv.isSelected()) {
+            pitv.setBackground(pitv.getPhrase().getSelectedColor());
+            pitv.repaint();
+        }
+        else {
+            pitv.setBackground(pitv.getPhrase().getUnselectedColor());
+            pitv.repaint();
         }
 
-        app.updateIntervalMarker();
-        app.getGraphPanel().repaint();
-        app.getFrame().pack();
+        Phrase tempPhrase;
+
+        if (pitv.getPhrase().getParentPhrase() != null) tempPhrase = pitv.getPhrase().getParentPhrase();
+        else tempPhrase = pitv.getPhrase();
+
+        if (!tempPhrase.isSelected()) {
+            tempPhrase.setSelected(true);
+
+            app.updateActivePhrase(tempPhrase);
+
+            app.getColorButton().setCol(app.getActivePhrase().getUnselectedColor());
+            app.getColorButton().repaint();
+
+            app.getSpectrumLabel().setText(app.getActivePhrase().getCompound().getSpectrumType());
+            app.getSpectrumLabel().repaint();
+
+            app.setChPanel(new ChartPanel(app.getActivePhrase().getCompound().getDataChart().getDataChart()));
+            app.getChPanel().setPreferredSize(new Dimension(500, 500));
+            app.getChPanel().setVisible(true);
+            app.getChPanel().setBounds(0, 0, 500, 400);
+            app.getChPanel().setDomainZoomable(true);
+            app.getChPanel().addChartMouseListener(new GraphController(app, project));
+            app.getGraphPanel().setLayout(new BorderLayout());
+            app.getGraphPanel().setBounds(20, 52, 500, 400);
+            app.getGraphPanel().removeAll();
+            app.getGraphPanel().add(app.getChPanel(), BorderLayout.CENTER);
+            app.getGraphPanel().repaint();
+            app.updateIntervalMarker();
+            app.getSoundPlayer().reset();
+            app.getSoundPlayer().updateSoundPlayer();
+            app.getFrame().pack();
+        }
 
     }
 
@@ -69,15 +99,17 @@ public class PhraseInTrackController implements MouseListener {
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        pitv.setBackground(pitv.getPhrase().getSelectedColor());
-        pitv.repaint();
-        app.getFrame().pack();
+        if (!pitv.isSelected()) {
+            pitv.setBackground(pitv.getPhrase().getSelectedColor());
+            pitv.repaint();
+        }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        pitv.setBackground(pitv.getPhrase().getUnselectedColor());
-        pitv.repaint();
-        app.getFrame().pack();
+        if (!pitv.isSelected()) {
+            pitv.setBackground(pitv.getPhrase().getUnselectedColor());
+            pitv.repaint();
+        }
     }
 }

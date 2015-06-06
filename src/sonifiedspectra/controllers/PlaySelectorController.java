@@ -28,7 +28,6 @@ public class PlaySelectorController implements ActionListener, MouseListener {
     public void actionPerformed(ActionEvent e) {
         if (app.isProject() && type == 1) {
             app.setProject(false);
-
             app.getPlayProjectButton().setCol(app.getButtonBackgroundColor());
             app.getPlayPhraseButton().setCol(app.getActivePhrase().getUnselectedColor());
         }
@@ -37,6 +36,7 @@ public class PlaySelectorController implements ActionListener, MouseListener {
             app.getPlayProjectButton().setCol(app.getActivePhrase().getUnselectedColor());
             app.getPlayPhraseButton().setCol(app.getButtonBackgroundColor());
         }
+
         app.getPlayProjectButton().repaint();
         app.getPlayPhraseButton().repaint();
         app.getSoundPlayer().reset();

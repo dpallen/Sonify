@@ -1,5 +1,6 @@
 package sonifiedspectra.controllers;
 
+import sonifiedspectra.model.Compound;
 import sonifiedspectra.model.HelpStrings;
 import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
@@ -28,7 +29,15 @@ public class AddPhraseController implements ActionListener, MouseListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        Phrase newPhrase = new Phrase(app.getActiveProject().getCurrentPhraseId(), app.getActivePhrase().getCompound(), app.getColorsArray().get(app.getCurrentColorIndex()), 2500, 1000);
+        Compound compound = null;
+
+        for (Compound c : project.getCompoundsArray()) {
+
+            if (String.valueOf(app.getCompoundComboBox().getSelectedItem()).equals(c.getName())) compound = c;
+
+        }
+
+        Phrase newPhrase = new Phrase(app.getActiveProject().getCurrentPhraseId(), compound, app.getColorsArray().get(app.getCurrentColorIndex()), 2500, 1000);
         app.incrementColorIndex();
         app.getActiveProject().incrementPhraseId();
         newPhrase.initialize();

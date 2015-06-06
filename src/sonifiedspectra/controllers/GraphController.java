@@ -5,9 +5,12 @@ import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.plot.XYPlot;
+import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.model.Note;
+import sonifiedspectra.view.PhraseInTrackView;
 import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.TrackView;
 
 import java.util.ArrayList;
 
@@ -40,17 +43,34 @@ public class GraphController implements ChartMouseListener {
 
                 double x = plot.getDomainCrosshairValue();
 
-                ArrayList<Note> selectedNotes = app.getActivePhrase().getSelectedNotes();
+                ArrayList<Phrase> toUpdate = new ArrayList<Phrase>();
+                toUpdate.add(app.getActivePhrase());
 
-                System.out.println("Active phrase x1: " + app.getActivePhrase().getX1() + ", x2: " + app.getActivePhrase().getX2());
-
-                if (!app.getLeftOrRightCheckbox().isSelected() && x > app.getActivePhrase().getX2()) {
-                    app.getActivePhrase().setX1(x);
+                for (TrackView tv : app.getTrackViewArray()) {
+                    for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
+                        if (pitv.getPhrase().getParentPhrase() != null) {
+                            if (pitv.getPhrase().getParentPhrase().getId() == app.getActivePhrase().getId())
+                                toUpdate.add(pitv.getPhrase());
+                        }
+                    }
                 }
-                else if (app.getLeftOrRightCheckbox().isSelected() && x < app.getActivePhrase().getX1()) app.getActivePhrase().setX2(x);
 
-                app.getActivePhrase().initialize();
-                app.getActivePhrase().setSelectedNotes(selectedNotes);
+                for (Phrase p :toUpdate) {
+
+                    ArrayList<Note> selectedNotes = p.getSelectedNotes();
+
+                    System.out.println("Phrase x1: " + p.getX1() + ", x2: " + p.getX2());
+
+                    if (!app.getLeftOrRightCheckbox().isSelected() && x > p.getX2()) {
+                        p.setX1(x);
+                    } else if (app.getLeftOrRightCheckbox().isSelected() && x < p.getX1())
+                        p.setX2(x);
+
+                    p.initialize();
+                    p.setSelectedNotes(selectedNotes);
+
+                }
+
                 app.updateActivePhrase(app.getActivePhrase());
                 app.updateIntervalMarker();
                 app.getFrame().pack();

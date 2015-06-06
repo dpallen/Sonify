@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 
 /**
  * Created by Hvandenberg on 6/2/15.
@@ -33,15 +34,23 @@ public class AddTrackController implements ActionListener, MouseListener {
         app.getActiveProject().incrementTrackId();
         app.getActiveProject().getTracksArray().add(newTrack);
 
-        TrackView tv = new TrackView(newTrack);
+        TrackView tv = new TrackView(newTrack, app);
         tv.setBounds(0, 70 * (app.getActiveProject().getTracksArray().size() - 1), 100 * app.getActiveProject().getNumMeasures(), 70);
 
         app.getTrackViewArray().add(tv);
         app.getInTracksPanel().add(tv);
         tv.repaint();
 
-        TrackHeadView thv = new TrackHeadView(newTrack);
+        TrackHeadView thv = null;
+        try {
+            thv = new TrackHeadView(newTrack, app.getInstruments());
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } catch (FontFormatException e1) {
+            e1.printStackTrace();
+        }
         thv.setBounds(0, 70 * (app.getActiveProject().getTracksArray().size() - 1), 150, 70);
+        thv.getTrackNumberLabel().setText(String.valueOf(app.getActiveProject().getTracksArray().size()));
         thv.addMouseListener(new HelpTextController(app, HelpStrings.TRACK_HEAD));
         thv.addMouseListener(new TrackHeadController(app, app.getActiveProject(), thv));
         thv.getInstrumentComboBox().addItemListener(new TrackInstrumentController(app, app.getActiveProject(), thv));
@@ -52,6 +61,24 @@ public class AddTrackController implements ActionListener, MouseListener {
         app.getTrackHeadViewArray().add(thv);
         app.getTrackHeadPanel().add(thv);
         thv.repaint();
+
+        int j1 = 0;
+
+        for (TrackHeadView thv1 : app.getTrackHeadViewArray()) {
+            if (j1 % 2 != 0 && j1 != 0) thv1.setBackColor(Color.decode("#DDDDDD"));
+            else thv1.setBackColor(Color.decode("#F5F5F5"));
+            thv1.updatePanel();
+            j1++;
+        }
+
+        int j2 = 0;
+
+        for (TrackView tv1 : app.getTrackViewArray()) {
+            if (j2 % 2 != 0 && j2 != 0) tv1.setBackColor(Color.decode("#DDDDDD"));
+            else tv1.setBackColor(Color.decode("#F5F5F5"));
+            tv1.updatePanel();
+            j2++;
+        }
 
         app.getTrackHeadPanel().setPreferredSize(new Dimension(app.getTrackHeadPanel().getWidth(),
                 70 * app.getActiveProject().getTracksArray().size()));

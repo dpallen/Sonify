@@ -33,17 +33,24 @@ public class TrackHeadController implements MouseListener {
 
         if (!project.isTracksPanelMultipleSelection()) {
             for (TrackHeadView thv : app.getTrackHeadViewArray()) {
-                if (thv.getTrack().getId() != trackHeadView.getTrack().getId()) thv.getTrack().setSelected(false);
+                if (thv.getTrack().getId() != trackHeadView.getTrack().getId()) {
+                    thv.getTrack().setSelected(false);
+                    //app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(thv)).setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
+                    app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(thv)).updatePanel();
+                }
                 thv.updatePanel();
             }
         }
+
         if (trackHeadView.getTrack().isSelected()) {
-            trackHeadView.setBackground(Color.decode("#C9C9C9"));
+            trackHeadView.setBackground(Color.decode("#B8B8B8"));
             trackHeadView.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
+            app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
             trackHeadView.repaint();
         }
         else {
-            trackHeadView.setBackground(app.getButtonBackgroundColor());
+            trackHeadView.setBackground(trackHeadView.getBackColor());
+            app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
             trackHeadView.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
         }
         app.getFrame().pack();
@@ -72,7 +79,7 @@ public class TrackHeadController implements MouseListener {
     @Override
     public void mouseExited(MouseEvent e) {
         if (!trackHeadView.getTrack().isSelected()) {
-            trackHeadView.setBackground(app.getButtonBackgroundColor());
+            trackHeadView.setBackground(trackHeadView.getBackColor());
             trackHeadView.repaint();
             app.getFrame().pack();
         }

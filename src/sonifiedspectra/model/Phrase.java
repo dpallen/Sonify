@@ -22,6 +22,7 @@ public class Phrase extends jm.music.data.Phrase {
 
     private boolean quantized;
     private boolean selected;
+    private boolean loop;
 
     private String color;
     private String key;
@@ -54,6 +55,7 @@ public class Phrase extends jm.music.data.Phrase {
         this.compound = compound;
         this.currentFillerId = 0;
         this.selected = false;
+        this.loop = false;
         this.notesArray = new ArrayList<Note>();
 
         setBackgroundCol(color);
@@ -76,61 +78,65 @@ public class Phrase extends jm.music.data.Phrase {
 
     public void initialize() {
 
-        System.out.println("Initializing phrase...");
-        System.out.println("    ID: " + id);
-        System.out.println("    Compound name: " + compound.getName());
-        System.out.println("    x1: " + x1);
-        System.out.println("    x2: " + x2);
+        if (!loop) {
 
-        int startIndex = 0;
-        int endIndex = 0;
+            System.out.println("Initializing phrase...");
+            System.out.println("    ID: " + id);
+            System.out.println("    Compound name: " + compound.getName());
+            System.out.println("    x1: " + x1);
+            System.out.println("    x2: " + x2);
 
-        for (Peak p : compound.getDataChart().getPeaksArray()) {
-            if (x1 < p.getX1() && x1 > p.getX2() ) {
-                startIndex = compound.getDataChart().getPeaksArray().indexOf(p);
-                System.out.println("    First peak index: " + startIndex);
-            }
-            if (x2 < p.getX1() && x2 > p.getX2() ) {
-                endIndex = compound.getDataChart().getPeaksArray().indexOf(p);
-                System.out.println("    Last peak index: " + endIndex);
-            }
-        }
+            int startIndex = 0;
+            int endIndex = 0;
 
-        notesArray = new ArrayList<Note>();
-
-        int noteID = 0;
-        System.out.println("    Adding notes:");
-
-        for (int i = startIndex; i < endIndex; i ++) {
-            Note newNote = new Note(noteID, compound.getDataChart().getPeaksArray().get(i), false, this);
-            noteID++;
-            newNote.setPitch(scalePitch(newNote.getPeak().getValue(), compound.getDataChart().getHighestY(),
-                    compound.getDataChart().getLowestY(), maxPitch, minPitch));
-            newNote.setDynamic(100);
-
-            if (i == startIndex) {
-                highestWidth = newNote.getPeak().getWidth();
-                lowestWidth = newNote.getPeak().getWidth();
+            for (Peak p : compound.getDataChart().getPeaksArray()) {
+                if (x1 < p.getX1() && x1 > p.getX2()) {
+                    startIndex = compound.getDataChart().getPeaksArray().indexOf(p);
+                    System.out.println("    First peak index: " + startIndex);
+                }
+                if (x2 < p.getX1() && x2 > p.getX2()) {
+                    endIndex = compound.getDataChart().getPeaksArray().indexOf(p);
+                    System.out.println("    Last peak index: " + endIndex);
+                }
             }
 
-            if (newNote.getPeak().getWidth() > highestWidth) highestWidth = newNote.getPeak().getWidth();
-            if (newNote.getPeak().getWidth() < lowestWidth) lowestWidth = newNote.getPeak().getWidth();
+            notesArray = new ArrayList<Note>();
 
-            notesArray.add(newNote);
+            int noteID = 0;
+            System.out.println("    Adding notes:");
+
+            for (int i = startIndex; i < endIndex; i++) {
+                Note newNote = new Note(noteID, compound.getDataChart().getPeaksArray().get(i), false, this);
+                noteID++;
+                newNote.setPitch(scalePitch(newNote.getPeak().getValue(), compound.getDataChart().getHighestY(),
+                        compound.getDataChart().getLowestY(), maxPitch, minPitch));
+                newNote.setDynamic(100);
+
+                if (i == startIndex) {
+                    highestWidth = newNote.getPeak().getWidth();
+                    lowestWidth = newNote.getPeak().getWidth();
+                }
+
+                if (newNote.getPeak().getWidth() > highestWidth) highestWidth = newNote.getPeak().getWidth();
+                if (newNote.getPeak().getWidth() < lowestWidth) lowestWidth = newNote.getPeak().getWidth();
+
+                notesArray.add(newNote);
+            }
+
+            for (Note note : notesArray) {
+
+                note.setRhythmValue(scaleRhythmValue(note.getPeak().getWidth()));
+                System.out.println("        Note " + note.getId() + " - pitch: " + note.getPitch() + " (" +
+                        note.convertPitchToString() + "), rhythm value: " + note.getRhythmValue() + ", peak width: " +
+                        note.getPeak().getWidth() + ", dynamic: " + note.getDynamic());
+            }
+
+            System.out.println("    Highest width: " + highestWidth + ", lowest width: " + lowestWidth);
+            System.out.println("    Total notes added: " + notesArray.size());
+            System.out.println();
+            System.out.println("Phrase initialized.");
+
         }
-
-        for (Note note : notesArray) {
-
-            note.setRhythmValue(scaleRhythmValue(note.getPeak().getWidth()));
-            System.out.println("        Note " + note.getId() + " - pitch: " + note.getPitch() + " (" +
-                    note.convertPitchToString() + "), rhythm value: " + note.getRhythmValue() + ", peak width: " +
-                    note.getPeak().getWidth() + ", dynamic: " + note.getDynamic());
-        }
-
-        System.out.println("    Highest width: " + highestWidth + ", lowest width: " + lowestWidth);
-        System.out.println("    Total notes added: " + notesArray.size());
-        System.out.println();
-        System.out.println("Phrase initialized.");
 
     }
 
@@ -291,6 +297,7 @@ public class Phrase extends jm.music.data.Phrase {
         } else {
             unselectedColor = new Color(0, 0, 0);
             borderColor = new Color(0, 0, 0);
+            selectedColor = new Color(163, 163, 163);
         }
     }
 
@@ -496,5 +503,13 @@ public class Phrase extends jm.music.data.Phrase {
 
     public void setParentPhrase(Phrase parentPhrase) {
         this.parentPhrase = parentPhrase;
+    }
+
+    public boolean isLoop() {
+        return loop;
+    }
+
+    public void setLoop(boolean loop) {
+        this.loop = loop;
     }
 }

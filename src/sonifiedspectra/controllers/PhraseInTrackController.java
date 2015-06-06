@@ -9,6 +9,7 @@ import sonifiedspectra.view.PhraseInTrackView;
 import sonifiedspectra.view.SonifiedSpectra;
 import sonifiedspectra.view.TrackView;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,10 +46,18 @@ public class PhraseInTrackController implements MouseListener {
 
         if (pitv.isSelected()) {
             pitv.setBackground(pitv.getPhrase().getSelectedColor());
+            if (pitv.getPhrase().isLoop()) {
+                pitv.getNameLabel().setForeground(Color.BLACK);
+                pitv.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
+            }
             pitv.repaint();
         }
         else {
             pitv.setBackground(pitv.getPhrase().getUnselectedColor());
+            if (pitv.getPhrase().isLoop()) {
+                pitv.getNameLabel().setForeground(Color.WHITE);
+                pitv.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
+            }
             pitv.repaint();
         }
 
@@ -101,6 +110,7 @@ public class PhraseInTrackController implements MouseListener {
     public void mouseEntered(MouseEvent e) {
         if (!pitv.isSelected()) {
             pitv.setBackground(pitv.getPhrase().getSelectedColor());
+            if (pitv.getPhrase().isLoop()) pitv.getNameLabel().setForeground(Color.BLACK);
             pitv.repaint();
         }
     }
@@ -109,6 +119,7 @@ public class PhraseInTrackController implements MouseListener {
     public void mouseExited(MouseEvent e) {
         if (!pitv.isSelected()) {
             pitv.setBackground(pitv.getPhrase().getUnselectedColor());
+            if (pitv.getPhrase().isLoop()) pitv.getNameLabel().setForeground(Color.WHITE);
             pitv.repaint();
         }
     }

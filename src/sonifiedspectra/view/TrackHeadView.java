@@ -2,8 +2,13 @@ package sonifiedspectra.view;
 
 import sonifiedspectra.model.Track;
 
+import javax.sound.midi.Instrument;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Created by Hvandenberg on 6/2/15.
@@ -14,22 +19,34 @@ public class TrackHeadView extends JPanel {
     private JCheckBox liveCheckbox;
     private JSlider volumeSlider;
     private BetterButton expandButton;
+    private Color backColor;
+    private JLabel trackNumberLabel;
 
     private Track track;
 
-    public TrackHeadView(Track track) {
+    public TrackHeadView(Track track, Instrument instruments[]) throws IOException, FontFormatException {
         this.track = track;
         this.setLayout(null);
 
+        backColor = Color.decode("#F5F5F5");
+
         instrumentComboBox = new JComboBox();
-        for (int i = 0; i < 128; i++) instrumentComboBox.addItem(i);
-        instrumentComboBox.setSelectedItem(track.getInstrument());
-        instrumentComboBox.setBounds(5, 5, 80, 32);
+        for (int i = 0; i < instruments.length; i++) instrumentComboBox.addItem(instruments[i].getName());
+        instrumentComboBox.setSelectedIndex(track.getInstrument());
+        instrumentComboBox.setBounds(5, 5, 140, 32);
+        instrumentComboBox.setFont(new Font(instrumentComboBox.getFont().getName(), Font.PLAIN, 10));
         add(instrumentComboBox);
+
+        Font hnt20 = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(new File("resources/HelveticaNeue-Thin.otf"))).deriveFont(Font.PLAIN, 20);
+        trackNumberLabel = new JLabel("0");
+        trackNumberLabel.setFont(hnt20);
+        trackNumberLabel.setBounds(0, 30, 40, 40);
+        trackNumberLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        add(trackNumberLabel);
 
         liveCheckbox = new JCheckBox();
         liveCheckbox.setSelected(track.isLive());
-        liveCheckbox.setBounds(80, 5, 25, 32);
+        liveCheckbox.setBounds(80, 35, 25, 32);
         add(liveCheckbox);
 
         /*volumeSlider = new JSlider();
@@ -42,7 +59,7 @@ public class TrackHeadView extends JPanel {
         Icon collapsedIcon = new ImageIcon("resources/icons/collapsedicon.png");
         expandButton = new BetterButton(Color.decode("#F5F5F5"), 25, 25, 6);
         expandButton.setIcon(collapsedIcon);
-        expandButton.setBounds(110, 7, 25, 25);
+        expandButton.setBounds(110, 38, 25, 25);
         expandButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         expandButton.setBorderPainted(true);
         expandButton.setFocusPainted(false);
@@ -54,11 +71,11 @@ public class TrackHeadView extends JPanel {
 
     public void updatePanel() {
         if (track.isSelected()) {
-            setBackground(Color.decode("#C9C9C9"));
+            setBackground(Color.decode("#B8B8B8"));
             setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
         }
         else {
-            setBackground(Color.decode("#F5F5F5"));
+            setBackground(backColor);
             setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
         }
     }
@@ -108,5 +125,21 @@ public class TrackHeadView extends JPanel {
 
     public void setExpandButton(BetterButton expandButton) {
         this.expandButton = expandButton;
+    }
+
+    public Color getBackColor() {
+        return backColor;
+    }
+
+    public void setBackColor(Color backColor) {
+        this.backColor = backColor;
+    }
+
+    public JLabel getTrackNumberLabel() {
+        return trackNumberLabel;
+    }
+
+    public void setTrackNumberLabel(JLabel trackNumberLabel) {
+        this.trackNumberLabel = trackNumberLabel;
     }
 }

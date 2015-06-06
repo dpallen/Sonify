@@ -1,13 +1,17 @@
 package sonifiedspectra.controllers;
 
+import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
+import sonifiedspectra.view.PhraseInTrackView;
 import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.TrackView;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 /**
  * Created by Hvandenberg on 5/31/15.
@@ -26,8 +30,25 @@ public class TransposeButtonController implements ActionListener, MouseListener 
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (type == 0) app.getActivePhrase().transposeSelectedNotesUp();
-        else app.getActivePhrase().transposeSelectedNotesDown();
+
+        ArrayList<Phrase> toUpdate = new ArrayList<Phrase>();
+        toUpdate.add(app.getActivePhrase());
+
+        for (TrackView tv : app.getTrackViewArray()) {
+            for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
+                if (pitv.getPhrase().getParentPhrase() != null) {
+                    if (pitv.getPhrase().getParentPhrase().getId() == app.getActivePhrase().getId())
+                        toUpdate.add(pitv.getPhrase());
+                }
+            }
+        }
+
+        for (Phrase p :toUpdate) {
+
+            if (type == 0) p.transposeSelectedNotesUp();
+            else p.transposeSelectedNotesDown();
+
+        }
         if (app.getActivePhrase().isValidTransposeSelection()) {
             app.getTransposeTextField().setText(String.valueOf(app.getActivePhrase().getSelectedNotes().get(0).getTranspose()));
             if (app.getActivePhrase().getSelectedNotes().get(0).getTranspose() == 0) app.getTransposeTextField().setForeground(Color.BLACK);

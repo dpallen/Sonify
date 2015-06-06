@@ -53,7 +53,7 @@ public class Project {
     }
 
     public int getNumMeasures() {
-        return 10;
+        return 30;
     }
 
     public void incrementPhraseId() {

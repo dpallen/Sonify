@@ -23,15 +23,16 @@ public class PhraseInTrackView extends JPanel {
         setBackground(phrase.getUnselectedColor());
         setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
 
-        nameLabel = new JLabel(phrase.getCompound().getName());
+        if (phrase.getCompound() != null) nameLabel = new JLabel(phrase.getCompound().getName());
+        else nameLabel = new JLabel("Loop");
         nameLabel.setFont(new Font("Serif", Font.PLAIN, 10));
-        nameLabel.setBounds(2, 0, 75, 15);
+        nameLabel.setBounds(18, 0, 75, 15);
         add(nameLabel);
 
         Icon removephrasefromtrackicon = new ImageIcon("resources/icons/removephrasefromtrackicon.png");
         removeButton = new BetterButton(Color.decode("#F5F5F5"), 10, 10, 0);
         removeButton.setIcon(removephrasefromtrackicon);
-        removeButton.setBounds(50, 2, 10, 10);
+        removeButton.setBounds(3, 2, 10, 10);
         removeButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         removeButton.setBorderPainted(true);
         removeButton.setFocusPainted(false);
@@ -45,7 +46,20 @@ public class PhraseInTrackView extends JPanel {
 
     public void adjustSize(int j4) {
         setBounds((int) ((phrase.getStartTime() * 4) * 25), j4 * 15, getAdjustedWidth(), 15);
-        removeButton.setBounds(getAdjustedWidth() - 15, removeButton.getY(), removeButton.getWidth(), removeButton.getHeight());
+        //removeButton.setBounds(getAdjustedWidth() - 15, removeButton.getY(), removeButton.getWidth(), removeButton.getHeight());
+    }
+
+    public void print() {
+        System.out.println("Pitv phrase id: " + phrase.getId());
+        System.out.println("    Loop: " + phrase.isLoop());
+        System.out.println("    x: " + getX());
+        System.out.println("    y: " + getY());
+        System.out.println("    width: " + getWidth());
+        System.out.println("    height: " + getHeight());
+        System.out.println("    name: " + nameLabel.getText());
+        System.out.println("    adjusted width: " + getAdjustedWidth());
+        System.out.println("    phrase beat length: " + phrase.getBeatLength2());
+        System.out.println("    phrase num notes: " + phrase.getNotesArray().size());
     }
 
     public int getAdjustedWidth() {

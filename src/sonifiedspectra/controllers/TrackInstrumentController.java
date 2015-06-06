@@ -35,6 +35,9 @@ public class TrackInstrumentController implements ItemListener {
         int instrument = thv.getInstrumentComboBox().getSelectedIndex();
         thv.getTrack().setInstrument(instrument);
 
+        app.getSoundPlayer().reset();
+        app.getSoundPlayer().updateSoundPlayer();
+
     }
 
 }

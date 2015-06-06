@@ -1,8 +1,9 @@
 package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Project;
-import sonifiedspectra.view.BetterButton;
+import sonifiedspectra.view.PhraseInTrackView;
 import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.TrackView;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,11 +22,31 @@ public class LoopController implements ActionListener, MouseListener {
     public LoopController(SonifiedSpectra app, Project project) {
         this.app = app;
         this.project = project;
+        this.visible = false;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        visible = !visible;
+
+        app.getLoopDialog().getSelectedLabel().setText("Selected: " + app.getActiveProject().getSelectedTracks().size()
+                + " tracks, " + app.getSelectedMeasures().size() + " measures");
+
+        for (TrackView tv : app.getTrackViewArray()) {
+            for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
+                if (pitv.isSelected()) {
+                    if (pitv.getPhrase().isLoop()) app.getLoopDialog().getLoopComboBox()
+                            .setSelectedIndex(app.getLoopDialog().getLoopsArray().indexOf(pitv.getPhrase()));
+                }
+            }
+        }
+
+        app.getLoopDialog().getMeasureLabel().setText((app.getLoopDialog().getLoopsArray()
+                .get(app.getLoopDialog().getLoopComboBox().getSelectedIndex()).getBeatLength2() / 4) + " measures");
+
+        app.getLoopDialog().getLoopPlayer().updateLoopPlayer(app.getLoopDialog().getLoopsArray()
+                .get(app.getLoopDialog().getLoopComboBox().getSelectedIndex()));
+
+        app.getLoopDialog().setVisible(!app.getLoopDialog().isVisible());
     }
 
     @Override

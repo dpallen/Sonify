@@ -43,16 +43,21 @@ public class MovePitvController implements ActionListener, MouseListener {
                     if (x < 0) x = 0;
 
                     double newTime = ((double) move)/((double) 4);
+                    double newX = pitv.getPhrase().getStartTime() + newTime;
+                    if (newX < 0) newX = 0;
 
                     System.out.println("New time: " + newTime);
 
-                    pitv.getPhrase().setStartTime(pitv.getPhrase().getStartTime() + newTime);
+                    pitv.getPhrase().setStartTime(newX);
                     System.out.println("Start time: " + pitv.getPhrase().getStartTime());
                     pitv.setBounds(x, pitv.getY(), pitv.getWidth(), pitv.getHeight());
                     pitv.repaint();
                 }
             }
         }
+
+        app.getSoundPlayer().reset();
+        app.getSoundPlayer().updateSoundPlayer();
 
         app.getFrame().pack();
     }

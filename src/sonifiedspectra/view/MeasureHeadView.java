@@ -11,26 +11,38 @@ public class MeasureHeadView extends JPanel {
     private JLabel measureNumberLabel;
     private int measureNumber;
     private boolean selected;
+    private Color backColor;
 
     public MeasureHeadView(int measureNumber) {
         this.measureNumber = measureNumber;
         this.selected = false;
+        setLayout(null);
+
+        backColor = Color.decode("#F5F5F5");
 
         measureNumberLabel = new JLabel(String.valueOf(measureNumber));
-        measureNumberLabel.setBounds(40, 5, 20, 20);
-        measureNumberLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        measureNumberLabel.setBounds(5, 5, 20, 20);
         add(measureNumberLabel);
         setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
     }
 
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.setColor(Color.decode("#C9C9C9"));
+        g.fillRect(25, 0, 1, 33);
+        g.fillRect(50, 0, 1, 33);
+        g.fillRect(75, 0, 1, 33);
+    }
+
     public void updatePanel() {
         if (selected) {
-            setBackground(Color.decode("#C9C9C9"));
+            setBackground(Color.decode("#B8B8B8"));
             setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, true));
             repaint();
         }
         else {
-            setBackground(Color.decode("#F5F5F5"));
+            setBackground(backColor);
             setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
             repaint();
         }
@@ -62,5 +74,13 @@ public class MeasureHeadView extends JPanel {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public Color getBackColor() {
+        return backColor;
+    }
+
+    public void setBackColor(Color backColor) {
+        this.backColor = backColor;
     }
 }

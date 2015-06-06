@@ -6,13 +6,17 @@ import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.XYPlot;
 import sonifiedspectra.controllers.*;
 import sonifiedspectra.model.*;
+import sonifiedspectra.model.Track;
 
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.*;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -99,6 +103,7 @@ public class SonifiedSpectra {
     private JTextField movePitvTextField;
 
     private JSlider playbackSlider;
+    private JSlider noteVolumeSlider;
 
     private JCheckBox quantizeCheckBox;
     private JCheckBox multipleSelectionCheckBox;
@@ -114,6 +119,7 @@ public class SonifiedSpectra {
     private JLabel transposeLabel;
     private JLabel projectLabel;
     private JLabel playbackLabel;
+    private JLabel noteVolumeLabel;
 
     private JTextPane helpTextPane;
 
@@ -125,12 +131,15 @@ public class SonifiedSpectra {
 
     private FillerNotesDialog fillerDialog;
     private EditCompoundDialog editCompoundDialog;
+    private LoopDialog loopDialog;
 
     private ArrayList<NoteView> noteViewArray;
     private ArrayList<PhraseView> phraseViewArray;
     private ArrayList<TrackHeadView> trackHeadViewArray;
     private ArrayList<TrackView> trackViewArray;
     private ArrayList<MeasureHeadView> measureHeadViewArray;
+
+    private Instrument instruments[];
 
     private ArrayList<String> colorsArray;
     private ArrayList<String> keysArray;
@@ -159,14 +168,19 @@ public class SonifiedSpectra {
         initializeView();
         initializeControllers();
 
-        soundPlayer = new SoundPlayer(new File( "midi/starwars.mid" ), activePhrase.getInstrument(), this);
+        soundPlayer = new SoundPlayer(new File( "midi/starwars.mid" ), activePhrase.getInstrument(), this, false);
+        loopDialog.setLoopPlayer(new SoundPlayer(new File( "midi/starwars.mid" ), 0, this, true));
 
         updateActivePhrase(activePhrase);
         updateIntervalMarker();
 
     }
 
-    private void initializeModel() {
+    private void initializeModel() throws MidiUnavailableException {
+
+        Synthesizer synthesizer = MidiSystem.getSynthesizer();
+
+        instruments = synthesizer.getDefaultSoundbank().getInstruments();
 
         activeProject = new Project();
         activeProject.setName("My Project");
@@ -249,7 +263,6 @@ public class SonifiedSpectra {
         Track track2 = new Track(activeProject.getCurrentTrackId());
         track2.setInstrument(47);
         activeProject.incrementTrackId();
-        track2.setLive(false);
         track2.getPhrases().add(phrase2);
         activeProject.getTracksArray().add(track2);
 
@@ -260,7 +273,7 @@ public class SonifiedSpectra {
 
     }
 
-    private void initializeView() throws FileNotFoundException, FontFormatException, IOException {
+    private void initializeView() throws FileNotFoundException, FontFormatException, IOException, MidiUnavailableException, UnsupportedAudioFileException, LineUnavailableException, InvalidMidiDataException {
 
         frame = new JFrame();
 
@@ -421,7 +434,7 @@ public class SonifiedSpectra {
                 .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         notesScrollPane
                 .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-        notesScrollPane.setBounds(20, 493, 500, 100);
+        notesScrollPane.setBounds(20, 493, 450, 100);
         frame.getContentPane().add(notesScrollPane);
 
         noteViewArray = new ArrayList<NoteView>();
@@ -439,6 +452,23 @@ public class SonifiedSpectra {
 
         notesPanel.setPreferredSize(new Dimension(10 + 44 * activePhrase.getNotesArray().size(), 100));
 
+        noteVolumeSlider = new JSlider();
+        noteVolumeSlider.setBounds(465, 490, 55, 100);
+        noteVolumeSlider.setOrientation(SwingConstants.VERTICAL);
+        noteVolumeSlider.setMinimum(0);
+        noteVolumeSlider.setMaximum(127);
+        noteVolumeSlider.setValue(100);
+        java.util.Hashtable labels = new java.util.Hashtable( );
+        labels.put(new Integer(0), new JLabel("0"));
+        labels.put(new Integer(127), new JLabel("127"));
+        noteVolumeSlider.setLabelTable(labels);
+        noteVolumeSlider.setPaintLabels(true);
+        frame.getContentPane().add(noteVolumeSlider);
+
+        noteVolumeLabel = new JLabel(String.valueOf(noteVolumeSlider.getValue()));
+        noteVolumeLabel.setBounds(495, 530, 30, 20);
+        frame.getContentPane().add(noteVolumeLabel);
+
         phrasesLabel = new JLabel("Phrases:");
         phrasesLabel.setFont(hnt20);
         phrasesLabel.setBounds(20, 599, 100, 24);
@@ -452,7 +482,7 @@ public class SonifiedSpectra {
         minTextField.setBounds(133, 600, 39, 32);
         minTextField.setText(String.valueOf(activePhrase.getMinPitch()));
         minTextField.setHorizontalAlignment(SwingConstants.HORIZONTAL);
-        frame.getContentPane().add(minTextField);
+        //frame.getContentPane().add(minTextField);
 
         maxTextField = new JTextField();
         maxTextField.setHorizontalAlignment(SwingConstants.CENTER);
@@ -462,7 +492,7 @@ public class SonifiedSpectra {
         maxTextField.setBounds(177, 600, 39, 32);
         maxTextField.setText(String.valueOf(activePhrase.getMaxPitch()));
         maxTextField.setHorizontalAlignment(SwingConstants.HORIZONTAL);
-        frame.getContentPane().add(maxTextField);
+        //frame.getContentPane().add(maxTextField);
 
         instrumentComboBox = new JComboBox();
         /*Font hnt12 = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(new File("resources/HelveticaNeue-Thin.otf"))).deriveFont(Font.PLAIN, 12);
@@ -471,11 +501,11 @@ public class SonifiedSpectra {
         compoundComboBox.setBackground(Color.decode("#F5F5F5"));
         compoundComboBox.setFont(hnt12);*/
         //compoundComboBox.setRenderer(new SSComboBoxRenderer());
-        for (int j = 0; j < 128; j++) {
-            instrumentComboBox.addItem(j);
+        for (int j = 0; j < instruments.length; j++) {
+            instrumentComboBox.addItem(instruments[j].getName());
         }
         instrumentComboBox.setSelectedIndex(activePhrase.getInstrument());
-        instrumentComboBox.setBounds(221, 600, 153, 32);
+        instrumentComboBox.setBounds(174, 600, 200, 32);
         frame.getContentPane().add(instrumentComboBox);
 
         colorButton = new BetterButton(activePhrase.getUnselectedColor(), 32, 32, 6);
@@ -611,7 +641,7 @@ public class SonifiedSpectra {
         helpTextPane.setFont(f);
         helpTextPane.setAlignmentX(JTextArea.RIGHT_ALIGNMENT);
         helpTextPane.setAlignmentY(JTextArea.BOTTOM_ALIGNMENT);
-        helpTextPane.setBounds(924, 11, 320, 32);
+        helpTextPane.setBounds(924, 11, 350, 32);
         frame.getContentPane().add(helpTextPane);
 
         Icon movepitvrighticon = new ImageIcon("resources/icons/movepitvrighticon.png");
@@ -626,7 +656,6 @@ public class SonifiedSpectra {
         movePitvTextField = new JTextField();
         movePitvTextField.setHorizontalAlignment(SwingConstants.CENTER);
         movePitvTextField.setBackground(Color.decode("#F5F5F5"));
-        //movePitvTextField.setFont(hnt10);
         movePitvTextField.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         movePitvTextField.setBounds(1240, 85, 32, 32);
         movePitvTextField.setText(String.valueOf(activeProject.getMovePitvFactor()));
@@ -698,7 +727,6 @@ public class SonifiedSpectra {
 
         trackHeadScrollPane = new JScrollPane();
         trackHeadScrollPane.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        trackHeadScrollPane.setBackground(Color.decode("#000000"));
         trackHeadScrollPane.getVerticalScrollBar().setUnitIncrement(20);
         trackHeadScrollPane.getHorizontalScrollBar().setUI(new BetterScrollBar());
         trackHeadScrollPane.setViewportView(trackHeadPanel);
@@ -707,7 +735,7 @@ public class SonifiedSpectra {
         trackHeadScrollPane
                 .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         trackHeadScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
-        trackHeadScrollPane.setBounds(0, 33, 150, 444);
+        trackHeadScrollPane.setBounds(0, 33, 150, 424);
         outTracksPanel.add(trackHeadScrollPane);
 
         trackHeadViewArray = new ArrayList<TrackHeadView>();
@@ -715,9 +743,12 @@ public class SonifiedSpectra {
         int j1 = 0;
 
         for (Track t : activeProject.getTracksArray()) {
-            TrackHeadView thv = new TrackHeadView(t);
-            thv.setBackground(buttonBackgroundColor);
+            TrackHeadView thv = new TrackHeadView(t, instruments);
             thv.setBounds(0, 0 + j1 * 70, 150, 70);
+            thv.getTrackNumberLabel().setText(String.valueOf(j1 + 1));
+            if (j1 % 2 != 0 && j1 != 0) thv.setBackColor(Color.decode("#DDDDDD"));
+            else thv.setBackColor(Color.decode("#F5F5F5"));
+            thv.updatePanel();
             trackHeadViewArray.add(thv);
             trackHeadPanel.add(thv);
             j1++;
@@ -747,9 +778,12 @@ public class SonifiedSpectra {
         measureHeadViewArray = new ArrayList<MeasureHeadView>();
 
         for (int k = 0; k < activeProject.getNumMeasures(); k++) {
-            MeasureHeadView mhv = new MeasureHeadView(k);
+            MeasureHeadView mhv = new MeasureHeadView(k + 1);
             mhv.setBackground(buttonBackgroundColor);
             mhv.setBounds(0 + k * 100, 0, 100, 33);
+            if (k % 2 != 0 && k != 0) mhv.setBackColor(Color.decode("#DDDDDD"));
+            else mhv.setBackColor(Color.decode("#F5F5F5"));
+            mhv.updatePanel();
             measureHeadViewArray.add(mhv);
             measureHeadPanel.add(mhv);
         }
@@ -781,9 +815,11 @@ public class SonifiedSpectra {
         int j3 = 0;
 
         for (Track t : activeProject.getTracksArray()) {
-            TrackView tv = new TrackView(t);
-            tv.setBackground(buttonBackgroundColor);
+            TrackView tv = new TrackView(t, this);
             tv.setBounds(0, 70 * j3, 100 * activeProject.getNumMeasures(), 70);
+            if (j3 % 2 != 0 && j3 != 0) tv.setBackColor(Color.decode("#DDDDDD"));
+            else tv.setBackColor(Color.decode("#F5F5F5"));
+            tv.updatePanel();
             j3++;
             trackViewArray.add(tv);
             inTracksPanel.add(tv);
@@ -879,7 +915,7 @@ public class SonifiedSpectra {
         for (String s : qualityArray) {
             qualityComboBox.addItem(s);
         }
-        qualityComboBox.setBounds(207, 125, 95, 28);
+        qualityComboBox.setBounds(207, 125, 150, 28);
         qualityComboBox.setSelectedItem( "Major" );
         playbackPanel.add(qualityComboBox);
 
@@ -893,8 +929,8 @@ public class SonifiedSpectra {
         for (String s : rhythmArray) {
             qrhythmComboBox.addItem(s);
         }
-        qrhythmComboBox.setBounds(317, 125, 95, 28);
-        qrhythmComboBox.setSelectedItem("1/4");
+        qrhythmComboBox.setBounds(372, 125, 95, 28);
+        qrhythmComboBox.setSelectedItem("1/16");
         playbackPanel.add(qrhythmComboBox);
 
         JLabel tempoLabel = new JLabel("Tempo:");
@@ -932,6 +968,15 @@ public class SonifiedSpectra {
         int y2 = (screenSize.height / 2) - (height2 / 2);
         editCompoundDialog.setLocation( x2, y2 );
         editCompoundDialog.setVisible(false);
+
+        loopDialog = new LoopDialog(this);
+        loopDialog.pack();
+        final int width3 = loopDialog.getWidth();
+        final int height3 = loopDialog.getHeight();
+        int x3 = (screenSize.width / 2) - (width3 / 2);
+        int y3 = (screenSize.height / 2) - (height3 / 2);
+        loopDialog.setLocation(x3, y3);
+        loopDialog.setVisible(false);
 
     }
 
@@ -972,6 +1017,11 @@ public class SonifiedSpectra {
         fillerButton.addMouseListener(new HelpTextController(this, HelpStrings.FILLER));
         fillerButton.addActionListener(fillerController);
         fillerButton.addMouseListener(fillerController);
+
+        noteVolumeSlider.addChangeListener(new NoteVolumeController(this, activeProject));
+        noteVolumeSlider.addMouseListener(new HelpTextController(this, "Test"));
+
+        instrumentComboBox.addItemListener(new PhraseInstrumentController(this));
 
         EditPhraseController editPhraseController = new EditPhraseController(this, activeProject);
         editPhraseButton.addMouseListener(new HelpTextController(this, HelpStrings.EDIT_PHRASE));
@@ -1098,13 +1148,51 @@ public class SonifiedSpectra {
 
         SoundPlayerController playPauseController = new SoundPlayerController(this, activeProject, 0);
         playButton.addMouseListener(new HelpTextController(this, HelpStrings.PLAY_PAUSE));
-        //playButton.addActionListener(playPauseController);
         playButton.addMouseListener(playPauseController);
 
         SoundPlayerController stopController = new SoundPlayerController(this, activeProject, 1);
         stopButton.addMouseListener(new HelpTextController(this, HelpStrings.STOP));
         stopButton.addActionListener(stopController);
         stopButton.addMouseListener(stopController);
+
+        LoopPlayerController loopPlayPauseController = new LoopPlayerController(this, activeProject, 0);
+        loopDialog.getPlayButton().addMouseListener(loopPlayPauseController);
+
+        LoopPlayerController loopStopController = new LoopPlayerController(this, activeProject, 1);
+        loopDialog.getStopButton().addActionListener(loopStopController);
+        loopDialog.getStopButton().addMouseListener(loopStopController);
+
+        quantizeCheckBox.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                soundPlayer.reset();
+                soundPlayer.updateSoundPlayer();
+            }
+        });
+
+        keyComboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                soundPlayer.reset();
+                soundPlayer.updateSoundPlayer();
+            }
+        });
+
+        qualityComboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                soundPlayer.reset();
+                soundPlayer.updateSoundPlayer();
+            }
+        });
+
+        qrhythmComboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                soundPlayer.reset();
+                soundPlayer.updateSoundPlayer();
+            }
+        });
 
     }
 
@@ -1113,7 +1201,7 @@ public class SonifiedSpectra {
         activePhrase = phrase;
 
         temp = false;
-        compoundComboBox.setSelectedIndex(activePhrase.getCompound().getId());
+        if (!phrase.isLoop()) compoundComboBox.setSelectedIndex(activePhrase.getCompound().getId());
         temp = true;
 
         for (PhraseView pv : phraseViewArray) {
@@ -1151,17 +1239,20 @@ public class SonifiedSpectra {
         colorButton.setCol(activePhrase.getUnselectedColor());
         colorButton.repaint();
 
-        activePhrase.getCompound().getDataChart().getDataChart().getTitle().setText(
-                activePhrase.getCompound().getName());
-        phraseViewArray.get(activeProject.getPhrasesArray().indexOf(
-                activePhrase)).getNameLabel().setText(activePhrase.getCompound().getName());
+        if (!phrase.isLoop()) {
+            activePhrase.getCompound().getDataChart().getDataChart().getTitle().setText(
+                    activePhrase.getCompound().getName());
+        }
 
         int j4 = 0;
         for (TrackView tv : trackViewArray) {
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                 pitv.adjustSize(j4);
+                if (pitv.getPhrase().isLoop()) pitv.getNameLabel().setForeground(Color.WHITE);
                 if (activePhrase.getId() == pitv.getPhrase().getId() || (pitv.getPhrase().getParentPhrase() != null && activePhrase.getId() == pitv.getPhrase().getParentPhrase().getId())) {
-                    pitv.getNameLabel().setText(activePhrase.getCompound().getName());
+                    if (!pitv.getPhrase().isLoop()) {
+                        pitv.getNameLabel().setText(activePhrase.getCompound().getName());
+                    }
                     pitv.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 2, false));
                     pitv.repaint();
                 }
@@ -1279,6 +1370,30 @@ public class SonifiedSpectra {
         }
 
         return selectedMeasures;
+
+    }
+
+    public ArrayList<TrackHeadView> getSelectedTrackHeads() {
+
+        ArrayList<TrackHeadView> selectedTrackHeads = new ArrayList<TrackHeadView>();
+
+        for (TrackHeadView thv : trackHeadViewArray) {
+            if (thv.getTrack().isSelected()) selectedTrackHeads.add(thv);
+        }
+
+        return selectedTrackHeads;
+
+    }
+
+    public ArrayList<TrackView> getSelectedTrackViews() {
+
+        ArrayList<TrackView> selectedTrackViews = new ArrayList<TrackView>();
+
+        for (TrackView tv : trackViewArray) {
+            if (tv.getTrack().isSelected()) selectedTrackViews.add(tv);
+        }
+
+        return selectedTrackViews;
 
     }
 
@@ -2103,5 +2218,37 @@ public class SonifiedSpectra {
 
     public void setTracksMultSelectCheckbox(JCheckBox tracksMultSelectCheckbox) {
         this.tracksMultSelectCheckbox = tracksMultSelectCheckbox;
+    }
+
+    public JSlider getNoteVolumeSlider() {
+        return noteVolumeSlider;
+    }
+
+    public void setNoteVolumeSlider(JSlider noteVolumeSlider) {
+        this.noteVolumeSlider = noteVolumeSlider;
+    }
+
+    public JLabel getNoteVolumeLabel() {
+        return noteVolumeLabel;
+    }
+
+    public void setNoteVolumeLabel(JLabel noteVolumeLabel) {
+        this.noteVolumeLabel = noteVolumeLabel;
+    }
+
+    public LoopDialog getLoopDialog() {
+        return loopDialog;
+    }
+
+    public void setLoopDialog(LoopDialog loopDialog) {
+        this.loopDialog = loopDialog;
+    }
+
+    public Instrument[] getInstruments() {
+        return instruments;
+    }
+
+    public void setInstruments(Instrument[] instruments) {
+        this.instruments = instruments;
     }
 }

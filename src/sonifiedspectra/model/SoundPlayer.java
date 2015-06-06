@@ -57,43 +57,56 @@ public class SoundPlayer {
     private SonifiedSpectra app;
 
     // Create a SoundPlayer component for the specified file.
-    public SoundPlayer(File f, int programChange, SonifiedSpectra app)
+    public SoundPlayer(File f, int programChange, SonifiedSpectra app, boolean loop)
             throws IOException,
             UnsupportedAudioFileException,
             LineUnavailableException,
             MidiUnavailableException,
-            InvalidMidiDataException
-    {
+            InvalidMidiDataException {
         this.app = app;
         // First, get a Sequencer to play sequences of MIDI events
         // That is, to send events to a Synthesizer at the right time.
-        sequencer = MidiSystem.getSequencer( );  // Used to play sequences
-        sequencer.open( );                       // Turn it on.
+        sequencer = MidiSystem.getSequencer();  // Used to play sequences
+        sequencer.open();                       // Turn it on.
 
         // Get a Synthesizer for the Sequencer to send notes to
-        Synthesizer synth = MidiSystem.getSynthesizer( );
-        synth.open( );  // acquire whatever resources it needs
+        Synthesizer synth = MidiSystem.getSynthesizer();
+        synth.open();  // acquire whatever resources it needs
 
         // The Sequencer obtained above may be connected to a Synthesizer
         // by default, or it may not.  Therefore, we explicitly connect it.
-        Transmitter transmitter = sequencer.getTransmitter( );
-        Receiver receiver = synth.getReceiver( );
+        Transmitter transmitter = sequencer.getTransmitter();
+        Receiver receiver = synth.getReceiver();
         transmitter.setReceiver(receiver);
 
         // Read the sequence from the file and tell the sequencer about it
         sequence = MidiSystem.getSequence(f);
         sequencer.setSequence(sequence);
-        audioLength = (int) sequence.getTickLength( ); // Get sequence length
+        audioLength = (int) sequence.getTickLength(); // Get sequence length
 
-        // Now create the basic GUI
-        play = app.getPlayButton();                // Play/stop button
-        progress = app.getPlaybackSlider(); // Shows position in sound
-        progress.setMinimum(0);
-        progress.setMaximum(audioLength);
-        progress.setValue(0);
-        stop = app.getStopButton();
-        time = app.getTimerLabel();
-        time.setText((getTimeString((int) sequencer.getMicrosecondPosition(), (int) sequencer.getMicrosecondLength())));
+        if (!loop) {
+            // Now create the basic GUI
+            play = app.getPlayButton();                // Play/stop button
+            progress = app.getPlaybackSlider(); // Shows position in sound
+            progress.setMinimum(0);
+            progress.setMaximum(audioLength);
+            progress.setValue(0);
+            stop = app.getStopButton();
+            time = app.getTimerLabel();
+            time.setText((getTimeString((int) sequencer.getMicrosecondPosition(), (int) sequencer.getMicrosecondLength())));
+        }
+
+        else {
+            // Now create the basic GUI
+            play = app.getLoopDialog().getPlayButton();                // Play/stop button
+            progress = app.getLoopDialog().getProgress(); // Shows position in sound
+            progress.setMinimum(0);
+            progress.setMaximum(audioLength);
+            progress.setValue(0);
+            stop = app.getLoopDialog().getStopButton();
+            time = app.getLoopDialog().getTime();
+            time.setText((getTimeString((int) sequencer.getMicrosecondPosition(), (int) sequencer.getMicrosecondLength())));
+        }
 
         // When clicked, start or pause playing the sound
         play.addActionListener(new ActionListener() {
@@ -102,8 +115,7 @@ public class SoundPlayer {
                     stop();
                     Icon playIcon = new ImageIcon("resources/icons/playicon.png");
                     play.setIcon(playIcon);
-                }
-                else {
+                } else {
                     play();
                     Icon pauseIcon = new ImageIcon("resources/icons/pauseicon.png");
                     play.setIcon(pauseIcon);
@@ -111,21 +123,23 @@ public class SoundPlayer {
             }
         });
 
+        final SonifiedSpectra app2 = app;
+        final boolean loop2 = loop;
         // When clicked, stop and reset playing the sound
         stop.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 reset();
                 Icon playIcon = new ImageIcon("resources/icons/playicon.png");
                 play.setIcon(playIcon);
-                tempo.setValue(100);
+                if (!loop2) tempo.setValue(app2.getActiveProject().getTempo());
             }
         });
 
         // Whenever the slider value changes, first update the time label.
         // Next, if we're not already at the new position, skip to it.
-        progress.addChangeListener(new ChangeListener( ) {
+        progress.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                int value = progress.getValue( );
+                int value = progress.getValue();
                 // Update the time label
                 time.setText(getTimeString((int) sequencer.getMicrosecondPosition(), (int) sequencer.getMicrosecondLength()));
                 // If we're not already there, skip there.
@@ -135,26 +149,15 @@ public class SoundPlayer {
 
         // This timer calls the tick( ) method 10 times a second to keep
         // our slider in sync with the music.
-        timer = new Timer(100, new ActionListener( ) {
-            public void actionPerformed(ActionEvent e) { tick( ); }
+        timer = new Timer(100, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                tick();
+            }
         });
 
-        /*Track[] tracks = sequence.getTracks();
-        for (int i = 0; i < tracks.length; i++) {
-
-            try {
-                ShortMessage instrumentChange = new ShortMessage();
-                instrumentChange.setMessage(ShortMessage.PROGRAM_CHANGE, 0, 0, -1);
-                tracks[i].add(new MidiEvent(instrumentChange, 0));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }*/
-
         // Now add additional controls based on the type of the sound
-        addMidiControls( );
-        app.getPlaybackPanel().add(time);
+        if (!loop) {addMidiControls();
+        app.getPlaybackPanel().add(time);}
     }
 
     /** Start playing the sound at the current position */
@@ -180,6 +183,8 @@ public class SoundPlayer {
         Icon playIcon = new ImageIcon("resources/icons/playicon.png");
         app.getPlayButton().setIcon(playIcon);
         app.getPlayButton().repaint();
+        app.getLoopDialog().getPlayButton().setIcon(playIcon);
+        app.getLoopDialog().getPlayButton().repaint();
     }
 
     /** Skip to the specified position */
@@ -225,7 +230,7 @@ public class SoundPlayer {
     void addMidiControls( ) {
         // Add a slider to control the tempo
         tempo = new JSlider(40, 255);
-        tempo.setValue((int) (sequencer.getTempoInBPM()));
+        tempo.setValue((int) (app.getActiveProject().getTempo()));
         java.util.Hashtable labels = new java.util.Hashtable( );
         labels.put(new Integer(40), new JLabel("40"));
         labels.put(new Integer(120), new JLabel("120"));
@@ -242,18 +247,60 @@ public class SoundPlayer {
         tempo.setBounds(507, 75, 168, 50);
         app.getPlaybackPanel().add(tempo);
 
-        int i = 0;
-        for (TrackHeadView thv : app.getTrackHeadViewArray()) {
-            final int trackNum = i;
-            final TrackHeadView thv2 = thv;
-            thv.getLiveCheckbox().addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    sequencer.setTrackMute(trackNum, thv2.getLiveCheckbox().isSelected());
-                }
-            });
-            i++;
-        }
+    }
 
+    public void updateLoopPlayer(Phrase phrase) {
+
+        Score score = new Score();
+        Part newPart = new Part();
+        jm.music.data.Phrase newPhrase = new jm.music.data.Phrase();
+        for (Note note : phrase.getNotesArray()) {
+            jm.music.data.Note newNote = new jm.music.data.Note(note.getPitch() + note.getTranspose(), note.getRhythmValue(), note.getDynamic());
+            newPhrase.add(newNote);
+        }
+        newPhrase.setInstrument(phrase.getInstrument());
+        newPart.setInstrument(phrase.getInstrument());
+        newPart.add(newPhrase);
+        score.add(newPart);
+
+        score.setTempo(120);
+
+        Write.midi(score, "midi/loop.mid");
+
+        File midiFile = new File( "midi/loop.mid" );   // This is the file we'll be playing
+
+        phrase.setMidiFile(midiFile);
+
+        // Read the sequence from the file and tell the sequencer about it
+        try {
+            setSequence(MidiSystem.getSequence(midiFile));
+        } catch (InvalidMidiDataException e1) {
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        try {
+            getSequencer().setSequence(getSequence());
+        } catch (InvalidMidiDataException e1) {
+            e1.printStackTrace();
+        }
+        setAudioLength((int) getSequence().getTickLength()); // Get sequence length
+
+        // Now create the basic GUI
+        getProgress().setMinimum(0);
+        getProgress().setMaximum(getAudioLength());
+        getProgress().setValue(0);
+        getTime().setText((getTimeString((int)
+                        getSequencer().getMicrosecondPosition(),
+                (int) getSequencer().getMicrosecondLength())));
+
+        // This timer calls the tick( ) method 10 times a second to keep
+        // our slider in sync with the music.
+        setTimer(new Timer(100, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                tick();
+            }
+        }));
     }
 
     public void updateSoundPlayer() {
@@ -274,10 +321,9 @@ public class SoundPlayer {
                         jm.music.data.Note newNote = new jm.music.data.Note(note.getPitch() + note.getTranspose(), note.getRhythmValue(), note.getDynamic());
                         newPhrase.add(newNote);
                     }
-                    newPhrase.setInstrument(phrase.getInstrument());
+                    newPhrase.setInstrument(track.getInstrument());
                     newPhrase.setStartTime(phrase.getStartTime() * 4);
-                    newPart.setInstrument(phrase.getInstrument());
-                    newPart.setProgChg(phrase.getInstrument());
+                    newPart.setInstrument(track.getInstrument());
                     newPart.add(newPhrase);
                 }
                 score.add(newPart);
@@ -356,17 +402,17 @@ public class SoundPlayer {
             }
         }));
 
-
-        javax.sound.midi.Track[] tracks = getSequence().getTracks();
-        for (int i = 0; i < tracks.length; i++) {
-
-            try {
-                ShortMessage instrumentChange = new ShortMessage();
-                instrumentChange.setMessage(ShortMessage.PROGRAM_CHANGE, 0, app.getActivePhrase().getInstrument(), -1);
-                tracks[i].add(new MidiEvent(instrumentChange, 0));
-            } catch (Exception e2) {
-                e2.printStackTrace();
-            }
+        int j = 0;
+        for (TrackHeadView thv : app.getTrackHeadViewArray()) {
+            final int trackNum = j;
+            final TrackHeadView thv2 = thv;
+            thv2.getLiveCheckbox().addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    if (app.isProject()) sequencer.setTrackMute(trackNum + 1, !thv2.getLiveCheckbox().isSelected());
+                }
+            });
+            sequencer.setTrackMute(trackNum + 1, !thv2.getLiveCheckbox().isSelected());
+            j++;
         }
     }
 

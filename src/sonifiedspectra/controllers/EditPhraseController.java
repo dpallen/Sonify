@@ -13,7 +13,7 @@ import java.util.ArrayList;
 /**
  * Created by Hvandenberg on 6/1/15.
  */
-public class EditPhraseController implements ActionListener, MouseListener {
+public class  EditPhraseController implements ActionListener, MouseListener {
 
     private SonifiedSpectra app;
     private Project project;

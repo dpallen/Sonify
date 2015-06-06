@@ -48,6 +48,9 @@ public class NoteController implements MouseListener {
             app.getTransposeTextField().setForeground(Color.BLACK);
         }
 
+        if (app.getActivePhrase().getSelectedNotes().size() == 1) app.getNoteVolumeSlider()
+                .setValue(app.getActivePhrase().getSelectedNotes().get(0).getDynamic());
+
         app.updateIntervalMarker();
         app.getGraphPanel().repaint();
         app.getFrame().pack();

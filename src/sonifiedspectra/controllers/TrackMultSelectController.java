@@ -7,6 +7,7 @@ import sonifiedspectra.view.SonifiedSpectra;
 import sonifiedspectra.view.TrackHeadView;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -40,7 +41,10 @@ public class TrackMultSelectController implements ActionListener {
             for (TrackHeadView thv : app.getTrackHeadViewArray()) {
                 if (thv.getTrack().isSelected()) {
                     if (isFirst1) isFirst1 = false;
-                    else thv.getTrack().setSelected(false);
+                    else {
+                        thv.getTrack().setSelected(false);
+                        app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(thv)).setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
+                    }
                 }
                 thv.updatePanel();
             }
@@ -50,7 +54,10 @@ public class TrackMultSelectController implements ActionListener {
             for (MeasureHeadView mhv : app.getMeasureHeadViewArray()) {
                 if (mhv.isSelected()) {
                     if (isFirst2) isFirst2 = false;
-                    else mhv.setSelected(false);
+                    else {
+                        mhv.setSelected(false);
+                        app.getMeasureHeadViewArray().get(app.getMeasureHeadViewArray().indexOf(mhv)).setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
+                    }
                 }
                 mhv.updatePanel();
             }

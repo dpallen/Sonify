@@ -2,7 +2,7 @@ package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.NoteView;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -13,13 +13,13 @@ import java.awt.event.ActionListener;
  */
 public class MultipleNoteSelectionController implements ActionListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
     private JCheckBox checkBox;
     private Icon selectedIcon;
     private Icon unselectedIcon;
 
-    public MultipleNoteSelectionController(SonifiedSpectra app, Project project, JCheckBox checkBox) {
+    public MultipleNoteSelectionController(Sonify app, Project project, JCheckBox checkBox) {
         this.app = app;
         this.project = project;
         this.checkBox = checkBox;

@@ -1,16 +1,9 @@
 package sonifiedspectra.controllers;
 
-import org.jfree.chart.ChartPanel;
-import sonifiedspectra.model.Compound;
-import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
-import sonifiedspectra.model.Track;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 import sonifiedspectra.view.TrackHeadView;
-import sonifiedspectra.view.TrackView;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -19,11 +12,11 @@ import java.awt.event.ItemListener;
  */
 public class TrackInstrumentController implements ItemListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
     private TrackHeadView thv;
 
-    public TrackInstrumentController(SonifiedSpectra app, Project project, TrackHeadView thv) {
+    public TrackInstrumentController(Sonify app, Project project, TrackHeadView thv) {
         this.app = app;
         this.project = project;
         this.thv = thv;

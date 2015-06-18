@@ -1,7 +1,6 @@
 package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Project;
-import sonifiedspectra.model.Track;
 import sonifiedspectra.view.*;
 
 import java.awt.*;
@@ -15,12 +14,12 @@ import java.awt.event.MouseListener;
  */
 public class RemovePhraseFromTrackController implements ActionListener, MouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
     private PhraseInTrackView pitv;
     private TrackView tv;
 
-    public RemovePhraseFromTrackController(SonifiedSpectra app, Project project, PhraseInTrackView pitv, TrackView tv) {
+    public RemovePhraseFromTrackController(Sonify app, Project project, PhraseInTrackView pitv, TrackView tv) {
         this.project = project;
         this.app = app;
         this.pitv = pitv;

@@ -8,6 +8,7 @@ import sonifiedspectra.controllers.*;
 import sonifiedspectra.model.*;
 import sonifiedspectra.model.Track;
 
+import javax.imageio.ImageIO;
 import javax.sound.midi.*;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -17,6 +18,7 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,7 +28,7 @@ import java.util.ArrayList;
 /**
  * Created by Hvandenberg on 5/28/15.
  */
-public class SonifiedSpectra {
+public class Sonify {
 
     private BetterButton importCompoundButton;
     private JButton importCompoundButton2;
@@ -52,6 +54,7 @@ public class SonifiedSpectra {
     private JButton addPhraseButton2;
     private BetterButton editPhraseButton;
     private BetterButton removePhraseButton;
+
     private JButton removePhraseButton2;
     private BetterButton playProjectButton;
     private JButton playProjectButton2;
@@ -69,6 +72,7 @@ public class SonifiedSpectra {
     private BetterButton addPhraseToTrackButton;
     private BetterButton movePitvRightButton;
     private BetterButton movePitvLeftButton;
+    private BetterButton duplicatePhraseButton;
 
     private Color buttonHighlightColor;
     private Color buttonBackgroundColor;
@@ -131,6 +135,8 @@ public class SonifiedSpectra {
 
     private FillerNotesDialog fillerDialog;
     private EditCompoundDialog editCompoundDialog;
+    private EditPhraseDialog editPhraseDialog;
+    private NewProjectDialog newProjectDialog;
     private LoopDialog loopDialog;
 
     private ArrayList<NoteView> noteViewArray;
@@ -154,7 +160,7 @@ public class SonifiedSpectra {
     // Prevents calling combobox listener infinitely when switching phrases
     private boolean temp;
 
-    public SonifiedSpectra() throws FileNotFoundException, FontFormatException, IOException, MidiUnavailableException,
+    public Sonify() throws FileNotFoundException, FontFormatException, IOException, MidiUnavailableException,
             UnsupportedAudioFileException, LineUnavailableException, InvalidMidiDataException {
 
         initialize();
@@ -164,6 +170,10 @@ public class SonifiedSpectra {
     private void initialize() throws FileNotFoundException, FontFormatException,
             IOException, MidiUnavailableException, UnsupportedAudioFileException,
             LineUnavailableException, InvalidMidiDataException {
+
+        activeProject = new Project();
+        activeProject.setName("My Project");
+
         initializeModel();
         initializeView();
         initializeControllers();
@@ -176,14 +186,11 @@ public class SonifiedSpectra {
 
     }
 
-    private void initializeModel() throws MidiUnavailableException {
+    public void initializeModel() throws MidiUnavailableException {
 
         Synthesizer synthesizer = MidiSystem.getSynthesizer();
 
         instruments = synthesizer.getDefaultSoundbank().getInstruments();
-
-        activeProject = new Project();
-        activeProject.setName("My Project");
 
         colorsArray = new ArrayList<String>();
         colorsArray.add("Red");
@@ -273,7 +280,7 @@ public class SonifiedSpectra {
 
     }
 
-    private void initializeView() throws FileNotFoundException, FontFormatException, IOException, MidiUnavailableException, UnsupportedAudioFileException, LineUnavailableException, InvalidMidiDataException {
+    public void initializeView() throws FileNotFoundException, FontFormatException, IOException, MidiUnavailableException, UnsupportedAudioFileException, LineUnavailableException, InvalidMidiDataException {
 
         frame = new JFrame();
 
@@ -644,33 +651,6 @@ public class SonifiedSpectra {
         helpTextPane.setBounds(924, 11, 350, 32);
         frame.getContentPane().add(helpTextPane);
 
-        Icon movepitvrighticon = new ImageIcon("resources/icons/movepitvrighticon.png");
-        movePitvRightButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
-        movePitvRightButton.setIcon(movepitvrighticon);
-        movePitvRightButton.setBounds(1240, 52, 32, 32);
-        movePitvRightButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        movePitvRightButton.setBorderPainted(true);
-        movePitvRightButton.setFocusPainted(false);
-        frame.getContentPane().add(movePitvRightButton);
-
-        movePitvTextField = new JTextField();
-        movePitvTextField.setHorizontalAlignment(SwingConstants.CENTER);
-        movePitvTextField.setBackground(Color.decode("#F5F5F5"));
-        movePitvTextField.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        movePitvTextField.setBounds(1240, 85, 32, 32);
-        movePitvTextField.setText(String.valueOf(activeProject.getMovePitvFactor()));
-        movePitvTextField.setHorizontalAlignment(SwingConstants.HORIZONTAL);
-        frame.getContentPane().add(movePitvTextField);
-
-        Icon movepitvlefticon = new ImageIcon("resources/icons/movepitvlefticon.png");
-        movePitvLeftButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
-        movePitvLeftButton.setIcon(movepitvlefticon);
-        movePitvLeftButton.setBounds(1240, 119, 32, 32);
-        movePitvLeftButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        movePitvLeftButton.setBorderPainted(true);
-        movePitvLeftButton.setFocusPainted(false);
-        frame.getContentPane().add(movePitvLeftButton);
-
         outTracksPanel = new JPanel();
         outTracksPanel.setLayout(null);
         outTracksPanel.setBorder(null);
@@ -780,7 +760,7 @@ public class SonifiedSpectra {
         for (int k = 0; k < activeProject.getNumMeasures(); k++) {
             MeasureHeadView mhv = new MeasureHeadView(k + 1);
             mhv.setBackground(buttonBackgroundColor);
-            mhv.setBounds(0 + k * 100, 0, 100, 33);
+            mhv.setBounds(0 + k * SizeConstants.MEASURE_SCALE * 4, 0, SizeConstants.MEASURE_SCALE * 4, 33);
             if (k % 2 != 0 && k != 0) mhv.setBackColor(Color.decode("#DDDDDD"));
             else mhv.setBackColor(Color.decode("#F5F5F5"));
             mhv.updatePanel();
@@ -950,6 +930,42 @@ public class SonifiedSpectra {
         bpmLabel.setBounds(638, 57, 40, 17);
         playbackPanel.add(bpmLabel);
 
+        Icon movepitvrighticon = new ImageIcon("resources/icons/movepitvrighticon.png");
+        movePitvRightButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
+        movePitvRightButton.setIcon(movepitvrighticon);
+        movePitvRightButton.setBounds(1240, 52, 32, 32);
+        movePitvRightButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+        movePitvRightButton.setBorderPainted(true);
+        movePitvRightButton.setFocusPainted(false);
+        frame.getContentPane().add(movePitvRightButton);
+
+        movePitvTextField = new JTextField();
+        movePitvTextField.setHorizontalAlignment(SwingConstants.CENTER);
+        movePitvTextField.setBackground(Color.decode("#F5F5F5"));
+        movePitvTextField.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+        movePitvTextField.setBounds(1240, 85, 32, 32);
+        movePitvTextField.setText(String.valueOf(activeProject.getMovePitvFactor()));
+        movePitvTextField.setHorizontalAlignment(SwingConstants.HORIZONTAL);
+        frame.getContentPane().add(movePitvTextField);
+
+        Icon movepitvlefticon = new ImageIcon("resources/icons/movepitvlefticon.png");
+        movePitvLeftButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
+        movePitvLeftButton.setIcon(movepitvlefticon);
+        movePitvLeftButton.setBounds(1240, 119, 32, 32);
+        movePitvLeftButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+        movePitvLeftButton.setBorderPainted(true);
+        movePitvLeftButton.setFocusPainted(false);
+        frame.getContentPane().add(movePitvLeftButton);
+
+        Icon duplicatephraseicon = new ImageIcon("resources/icons/duplicatephraseicon.png");
+        duplicatePhraseButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
+        duplicatePhraseButton.setIcon(duplicatephraseicon);
+        duplicatePhraseButton.setBounds(1240, 153, 32, 32);
+        duplicatePhraseButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+        duplicatePhraseButton.setBorderPainted(true);
+        duplicatePhraseButton.setFocusPainted(false);
+        frame.getContentPane().add(duplicatePhraseButton);
+
         fillerDialog = new FillerNotesDialog(this);
         fillerDialog.pack();
         final int width = fillerDialog.getWidth();
@@ -969,6 +985,24 @@ public class SonifiedSpectra {
         editCompoundDialog.setLocation( x2, y2 );
         editCompoundDialog.setVisible(false);
 
+        editPhraseDialog = new EditPhraseDialog(this);
+        editPhraseDialog.pack();
+        final int width4 = editPhraseDialog.getWidth();
+        final int height4 = editPhraseDialog.getHeight();
+        int x4 = (screenSize.width / 2) - (width4 / 2);
+        int y4 = (screenSize.height / 2) - (height4 / 2);
+        editPhraseDialog.setLocation( x4, y4 );
+        editPhraseDialog.setVisible(false);
+
+        newProjectDialog = new NewProjectDialog(this);
+        newProjectDialog.pack();
+        final int width5 = newProjectDialog.getWidth();
+        final int height5 = newProjectDialog.getHeight();
+        int x5 = (screenSize.width / 2) - (width5 / 2);
+        int y5 = (screenSize.height / 2) - (height5 / 2);
+        newProjectDialog.setLocation(x5, y5);
+        newProjectDialog.setVisible(false);
+
         loopDialog = new LoopDialog(this);
         loopDialog.pack();
         final int width3 = loopDialog.getWidth();
@@ -980,7 +1014,7 @@ public class SonifiedSpectra {
 
     }
 
-    private void initializeControllers() {
+    public void initializeControllers() {
 
         compoundComboBox.addItemListener(new CompoundComboBoxController(this, activeProject, compoundComboBox));
         compoundComboBox.addMouseListener(new HelpTextController(this, HelpStrings.COMPOUND_BOX));
@@ -1117,6 +1151,10 @@ public class SonifiedSpectra {
         movePitvLeftButton.addMouseListener(new HelpTextController(this, HelpStrings.MOVE_PITV_LEFT));
         movePitvLeftButton.addActionListener(movePitvLeftController);
         movePitvLeftButton.addMouseListener(movePitvLeftController);
+
+        DuplicatePhraseController duplicatePhraseController = new DuplicatePhraseController(this);
+        duplicatePhraseButton.addMouseListener(new HelpTextController(this, HelpStrings.DUPLICATE_PHRASE));
+        duplicatePhraseButton.addMouseListener(duplicatePhraseController);
 
         tracksMultSelectCheckbox.addActionListener(new TrackMultSelectController(this, activeProject, tracksMultSelectCheckbox));
         tracksMultSelectCheckbox.addMouseListener(new HelpTextController(this, HelpStrings.TRACKS_MULT_SELECT));
@@ -1334,10 +1372,10 @@ public class SonifiedSpectra {
         double x1 = n.getPeak().getX1();
         double x2 = n.getPeak().getX2();
 
-        if (activePhrase.getNotesArray().indexOf(n) == 0) x1 = activePhrase.getX2();
+        if (activePhrase.getNotesArray().indexOf(n) == 0) x1 = activePhrase.getX1();
 
         if (activePhrase.getNotesArray().indexOf(n) == activePhrase.getNotesArray().size() - 1)
-            x2 = activePhrase.getX1();
+            x2 = activePhrase.getX2();
 
         Marker newMarker = new IntervalMarker(x2, x1);
 
@@ -1401,9 +1439,46 @@ public class SonifiedSpectra {
             MidiUnavailableException, UnsupportedAudioFileException, LineUnavailableException,
             InvalidMidiDataException {
 
-        SonifiedSpectra app = new SonifiedSpectra();
-        app.frame.setVisible(true);
+        showSplashScreen();
 
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    Sonify app = new Sonify();
+                    app.frame.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            //InputStream is = MyClass.class.getClassLoader().getResourceAsStream(name)
+        });
+
+    }
+
+    public static void showSplashScreen() {
+        JWindow splash = new JWindow();
+        BufferedImage splashScreenImg;
+        try {
+            splashScreenImg = ImageIO.read(new File("resources/icons/sonifysplashscreen.png"));
+            splash.getContentPane().add(new JLabel(new ImageIcon(splashScreenImg)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int width = 500;
+        int height = 380;
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (screen.width - width) / 2;
+        int y = (screen.height - height) / 2;
+        splash.setBounds(x, y, width, height);
+        splash.setVisible(true);
+        try {
+            Thread.sleep(8000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        splash.setVisible(false);
+        splash.dispose();
     }
 
     //Getters and Setters
@@ -2250,5 +2325,29 @@ public class SonifiedSpectra {
 
     public void setInstruments(Instrument[] instruments) {
         this.instruments = instruments;
+    }
+
+    public EditPhraseDialog getEditPhraseDialog() {
+        return editPhraseDialog;
+    }
+
+    public void setEditPhraseDialog(EditPhraseDialog editPhraseDialog) {
+        this.editPhraseDialog = editPhraseDialog;
+    }
+
+    public BetterButton getDuplicatePhraseButton() {
+        return duplicatePhraseButton;
+    }
+
+    public void setDuplicatePhraseButton(BetterButton duplicatePhraseButton) {
+        this.duplicatePhraseButton = duplicatePhraseButton;
+    }
+
+    public NewProjectDialog getNewProjectDialog() {
+        return newProjectDialog;
+    }
+
+    public void setNewProjectDialog(NewProjectDialog newProjectDialog) {
+        this.newProjectDialog = newProjectDialog;
     }
 }

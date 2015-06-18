@@ -1,7 +1,7 @@
 package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Project;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 
 import javax.swing.*;
 import java.awt.event.ItemEvent;
@@ -12,11 +12,11 @@ import java.awt.event.ItemListener;
  */
 public class LoopComboBoxController implements ItemListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
     private JComboBox loopComboBox;
 
-    public LoopComboBoxController(SonifiedSpectra app, Project project, JComboBox loopComboBox) {
+    public LoopComboBoxController(Sonify app, Project project, JComboBox loopComboBox) {
         this.app = app;
         this.project = project;
         this.loopComboBox = loopComboBox;

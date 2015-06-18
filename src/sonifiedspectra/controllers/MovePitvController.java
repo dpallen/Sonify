@@ -1,11 +1,11 @@
 package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Project;
+import sonifiedspectra.model.SizeConstants;
 import sonifiedspectra.view.PhraseInTrackView;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 import sonifiedspectra.view.TrackView;
 
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -16,11 +16,11 @@ import java.awt.event.MouseListener;
  */
 public class MovePitvController implements ActionListener, MouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
     private int type;
 
-    public MovePitvController(SonifiedSpectra app, Project project, int type) {
+    public MovePitvController(Sonify app, Project project, int type) {
         this.project = project;
         this.app = app;
         this.type = type;
@@ -39,7 +39,7 @@ public class MovePitvController implements ActionListener, MouseListener {
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                 if (pitv.isSelected()) {
 
-                    int x = pitv.getX() + (25 * move);
+                    int x = pitv.getX() + (SizeConstants.MEASURE_SCALE * move);
                     if (x < 0) x = 0;
 
                     double newTime = ((double) move)/((double) 4);

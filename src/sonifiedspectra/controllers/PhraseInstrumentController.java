@@ -1,6 +1,6 @@
 package sonifiedspectra.controllers;
 
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -10,9 +10,9 @@ import java.awt.event.ItemListener;
  */
 public class PhraseInstrumentController implements ItemListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
 
-    public PhraseInstrumentController(SonifiedSpectra app) {
+    public PhraseInstrumentController(Sonify app) {
         this.app = app;
     }
 

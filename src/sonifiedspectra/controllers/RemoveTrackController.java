@@ -2,8 +2,7 @@ package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Project;
 import sonifiedspectra.model.Track;
-import sonifiedspectra.view.PhraseInTrackView;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 import sonifiedspectra.view.TrackHeadView;
 import sonifiedspectra.view.TrackView;
 
@@ -19,10 +18,10 @@ import java.util.ArrayList;
  */
 public class RemoveTrackController implements ActionListener, MouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
 
-    public RemoveTrackController(SonifiedSpectra app, Project project) {
+    public RemoveTrackController(Sonify app, Project project) {
         this.project = project;
         this.app = app;
     }

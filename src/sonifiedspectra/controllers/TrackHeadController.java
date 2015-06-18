@@ -1,9 +1,7 @@
 package sonifiedspectra.controllers;
 
-import org.jfree.chart.plot.XYPlot;
 import sonifiedspectra.model.Project;
-import sonifiedspectra.view.NoteView;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 import sonifiedspectra.view.TrackHeadView;
 
 import javax.swing.*;
@@ -16,11 +14,11 @@ import java.awt.event.MouseListener;
  */
 public class TrackHeadController implements MouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
     private TrackHeadView trackHeadView;
 
-    public TrackHeadController(SonifiedSpectra app, Project project, TrackHeadView trackHeadView) {
+    public TrackHeadController(Sonify app, Project project, TrackHeadView trackHeadView) {
         this.app = app;
         this.project = project;
         this.trackHeadView = trackHeadView;

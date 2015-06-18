@@ -1,9 +1,8 @@
 package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Note;
-import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,11 +14,11 @@ import java.awt.event.MouseListener;
  */
 public class FillerController implements ActionListener, MouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
     private boolean visible;
 
-    public FillerController(SonifiedSpectra app, Project project) {
+    public FillerController(Sonify app, Project project) {
         this.project = project;
         this.app = app;
         this.visible = false;

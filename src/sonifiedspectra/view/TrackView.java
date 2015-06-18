@@ -1,6 +1,7 @@
 package sonifiedspectra.view;
 
 import sonifiedspectra.model.Phrase;
+import sonifiedspectra.model.SizeConstants;
 import sonifiedspectra.model.Track;
 
 import javax.swing.*;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
  */
 public class TrackView extends JPanel {
 
-    private SonifiedSpectra app;
+    private Sonify app;
 
     private JLabel nameLabel;
 
@@ -22,7 +23,7 @@ public class TrackView extends JPanel {
 
     private Color backColor;
 
-    public TrackView(Track track, SonifiedSpectra app) {
+    public TrackView(Track track, Sonify app) {
         this.track = track;
         this.app = app;
         initialize();
@@ -41,7 +42,7 @@ public class TrackView extends JPanel {
             PhraseInTrackView pitv = new PhraseInTrackView(phrase);
             if (!phrase.isLoop()) pitv.getNameLabel().setText(phrase.getCompound().getName());
             else pitv.getNameLabel().setText("Loop");
-            pitv.setBounds((int) ((phrase.getStartTime() * 4) * 25), i * 15, pitv.getAdjustedWidth(), 15);
+            pitv.setBounds((int) ((phrase.getStartTime() * 4) * SizeConstants.MEASURE_SCALE), i * 15, pitv.getAdjustedWidth(), 15);
             phraseInTrackViewArray.add(pitv);
             add(pitv);
             i++;
@@ -77,12 +78,12 @@ public class TrackView extends JPanel {
 
             g.setColor(Color.decode("#C9C9C9"));
 
-            g.fillRect(25 + (100 * i), 0, 1, height);
-            g.fillRect(50 + (100 * i), 0, 1, height);
-            g.fillRect(75 + (100 * i), 0, 1, height);
+            g.fillRect(SizeConstants.MEASURE_SCALE + (SizeConstants.MEASURE_SCALE * 4 * i), 0, 1, height);
+            g.fillRect(SizeConstants.MEASURE_SCALE * 2 + (SizeConstants.MEASURE_SCALE * 4 * i), 0, 1, height);
+            g.fillRect(SizeConstants.MEASURE_SCALE * 3 + (SizeConstants.MEASURE_SCALE * 4 * i), 0, 1, height);
 
             g.setColor(Color.decode("#979797"));
-            g.fillRect(99 + (100 * i), 0, 2, height);
+            g.fillRect(SizeConstants.MEASURE_SCALE * 4 + (SizeConstants.MEASURE_SCALE * 4 * i), 0, 2, height);
 
             i++;
 

@@ -2,9 +2,7 @@ package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.MeasureHeadView;
-import sonifiedspectra.view.SonifiedSpectra;
-import sonifiedspectra.view.TrackHeadView;
-import sonifiedspectra.view.TrackView;
+import sonifiedspectra.view.Sonify;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,11 +14,11 @@ import java.awt.event.MouseListener;
  */
 public class MeasureHeadController implements MouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
     private MeasureHeadView mhv;
 
-    public MeasureHeadController(SonifiedSpectra app, Project project, MeasureHeadView mhv) {
+    public MeasureHeadController(Sonify app, Project project, MeasureHeadView mhv) {
         this.app = app;
         this.project = project;
         this.mhv = mhv;

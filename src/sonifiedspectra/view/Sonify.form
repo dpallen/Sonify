@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="sonifiedspectra.view.SonifiedSpectra">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="sonifiedspectra.view.Sonify">
   <grid id="27dc6" binding="rootPanel" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
@@ -201,7 +201,7 @@
             </constraints>
             <properties>
               <margin top="5" left="5" bottom="5" right="5"/>
-              <text value="Hi"/>
+              <text value=""/>
             </properties>
           </component>
           <component id="1fb92" class="javax.swing.JButton" binding="fillerButton2" default-binding="true">

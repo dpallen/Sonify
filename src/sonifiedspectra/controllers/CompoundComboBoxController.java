@@ -4,7 +4,7 @@ import org.jfree.chart.ChartPanel;
 import sonifiedspectra.model.Compound;
 import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,11 +16,11 @@ import java.awt.event.ItemListener;
  */
 public class CompoundComboBoxController implements ItemListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
     private JComboBox compoundComboBox;
 
-    public CompoundComboBoxController(SonifiedSpectra app, Project project, JComboBox compoundComboBox) {
+    public CompoundComboBoxController(Sonify app, Project project, JComboBox compoundComboBox) {
         this.app = app;
         this.project = project;
         this.compoundComboBox = compoundComboBox;

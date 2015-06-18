@@ -12,13 +12,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class LoopDialog extends JDialog {
 
-    private SonifiedSpectra app;
+    private Sonify app;
 
     private JPanel contentPane;
     private JButton buttonOK;
@@ -38,7 +37,7 @@ public class LoopDialog extends JDialog {
 
     private ArrayList<Phrase> loopsArray;
 
-    public LoopDialog(SonifiedSpectra app) throws IOException, FontFormatException, MidiUnavailableException, UnsupportedAudioFileException, LineUnavailableException, InvalidMidiDataException {
+    public LoopDialog(Sonify app) throws IOException, FontFormatException, MidiUnavailableException, UnsupportedAudioFileException, LineUnavailableException, InvalidMidiDataException {
         this.app = app;
         this.loopsArray = new ArrayList<Phrase>();
         setContentPane(contentPane);

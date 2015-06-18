@@ -1,18 +1,14 @@
 package sonifiedspectra.controllers;
 
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.plot.XYPlot;
 import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
-import sonifiedspectra.view.NoteView;
 import sonifiedspectra.view.PhraseInTrackView;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 import sonifiedspectra.view.TrackView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -21,11 +17,11 @@ import java.awt.event.MouseListener;
  */
 public class PhraseInTrackController implements MouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
     private PhraseInTrackView pitv;
 
-    public PhraseInTrackController(SonifiedSpectra app, Project project, PhraseInTrackView pitv) {
+    public PhraseInTrackController(Sonify app, Project project, PhraseInTrackView pitv) {
         this.app = app;
         this.project = project;
         this.pitv = pitv;

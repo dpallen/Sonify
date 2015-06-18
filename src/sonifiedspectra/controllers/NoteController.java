@@ -3,7 +3,7 @@ package sonifiedspectra.controllers;
 import org.jfree.chart.plot.XYPlot;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.NoteView;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -15,10 +15,10 @@ import java.awt.event.MouseListener;
 public class NoteController implements MouseListener {
 
     private Project project;
-    private SonifiedSpectra app;
+    private Sonify app;
     private NoteView noteView;
 
-    public NoteController(Project project, SonifiedSpectra app, NoteView noteView) {
+    public NoteController(Project project, Sonify app, NoteView noteView) {
         this.project = project;
         this.app = app;
         this.noteView = noteView;

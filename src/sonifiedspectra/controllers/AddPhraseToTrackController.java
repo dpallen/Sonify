@@ -18,10 +18,10 @@ import java.io.IOException;
  */
 public class AddPhraseToTrackController implements ActionListener, MouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
 
-    public AddPhraseToTrackController(SonifiedSpectra app, Project project) {
+    public AddPhraseToTrackController(Sonify app, Project project) {
         this.project = project;
         this.app = app;
     }

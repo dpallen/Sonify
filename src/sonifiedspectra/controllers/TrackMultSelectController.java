@@ -2,8 +2,7 @@ package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.MeasureHeadView;
-import sonifiedspectra.view.NoteView;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 import sonifiedspectra.view.TrackHeadView;
 
 import javax.swing.*;
@@ -16,13 +15,13 @@ import java.awt.event.ActionListener;
  */
 public class TrackMultSelectController implements ActionListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
     private JCheckBox checkBox;
     private Icon selectedIcon;
     private Icon unselectedIcon;
 
-    public TrackMultSelectController(SonifiedSpectra app, Project project, JCheckBox checkBox) {
+    public TrackMultSelectController(Sonify app, Project project, JCheckBox checkBox) {
         this.app = app;
         this.project = project;
         this.checkBox = checkBox;

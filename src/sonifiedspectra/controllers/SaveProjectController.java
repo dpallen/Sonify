@@ -1,37 +1,22 @@
 package sonifiedspectra.controllers;
 
-import jm.constants.Scales;
-import jm.music.data.Part;
-import jm.music.data.Phrase;
-import jm.music.data.Score;
-import jm.music.tools.Mod;
-import jm.util.Write;
-import sonifiedspectra.model.Note;
 import sonifiedspectra.model.Project;
-import sonifiedspectra.model.SoundPlayer;
-import sonifiedspectra.model.Track;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 
-import javax.sound.midi.*;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by Hvandenberg on 5/31/15.
  */
 public class SaveProjectController implements ActionListener, MouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
 
-    public SaveProjectController(SonifiedSpectra app, Project project) {
+    public SaveProjectController(Sonify app, Project project) {
         this.project = project;
         this.app = app;
     }

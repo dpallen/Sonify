@@ -5,12 +5,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class EditCompoundDialog extends JDialog {
 
-    private SonifiedSpectra app;
+    private Sonify app;
 
     private JPanel contentPane;
     private JButton buttonOK;
@@ -20,7 +19,7 @@ public class EditCompoundDialog extends JDialog {
     private JLabel titleLabel;
     private JLabel dataLabel;
 
-    public EditCompoundDialog(SonifiedSpectra app) throws IOException, FontFormatException {
+    public EditCompoundDialog(Sonify app) throws IOException, FontFormatException {
         this.app = app;
         setContentPane(contentPane);
         setModal(true);
@@ -85,6 +84,7 @@ public class EditCompoundDialog extends JDialog {
                         app.getActivePhrase().getCompound().getName());
             }
         }
+
         setVisible(false);
         app.getFrame().pack();
     }

@@ -4,12 +4,11 @@ import sonifiedspectra.model.Note;
 import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.PhraseInTrackView;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 import sonifiedspectra.view.TrackView;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -17,10 +16,10 @@ import java.util.ArrayList;
  */
 public class NoteVolumeController implements ChangeListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
 
-    public NoteVolumeController(SonifiedSpectra app, Project project) {
+    public NoteVolumeController(Sonify app, Project project) {
         this.app = app;
         this.project = project;
     }

@@ -3,7 +3,7 @@ package sonifiedspectra.controllers;
 import sonifiedspectra.model.HelpStrings;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.model.Track;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 import sonifiedspectra.view.TrackHeadView;
 import sonifiedspectra.view.TrackView;
 
@@ -19,10 +19,10 @@ import java.io.IOException;
  */
 public class AddTrackController implements ActionListener, MouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
 
-    public AddTrackController(SonifiedSpectra app, Project project) {
+    public AddTrackController(Sonify app, Project project) {
         this.project = project;
         this.app = app;
     }

@@ -10,14 +10,12 @@ import jm.music.data.Score;
 import jm.music.tools.Mod;
 import jm.util.Write;
 import sonifiedspectra.view.BetterButton;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 import sonifiedspectra.view.TrackHeadView;
 
 import javax.sound.midi.*;
-import javax.sound.midi.Track;
 import javax.sound.sampled.*;
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
@@ -54,10 +52,10 @@ public class SoundPlayer {
     private Timer timer;              // Updates slider every 100 milliseconds
     private JSlider tempo;
 
-    private SonifiedSpectra app;
+    private Sonify app;
 
     // Create a SoundPlayer component for the specified file.
-    public SoundPlayer(File f, int programChange, SonifiedSpectra app, boolean loop)
+    public SoundPlayer(File f, int programChange, Sonify app, boolean loop)
             throws IOException,
             UnsupportedAudioFileException,
             LineUnavailableException,
@@ -123,7 +121,7 @@ public class SoundPlayer {
             }
         });
 
-        final SonifiedSpectra app2 = app;
+        final Sonify app2 = app;
         final boolean loop2 = loop;
         // When clicked, stop and reset playing the sound
         stop.addActionListener(new ActionListener() {
@@ -547,11 +545,11 @@ public class SoundPlayer {
         this.timer = timer;
     }
 
-    public SonifiedSpectra getApp() {
+    public Sonify getApp() {
         return app;
     }
 
-    public void setApp(SonifiedSpectra app) {
+    public void setApp(Sonify app) {
         this.app = app;
     }
 }

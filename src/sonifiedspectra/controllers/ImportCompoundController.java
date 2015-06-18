@@ -1,7 +1,7 @@
 package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Project;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -16,9 +16,9 @@ import java.io.File;
 public class ImportCompoundController implements ActionListener, MouseListener {
 
     private Project project;
-    private SonifiedSpectra app;
+    private Sonify app;
 
-    public ImportCompoundController(SonifiedSpectra app, Project project) {
+    public ImportCompoundController(Sonify app, Project project) {
         this.app = app;
         this.project = project;
     }

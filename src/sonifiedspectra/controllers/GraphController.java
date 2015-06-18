@@ -9,7 +9,7 @@ import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.model.Note;
 import sonifiedspectra.view.PhraseInTrackView;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 import sonifiedspectra.view.TrackView;
 
 import java.util.ArrayList;
@@ -19,10 +19,10 @@ import java.util.ArrayList;
  */
 public class GraphController implements ChartMouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
 
-    public GraphController(SonifiedSpectra app, Project project) {
+    public GraphController(Sonify app, Project project) {
         this.app = app;
         this.project = project;
     }

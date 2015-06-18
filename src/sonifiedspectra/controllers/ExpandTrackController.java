@@ -1,8 +1,7 @@
 package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Project;
-import sonifiedspectra.model.Track;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 import sonifiedspectra.view.TrackHeadView;
 import sonifiedspectra.view.TrackView;
 
@@ -18,13 +17,13 @@ import java.awt.event.MouseListener;
  */
 public class ExpandTrackController implements ActionListener, MouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
     private TrackHeadView thv;
     private Icon collapsedIcon;
     private Icon expandedIcon;
 
-    public ExpandTrackController(SonifiedSpectra app, Project project, TrackHeadView thv) {
+    public ExpandTrackController(Sonify app, Project project, TrackHeadView thv) {
         this.project = project;
         this.app = app;
         this.thv = thv;

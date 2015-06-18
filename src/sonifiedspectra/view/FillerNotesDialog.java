@@ -1,20 +1,17 @@
 package sonifiedspectra.view;
 
 import sonifiedspectra.model.Note;
-import sonifiedspectra.model.Phrase;
-import sonifiedspectra.model.Project;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class FillerNotesDialog extends JDialog {
 
-    private SonifiedSpectra app;
+    private Sonify app;
 
     private JPanel contentPane;
     private JButton buttonOK;
@@ -26,7 +23,7 @@ public class FillerNotesDialog extends JDialog {
     private JLabel selectedLabel;
     private JButton removeSelectedFillerNotesButton;
 
-    public FillerNotesDialog(SonifiedSpectra app) throws IOException, FontFormatException {
+    public FillerNotesDialog(Sonify app) throws IOException, FontFormatException {
         this.app = app;
         setContentPane(contentPane);
         setModal(true);

@@ -1,5 +1,8 @@
 package sonifiedspectra.view;
 
+import apple.laf.JRSUIConstants;
+import sonifiedspectra.model.SizeConstants;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -30,9 +33,9 @@ public class MeasureHeadView extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.setColor(Color.decode("#C9C9C9"));
-        g.fillRect(25, 0, 1, 33);
-        g.fillRect(50, 0, 1, 33);
-        g.fillRect(75, 0, 1, 33);
+        g.fillRect(SizeConstants.MEASURE_SCALE, 0, 1, 33);
+        g.fillRect(SizeConstants.MEASURE_SCALE * 2, 0, 1, 33);
+        g.fillRect(SizeConstants.MEASURE_SCALE * 3, 0, 1, 33);
     }
 
     public void updatePanel() {

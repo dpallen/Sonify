@@ -1,7 +1,7 @@
 package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Project;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,11 +13,11 @@ import java.awt.event.MouseListener;
  */
 public class LoopPlayerController implements ActionListener, MouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
     private int type;
 
-    public LoopPlayerController(SonifiedSpectra app, Project project, int type) {
+    public LoopPlayerController(Sonify app, Project project, int type) {
         this.app = app;
         this.project = project;
         this.type = type;

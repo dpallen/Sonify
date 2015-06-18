@@ -23,8 +23,8 @@ public class Project {
         compoundsArray = new ArrayList<Compound>();
         phrasesArray = new ArrayList<Phrase>();
         tracksArray = new ArrayList<Track>();
-        notesPanelMultipleSelection = true;
-        tracksPanelMultipleSelection = true;
+        notesPanelMultipleSelection = false;
+        tracksPanelMultipleSelection = false;
         tempo = 120;
         movePitvFactor = 4;
         currentPhraseId = 0;

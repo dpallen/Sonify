@@ -3,7 +3,7 @@ package sonifiedspectra.controllers;
 import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.PhraseInTrackView;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 import sonifiedspectra.view.TrackView;
 
 import java.awt.*;
@@ -18,11 +18,11 @@ import java.util.ArrayList;
  */
 public class TransposeButtonController implements ActionListener, MouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
     private int type;
 
-    public TransposeButtonController(SonifiedSpectra app, Project project, int type) {
+    public TransposeButtonController(Sonify app, Project project, int type) {
         this.project = project;
         this.app = app;
         this.type = type;

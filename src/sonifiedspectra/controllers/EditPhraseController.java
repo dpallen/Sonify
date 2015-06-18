@@ -1,40 +1,37 @@
 package sonifiedspectra.controllers;
 
-import sonifiedspectra.model.Note;
 import sonifiedspectra.model.Project;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 
 /**
  * Created by Hvandenberg on 6/1/15.
  */
 public class  EditPhraseController implements ActionListener, MouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
 
-    public EditPhraseController(SonifiedSpectra app, Project project) {
+    public EditPhraseController(Sonify app, Project project) {
         this.app = app;
         this.project = project;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        app.getActivePhrase().setMinPitch(Integer.valueOf(app.getMinTextField().getText()));
-        app.getActivePhrase().setMaxPitch(Integer.valueOf(app.getMaxTextField().getText()));
-        app.getActivePhrase().setInstrument(app.getInstrumentComboBox().getSelectedIndex());
 
-        ArrayList<Note> selectedNotes = app.getActivePhrase().getSelectedNotes();
-        app.getActivePhrase().initialize();
-        app.getActivePhrase().setSelectedNotes(selectedNotes);
-        app.updateActivePhrase(app.getActivePhrase());
-        app.updateIntervalMarker();
-        app.getFrame().pack();
+        app.getEditPhraseDialog().getMinPitchTextField().setText(String.valueOf(app.getActivePhrase().getMinPitch()));
+        app.getEditPhraseDialog().getMaxPitchTextField().setText(String.valueOf(app.getActivePhrase().getMaxPitch()));
+        app.getEditPhraseDialog().getX1TextField().setText(String.valueOf(app.getActivePhrase().getX1()));
+        app.getEditPhraseDialog().getX2TextField().setText(String.valueOf(app.getActivePhrase().getX2()));
+        app.getEditPhraseDialog().getCompoundNameLabel().setText(app.getActivePhrase().getCompound().getName());
+
+        app.getEditPhraseDialog().setVisible(!app.getEditPhraseDialog().isVisible());
+
     }
 
     @Override

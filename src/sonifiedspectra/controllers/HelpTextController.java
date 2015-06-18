@@ -1,20 +1,19 @@
 package sonifiedspectra.controllers;
 
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 /**
  * Created by Hvandenberg on 6/1/15.
  */
 public class HelpTextController extends MouseAdapter {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private String text;
 
-    public HelpTextController(SonifiedSpectra app, String text) {
+    public HelpTextController(Sonify app, String text) {
         this.app = app;
         this.text = text;
     }

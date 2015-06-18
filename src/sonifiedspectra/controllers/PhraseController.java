@@ -3,7 +3,7 @@ package sonifiedspectra.controllers;
 import org.jfree.chart.ChartPanel;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.PhraseView;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -15,10 +15,10 @@ import java.awt.event.MouseListener;
 public class PhraseController implements MouseListener {
 
     private Project project;
-    private SonifiedSpectra app;
+    private Sonify app;
     private PhraseView phraseView;
 
-    public PhraseController(Project project, SonifiedSpectra app, PhraseView phraseView) {
+    public PhraseController(Project project, Sonify app, PhraseView phraseView) {
         this.project = project;
         this.app = app;
         this.phraseView = phraseView;

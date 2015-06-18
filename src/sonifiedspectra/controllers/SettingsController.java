@@ -1,7 +1,7 @@
 package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Project;
-import sonifiedspectra.view.SonifiedSpectra;
+import sonifiedspectra.view.Sonify;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,11 +13,11 @@ import java.awt.event.MouseListener;
  */
 public class SettingsController implements ActionListener, MouseListener {
 
-    private SonifiedSpectra app;
+    private Sonify app;
     private Project project;
     private boolean visible;
 
-    public SettingsController(SonifiedSpectra app, Project project) {
+    public SettingsController(Sonify app, Project project) {
         this.project = project;
         this.app = app;
         this.visible = false;

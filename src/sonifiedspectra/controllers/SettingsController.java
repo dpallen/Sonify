@@ -25,7 +25,7 @@ public class SettingsController implements ActionListener, MouseListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        visible = !visible;
+        app.getSettingsDialog().setVisible(!app.getSettingsDialog().isVisible());
         app.getFrame().pack();
     }
 

@@ -53,8 +53,9 @@ public class DuplicatePhraseController implements MouseListener {
 
                 tv.initialize();
                 for (PhraseInTrackView pitv2 : tv.getPhraseInTrackViewArray()) {
-                   // pitv2.setBounds((int) ((pitv2.getPhrase().getStartTime() * 4) * 25), i * 15, pitv2.getAdjustedWidth(), 15);
+                  //pitv2.setBounds((int) ((pitv2.getPhrase().getStartTime() * 4) * 25), i * 15, pitv2.getAdjustedWidth(), 15);
                     pitv2.addMouseListener(new PhraseInTrackController(app, app.getActiveProject(), pitv2));
+                    pitv2.addMouseListener(new HelpTextController(app, HelpStrings.PITV));
                     RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(app, app.getActiveProject(), pitv2, tv);
                     pitv2.getRemoveButton().addMouseListener(new HelpTextController(app, HelpStrings.REMOVE_PHRASE_FROM_TRACK));
                     pitv2.getRemoveButton().addActionListener(removePhraseFromTrackController);

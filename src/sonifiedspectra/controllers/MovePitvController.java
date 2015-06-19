@@ -1,7 +1,6 @@
 package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Project;
-import sonifiedspectra.model.SizeConstants;
 import sonifiedspectra.view.PhraseInTrackView;
 import sonifiedspectra.view.Sonify;
 import sonifiedspectra.view.TrackView;
@@ -39,7 +38,7 @@ public class MovePitvController implements ActionListener, MouseListener {
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                 if (pitv.isSelected()) {
 
-                    int x = pitv.getX() + (SizeConstants.MEASURE_SCALE * move);
+                    int x = pitv.getX() + (app.getMeasureScale() * move);
                     if (x < 0) x = 0;
 
                     double newTime = ((double) move)/((double) 4);

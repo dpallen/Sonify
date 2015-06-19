@@ -19,10 +19,7 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -54,6 +51,7 @@ public class Sonify {
     private JButton addPhraseButton2;
     private BetterButton editPhraseButton;
     private BetterButton removePhraseButton;
+    private BetterButton measuresButton;
 
     private JButton removePhraseButton2;
     private BetterButton playProjectButton;
@@ -137,7 +135,9 @@ public class Sonify {
     private EditCompoundDialog editCompoundDialog;
     private EditPhraseDialog editPhraseDialog;
     private NewProjectDialog newProjectDialog;
+    private SettingsDialog settingsDialog;
     private LoopDialog loopDialog;
+    private MeasuresDialog measuresDialog;
 
     private ArrayList<NoteView> noteViewArray;
     private ArrayList<PhraseView> phraseViewArray;
@@ -153,6 +153,7 @@ public class Sonify {
     private ArrayList<String> rhythmArray;
 
     private int currentColorIndex;
+    private int measureScale;
 
     private SoundPlayer soundPlayer;
     private boolean isProject;
@@ -171,8 +172,7 @@ public class Sonify {
             IOException, MidiUnavailableException, UnsupportedAudioFileException,
             LineUnavailableException, InvalidMidiDataException {
 
-        activeProject = new Project();
-        activeProject.setName("My Project");
+        activeProject = new Project("My Project");
 
         initializeModel();
         initializeView();
@@ -245,7 +245,27 @@ public class Sonify {
         }
 
         currentColorIndex = 0;
+        measureScale = 25;
 
+        File activeProjectFile = new File("resources/activeproject.txt");
+
+        String activeProjectName = "";
+        BufferedReader reader;
+
+        try {
+            reader = new BufferedReader(new FileReader(activeProjectFile));
+            activeProjectName = reader.readLine();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(activeProjectName);
+
+        activeProject.load(new File("projects/" + activeProjectName));
+        activePhrase = activeProject.getPhrasesArray().get(0);
+
+/*
         Phrase phrase = new Phrase(activeProject.getCurrentPhraseId(), activeProject.getCompoundsArray().get(0), colorsArray.get(currentColorIndex), 1500, 600);
         phrase.initialize();
         activeProject.incrementPhraseId();
@@ -277,6 +297,7 @@ public class Sonify {
         activeProject.incrementTrackId();
         track3.setInstrument(2);
         activeProject.getTracksArray().add(track3);
+*/
 
     }
 
@@ -758,9 +779,9 @@ public class Sonify {
         measureHeadViewArray = new ArrayList<MeasureHeadView>();
 
         for (int k = 0; k < activeProject.getNumMeasures(); k++) {
-            MeasureHeadView mhv = new MeasureHeadView(k + 1);
+            MeasureHeadView mhv = new MeasureHeadView(this, k + 1);
             mhv.setBackground(buttonBackgroundColor);
-            mhv.setBounds(0 + k * SizeConstants.MEASURE_SCALE * 4, 0, SizeConstants.MEASURE_SCALE * 4, 33);
+            mhv.setBounds(0 + k * measureScale * 4, 0, measureScale * 4, 33);
             if (k % 2 != 0 && k != 0) mhv.setBackColor(Color.decode("#DDDDDD"));
             else mhv.setBackColor(Color.decode("#F5F5F5"));
             mhv.updatePanel();
@@ -768,7 +789,7 @@ public class Sonify {
             measureHeadPanel.add(mhv);
         }
 
-        measureHeadPanel.setPreferredSize(new Dimension(102 * measureHeadViewArray.size(), 33));
+        measureHeadPanel.setPreferredSize(new Dimension(2 + measureScale * 4 * measureHeadViewArray.size(), 33));
 
         inTracksPanel = new JPanel();
         inTracksPanel.setLayout(null);
@@ -966,6 +987,15 @@ public class Sonify {
         duplicatePhraseButton.setFocusPainted(false);
         frame.getContentPane().add(duplicatePhraseButton);
 
+        Icon measuresIcon = new ImageIcon("resources/icons/measuresicon.png");
+        measuresButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
+        measuresButton.setIcon(measuresIcon);
+        measuresButton.setBounds(1240, 188, 32, 32);
+        measuresButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+        measuresButton.setBorderPainted(true);
+        measuresButton.setFocusPainted(false);
+        frame.getContentPane().add(measuresButton);
+
         fillerDialog = new FillerNotesDialog(this);
         fillerDialog.pack();
         final int width = fillerDialog.getWidth();
@@ -1003,6 +1033,15 @@ public class Sonify {
         newProjectDialog.setLocation(x5, y5);
         newProjectDialog.setVisible(false);
 
+        settingsDialog = new SettingsDialog(this);
+        settingsDialog.pack();
+        final int width6 = settingsDialog.getWidth();
+        final int height6 = settingsDialog.getHeight();
+        int x6 = (screenSize.width / 2) - (width6 / 2);
+        int y6 = (screenSize.height / 2) - (height6 / 2);
+        settingsDialog.setLocation(x6, y6);
+        settingsDialog.setVisible(false);
+
         loopDialog = new LoopDialog(this);
         loopDialog.pack();
         final int width3 = loopDialog.getWidth();
@@ -1011,6 +1050,15 @@ public class Sonify {
         int y3 = (screenSize.height / 2) - (height3 / 2);
         loopDialog.setLocation(x3, y3);
         loopDialog.setVisible(false);
+
+        measuresDialog = new MeasuresDialog(this);
+        measuresDialog.pack();
+        final int width7 = measuresDialog.getWidth();
+        final int height7 = measuresDialog.getHeight();
+        int x7 = (screenSize.width / 2) - (width7 / 2);
+        int y7 = (screenSize.height / 2) - (height7 / 2);
+        measuresDialog.setLocation(x7, y7);
+        measuresDialog.setVisible(false);
 
     }
 
@@ -1032,7 +1080,8 @@ public class Sonify {
         importCompoundButton.addMouseListener(importCompoundController);
 
         chPanel.addChartMouseListener(new GraphController(this, activeProject));
-        chPanel.addMouseListener(new HelpTextController(this, HelpStrings.GRAPH_PANEL));
+        chPanel.addMouseListener(new HelpTextController(this, HelpStrings.CHART_PANEL));
+        graphPanel.addMouseListener(new HelpTextController(this, HelpStrings.GRAPH_PANEL));
 
         multipleSelectionCheckBox.addActionListener(new MultipleNoteSelectionController(this, activeProject, multipleSelectionCheckBox));
         multipleSelectionCheckBox.addMouseListener(new HelpTextController(this, HelpStrings.MULT_SELEC));
@@ -1106,6 +1155,7 @@ public class Sonify {
         for (TrackView tv : trackViewArray) {
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                 pitv.addMouseListener(new PhraseInTrackController(this, activeProject, pitv));
+                pitv.addMouseListener(new HelpTextController(this, HelpStrings.PITV));
                 RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(this, activeProject, pitv, tv);
                 pitv.getRemoveButton().addMouseListener(new HelpTextController(this, HelpStrings.REMOVE_PHRASE_FROM_TRACK));
                 pitv.getRemoveButton().addActionListener(removePhraseFromTrackController);
@@ -1163,6 +1213,9 @@ public class Sonify {
         loopButton.addMouseListener(new HelpTextController(this, HelpStrings.LOOP));
         loopButton.addActionListener(loopController);
         loopButton.addMouseListener(loopController);
+
+        measuresButton.addMouseListener(new HelpTextController(this, HelpStrings.MEASURES));
+        measuresButton.addMouseListener(new MeasuresController(this));
 
         AddTrackController addTrackController = new AddTrackController(this, activeProject);
         addTrackButton.addMouseListener(new HelpTextController(this, HelpStrings.ADD_TRACK));
@@ -1311,14 +1364,6 @@ public class Sonify {
             playPhraseButton.setCol(activePhrase.getUnselectedColor());
             playPhraseButton.repaint();
         }
-
-        /*if (quantizeCheckBox.isSelected()) {
-
-            qrhythmComboBox.setSelectedItem(activePhrase.getQRhythm());
-            keyComboBox.setSelectedItem(activePhrase.getKey());
-            qualityComboBox.setSelectedItem(activePhrase.getQuality());
-
-        }*/
 
         soundPlayer.reset();
         soundPlayer.updateSoundPlayer();
@@ -2349,5 +2394,37 @@ public class Sonify {
 
     public void setNewProjectDialog(NewProjectDialog newProjectDialog) {
         this.newProjectDialog = newProjectDialog;
+    }
+
+    public SettingsDialog getSettingsDialog() {
+        return settingsDialog;
+    }
+
+    public void setSettingsDialog(SettingsDialog settingsDialog) {
+        this.settingsDialog = settingsDialog;
+    }
+
+    public int getMeasureScale() {
+        return measureScale;
+    }
+
+    public void setMeasureScale(int measureScale) {
+        this.measureScale = measureScale;
+    }
+
+    public BetterButton getMeasuresButton() {
+        return measuresButton;
+    }
+
+    public void setMeasuresButton(BetterButton measuresButton) {
+        this.measuresButton = measuresButton;
+    }
+
+    public MeasuresDialog getMeasuresDialog() {
+        return measuresDialog;
+    }
+
+    public void setMeasuresDialog(MeasuresDialog measuresDialog) {
+        this.measuresDialog = measuresDialog;
     }
 }

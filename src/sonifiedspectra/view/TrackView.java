@@ -1,7 +1,6 @@
 package sonifiedspectra.view;
 
 import sonifiedspectra.model.Phrase;
-import sonifiedspectra.model.SizeConstants;
 import sonifiedspectra.model.Track;
 
 import javax.swing.*;
@@ -39,10 +38,10 @@ public class TrackView extends JPanel {
         removeAll();
 
         for (Phrase phrase : track.getPhrases()) {
-            PhraseInTrackView pitv = new PhraseInTrackView(phrase);
+            PhraseInTrackView pitv = new PhraseInTrackView(app, phrase);
             if (!phrase.isLoop()) pitv.getNameLabel().setText(phrase.getCompound().getName());
             else pitv.getNameLabel().setText("Loop");
-            pitv.setBounds((int) ((phrase.getStartTime() * 4) * SizeConstants.MEASURE_SCALE), i * 15, pitv.getAdjustedWidth(), 15);
+            pitv.setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), i * 15, pitv.getAdjustedWidth(), 15);
             phraseInTrackViewArray.add(pitv);
             add(pitv);
             i++;
@@ -78,12 +77,12 @@ public class TrackView extends JPanel {
 
             g.setColor(Color.decode("#C9C9C9"));
 
-            g.fillRect(SizeConstants.MEASURE_SCALE + (SizeConstants.MEASURE_SCALE * 4 * i), 0, 1, height);
-            g.fillRect(SizeConstants.MEASURE_SCALE * 2 + (SizeConstants.MEASURE_SCALE * 4 * i), 0, 1, height);
-            g.fillRect(SizeConstants.MEASURE_SCALE * 3 + (SizeConstants.MEASURE_SCALE * 4 * i), 0, 1, height);
+            g.fillRect(app.getMeasureScale() + (app.getMeasureScale() * 4 * i), 0, 1, height);
+            g.fillRect(app.getMeasureScale() * 2 + (app.getMeasureScale() * 4 * i), 0, 1, height);
+            g.fillRect(app.getMeasureScale() * 3 + (app.getMeasureScale() * 4 * i), 0, 1, height);
 
             g.setColor(Color.decode("#979797"));
-            g.fillRect(SizeConstants.MEASURE_SCALE * 4 + (SizeConstants.MEASURE_SCALE * 4 * i), 0, 2, height);
+            g.fillRect(app.getMeasureScale() * 4 + (app.getMeasureScale() * 4 * i), 0, 2, height);
 
             i++;
 

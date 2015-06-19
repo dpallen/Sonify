@@ -140,6 +140,19 @@ public class Phrase extends jm.music.data.Phrase {
 
     }
 
+    public String saveString() {
+
+        int parentId = -1;
+
+        if (parentPhrase != null ) parentId = parentPhrase.getId();
+
+        String saveString = id + "," + instrument + "," + maxPitch + "," + minPitch + "," + currentFillerId + "," + x1 + "," + x2 + "," +
+                highestWidth + "," + lowestWidth + "," + quantized + "," + selected + "," + loop + "," + color + "," + key + "," + quality
+                + "," + qRhythm + "," + compound.getName() + "," + getStartTime() + "," + parentId;
+
+        return saveString;
+    }
+
     public void addFillerNote(Note fillerNote) {
         for (Note n : getSelectedNotes()) {
             notesArray.add(notesArray.indexOf(n) + 1, fillerNote);

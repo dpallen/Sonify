@@ -12,5 +12,6 @@
     <orderEntry type="library" name="jcommon-1.0" level="project" />
     <orderEntry type="library" name="swingx-1.6.1" level="project" />
     <orderEntry type="library" name="jfreechart-1.0.19" level="project" />
+    <orderEntry type="library" name="commons-io-2.4" level="project" />
   </component>
 </module>

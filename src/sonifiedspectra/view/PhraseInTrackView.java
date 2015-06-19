@@ -2,7 +2,6 @@ package sonifiedspectra.view;
 
 import sonifiedspectra.controllers.RemovePhraseFromTrackController;
 import sonifiedspectra.model.Phrase;
-import sonifiedspectra.model.SizeConstants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,12 +11,15 @@ import java.awt.*;
  */
 public class PhraseInTrackView extends JPanel {
 
+    private Sonify app;
+
     private JLabel nameLabel;
     private Phrase phrase;
     private BetterButton removeButton;
     private boolean selected;
 
-    public PhraseInTrackView(Phrase phrase) {
+    public PhraseInTrackView(Sonify app, Phrase phrase) {
+        this.app = app;
         this.phrase = phrase;
         selected = false;
         setLayout(null);
@@ -46,7 +48,7 @@ public class PhraseInTrackView extends JPanel {
     }
 
     public void adjustSize(int j4) {
-        setBounds((int) ((phrase.getStartTime() * 4) * SizeConstants.MEASURE_SCALE), j4 * 15, getAdjustedWidth(), 15);
+        setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), j4 * 15, getAdjustedWidth(), 15);
         //removeButton.setBounds(getAdjustedWidth() - 15, removeButton.getY(), removeButton.getWidth(), removeButton.getHeight());
     }
 
@@ -64,7 +66,7 @@ public class PhraseInTrackView extends JPanel {
     }
 
     public int getAdjustedWidth() {
-        return (int) (SizeConstants.MEASURE_SCALE * phrase.getBeatLength2());
+        return (int) (app.getMeasureScale() * phrase.getBeatLength2());
     }
 
     public JLabel getNameLabel() {

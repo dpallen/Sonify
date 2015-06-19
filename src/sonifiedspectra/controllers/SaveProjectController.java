@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 
 /**
  * Created by Hvandenberg on 5/31/15.
@@ -27,6 +28,12 @@ public class SaveProjectController implements ActionListener, MouseListener {
         app.getActivePhrase().setQuality((String) app.getQualityComboBox().getSelectedItem());
         app.getActivePhrase().setQRhythm((String) app.getQrhythmComboBox().getSelectedItem());
         app.getActiveProject().setName(app.getTitleTextField().getText());
+
+        try {
+            app.getActiveProject().save();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
 
         app.getSoundPlayer().updateSoundPlayer();
 

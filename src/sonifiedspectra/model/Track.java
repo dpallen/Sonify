@@ -23,6 +23,11 @@ public class Track extends Part{
         this.expanded = false;
     }
 
+    public String saveString() {
+        String saveString = id + "," + selected + "," + live + "," + expanded + "," + getInstrument();
+        return saveString;
+    }
+
     public void toggleSelected() {
         selected = !selected;
     }

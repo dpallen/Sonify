@@ -1,7 +1,10 @@
 package sonifiedspectra.view;
 
+import org.apache.commons.io.FileUtils;
+import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.model.SoundPlayer;
+import sonifiedspectra.model.Track;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
@@ -10,8 +13,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 public class NewProjectDialog extends JDialog {
 
@@ -20,8 +22,10 @@ public class NewProjectDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
+    private JLabel titleLabel;
+    private JTextField projectNameTextField;
 
-    public NewProjectDialog(Sonify app) {
+    public NewProjectDialog(Sonify app) throws IOException, FontFormatException {
         this.app = app;
         setContentPane(contentPane);
         setModal(true);
@@ -47,6 +51,11 @@ public class NewProjectDialog extends JDialog {
             }
         });
 
+        Font hnt20 = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(new File("resources/HelveticaNeue-Thin.otf"))).deriveFont(Font.PLAIN, 20);
+
+        titleLabel.setFont(hnt20);
+        projectNameTextField.setText(app.getActiveProject().getName());
+
         buttonCancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onCancel();
@@ -69,11 +78,37 @@ public class NewProjectDialog extends JDialog {
 
     private void onOK() throws MidiUnavailableException, LineUnavailableException, IOException, FontFormatException, InvalidMidiDataException, UnsupportedAudioFileException {
 
+        Project newProject = new Project(projectNameTextField.getText());
+
+        String name = projectNameTextField.getText();
+
+        File trgDir = new File("projects/");
+        File srcDir = new File("resources/projecttemplate.proj");
+        FileUtils.copyFileToDirectory(srcDir, trgDir);
+
+        File newSrcFile = new File("projects/" + projectNameTextField.getText() + ".proj");
+        File srcFile = new File("projects/projecttemplate.proj");
+
+        newProject.load(srcFile);
+        srcFile.renameTo(newSrcFile);
+
+        File saveFile = new File("resources/activeproject.txt");
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter(saveFile);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(name + ".proj");
+            bw.close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
         app.getFrame().dispose();
         app = new Sonify();
+        app.getActiveProject().setName(name);
+        app.getTitleTextField().setText(app.getActiveProject().getName());
         app.getFrame().setVisible(true);
-
-        setVisible(false);
+        dispose();
     }
 
     private void onCancel() {

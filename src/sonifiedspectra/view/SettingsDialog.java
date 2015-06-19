@@ -1,17 +1,32 @@
 package sonifiedspectra.view;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class SettingsDialog extends JDialog {
+    private Sonify app;
+
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
+    private JTextField measureScaleTextView;
+    private JLabel titleLabel;
 
-    public SettingsDialog() {
+    public SettingsDialog(Sonify app) throws IOException, FontFormatException {
+        this.app = app;
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
+
+        Font hnt20 = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(new File("resources/HelveticaNeue-Thin.otf"))).deriveFont(Font.PLAIN, 20);
+
+        titleLabel.setFont(hnt20);
+        measureScaleTextView.setText(String.valueOf(app.getMeasureScale()));
 
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -25,7 +40,6 @@ public class SettingsDialog extends JDialog {
             }
         });
 
-// call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -33,7 +47,6 @@ public class SettingsDialog extends JDialog {
             }
         });
 
-// call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onCancel();
@@ -42,12 +55,36 @@ public class SettingsDialog extends JDialog {
     }
 
     private void onOK() {
-// add your code here
-        dispose();
+
+        app.setMeasureScale(Integer.valueOf(measureScaleTextView.getText()));
+
+        app.updateActivePhrase(app.getActivePhrase());
+        app.updateIntervalMarker();
+
+        for (TrackView tv : app.getTrackViewArray()) {
+            tv.setBounds(tv.getX(), tv.getY(), app.getMeasureHeadViewArray().size() * app.getMeasureScale() * 4, tv.getHeight());
+            tv.repaint();
+        }
+
+        int i = 0;
+
+        for (MeasureHeadView mhv : app.getMeasureHeadViewArray()) {
+            mhv.setBounds(i * 4 * app.getMeasureScale(), mhv.getY(), 4 * app.getMeasureScale(), mhv.getHeight());
+            i++;
+            mhv.repaint();
+        }
+
+        app.getInTracksPanel().setPreferredSize(new Dimension(4 * app.getMeasureScale() * app.getActiveProject().getNumMeasures(),
+                70 * app.getTrackViewArray().size()));
+
+        app.getMeasureHeadPanel().setPreferredSize(new Dimension(2 + 4 * app.getMeasureScale() * app.getMeasureHeadViewArray().size(), 33));
+
+        setVisible(false);
+        app.getFrame().pack();
+
     }
 
     private void onCancel() {
-// add your code here if necessary
-        dispose();
+        setVisible(false);
     }
 }

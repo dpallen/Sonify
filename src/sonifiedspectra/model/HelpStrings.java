@@ -39,4 +39,7 @@ public interface HelpStrings {
     String MOVE_PITV_RIGHT = "Move selected phrase in tracks panel to the right by the amount shown in the text field in quarter notes.";
     String MOVE_PITV_LEFT = "Move selected phrase in tracks panel to the left by the amount shown in the text field in quarter notes.";
     String DUPLICATE_PHRASE = "Duplicate selected phrase the number of times shown on the above text field.";
+    String PITV = "Represents phrase. Click the x button to remove the phrase from its track. Use the menu buttons on the right to adjust phrase parameters.";
+    String MEASURES = "Opens measure settings panel.";
+    String CHART_PANEL = "Displays spectrum for active compound. Click on the graph to adjust phrase x and y values. Drag a box to zoom in, drag left to zoom out.";
 }

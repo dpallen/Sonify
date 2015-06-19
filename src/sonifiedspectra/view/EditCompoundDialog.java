@@ -47,7 +47,6 @@ public class EditCompoundDialog extends JDialog {
             }
         });
 
-// call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -55,7 +54,6 @@ public class EditCompoundDialog extends JDialog {
             }
         });
 
-// call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onCancel();
@@ -80,8 +78,10 @@ public class EditCompoundDialog extends JDialog {
 
         for (TrackView tv : app.getTrackViewArray()) {
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
-                if (pitv.getPhrase().getId() == app.getActivePhrase().getId()) pitv.getNameLabel().setText(
-                        app.getActivePhrase().getCompound().getName());
+                if (pitv.getPhrase().getId() == app.getActivePhrase().getId() ||
+                        (pitv.getPhrase().getParentPhrase() != null &&
+                                pitv.getPhrase().getParentPhrase().getId() == app.getActivePhrase().getId()))
+                    pitv.getNameLabel().setText(app.getActivePhrase().getCompound().getName());
             }
         }
 

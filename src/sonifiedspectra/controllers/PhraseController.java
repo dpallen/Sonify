@@ -1,6 +1,7 @@
 package sonifiedspectra.controllers;
 
 import org.jfree.chart.ChartPanel;
+import sonifiedspectra.model.HelpStrings;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.PhraseView;
 import sonifiedspectra.view.Sonify;
@@ -43,9 +44,11 @@ public class PhraseController implements MouseListener {
             app.getChPanel().setBounds(0, 0, 500, 400);
             app.getChPanel().setDomainZoomable(true);
             app.getChPanel().addChartMouseListener(new GraphController(app, project));
+            app.getChPanel().addMouseListener(new HelpTextController(app, HelpStrings.CHART_PANEL));
             app.getGraphPanel().setLayout(new BorderLayout());
             app.getGraphPanel().setBounds(20, 52, 500, 400);
             app.getGraphPanel().removeAll();
+            app.getGraphPanel().addMouseListener(new HelpTextController(app, HelpStrings.GRAPH_PANEL));
             app.getGraphPanel().add(app.getChPanel(), BorderLayout.CENTER);
             app.getGraphPanel().repaint();
             app.updateIntervalMarker();

@@ -41,34 +41,35 @@ public class TrackHeadController implements MouseListener {
         }
 
         if (trackHeadView.getTrack().isSelected()) {
-            trackHeadView.setBackground(Color.decode("#B8B8B8"));
-            trackHeadView.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
-            app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
+            trackHeadView.setBackground(app.getActivePhrase().getUnselectedColor());
+            trackHeadView.setBorder(BorderFactory.createLineBorder(app.getActivePhrase().getSelectedColor(), 2, false));
+            app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).setBorder(BorderFactory.createLineBorder(app.getActivePhrase().getBorderColor(), 2, false));
+            app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).setBackground(app.getActivePhrase().getUnselectedColor());
             trackHeadView.repaint();
+            app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).repaint();
         }
         else {
             trackHeadView.setBackground(trackHeadView.getBackColor());
             app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
             trackHeadView.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
+            app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).setBackground(trackHeadView.getBackColor());
+            app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).repaint();
         }
         app.getFrame().pack();
-
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
         if (!trackHeadView.getTrack().isSelected()) {
-            trackHeadView.setBackground(Color.decode("#C9C9C9"));
+            trackHeadView.setBackground(app.getActivePhrase().getUnselectedColor());
             trackHeadView.repaint();
             app.getFrame().pack();
         }

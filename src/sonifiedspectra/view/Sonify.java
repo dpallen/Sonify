@@ -20,6 +20,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 /**
@@ -158,6 +159,8 @@ public class Sonify {
     private SoundPlayer soundPlayer;
     private boolean isProject;
 
+    private Line playbackLine;
+
     // Prevents calling combobox listener infinitely when switching phrases
     private boolean temp;
 
@@ -235,6 +238,7 @@ public class Sonify {
             for (File dataFile : directoryListing) {
                 Compound compound = new Compound(i, dataFile, "Infrared");
                 compound.load();
+                System.out.println(compound.getName());
                 compound.getDataChart().createChart();
                 compound.setPeaks(compound.getDataChart().process());
                 compoundComboBox.addItem(compound.getName());
@@ -247,13 +251,14 @@ public class Sonify {
         currentColorIndex = 0;
         measureScale = 25;
 
-        File activeProjectFile = new File("resources/activeproject.txt");
+        File activeProjectFile = new File("resources/projecttemplate.proj");
 
         String activeProjectName = "";
         BufferedReader reader;
 
         try {
-            reader = new BufferedReader(new FileReader(activeProjectFile));
+            InputStream is = new FileInputStream(activeProjectFile);
+            reader = new BufferedReader(new InputStreamReader(is));
             activeProjectName = reader.readLine();
         }
         catch (IOException e) {
@@ -262,7 +267,7 @@ public class Sonify {
 
         System.out.println(activeProjectName);
 
-        activeProject.load(new File("projects/" + activeProjectName));
+        activeProject.load(activeProjectFile);
         activePhrase = activeProject.getPhrasesArray().get(0);
 
 /*
@@ -346,7 +351,7 @@ public class Sonify {
 
         spectrumLabel = new JLabel("Spectrum");
         Font hnt14 = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(new File("resources/HelveticaNeue-Thin.otf"))).deriveFont(Font.PLAIN, 14);
-        spectrumLabel.setText(activePhrase.getCompound().getSpectrumType());
+        //spectrumLabel.setText(activePhrase.getCompound().getSpectrumType());
         spectrumLabel.setBounds(289, 18, 75, 20);
         frame.getContentPane().add(spectrumLabel);
 
@@ -828,6 +833,10 @@ public class Sonify {
 
         inTracksPanel.setPreferredSize(new Dimension(100 * activeProject.getNumMeasures(),
                 70 * trackViewArray.size()));
+
+        playbackLine = new Line(5, 0, Color.BLUE);
+        playbackLine.setBounds(10, 15, 500, 27);
+        inTracksPanel.add(playbackLine);
 
         playbackLabel = new JLabel("Playback:");
         playbackLabel.setFont(hnt20);
@@ -1517,12 +1526,13 @@ public class Sonify {
         int y = (screen.height - height) / 2;
         splash.setBounds(x, y, width, height);
         splash.setVisible(true);
+        splash.toFront();
         try {
             Thread.sleep(8000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        splash.setVisible(false);
+        //splash.setVisible(false);
         splash.dispose();
     }
 
@@ -2426,5 +2436,13 @@ public class Sonify {
 
     public void setMeasuresDialog(MeasuresDialog measuresDialog) {
         this.measuresDialog = measuresDialog;
+    }
+
+    public Line getPlaybackLine() {
+        return playbackLine;
+    }
+
+    public void setPlaybackLine(Line playbackLine) {
+        this.playbackLine = playbackLine;
     }
 }

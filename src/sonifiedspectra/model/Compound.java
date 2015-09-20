@@ -21,7 +21,7 @@ public class Compound {
 
     private DataChart dataChart;
 
-    private ArrayList<Peak> peaks;
+    private ArrayList<Peak> peaks = new ArrayList<Peak>();
 
     public Compound(int id, File dataFile, String spectrumType) {
 
@@ -33,6 +33,8 @@ public class Compound {
     }
 
     public void load() {
+
+        System.out.println("Called");
 
         this.dataChart = new DataChart(dataFile);
 

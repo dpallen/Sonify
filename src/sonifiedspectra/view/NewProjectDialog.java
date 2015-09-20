@@ -89,7 +89,7 @@ public class NewProjectDialog extends JDialog {
         File newSrcFile = new File("projects/" + projectNameTextField.getText() + ".proj");
         File srcFile = new File("projects/projecttemplate.proj");
 
-        newProject.load(srcFile);
+        newProject.load(srcDir);
         srcFile.renameTo(newSrcFile);
 
         File saveFile = new File("resources/activeproject.txt");

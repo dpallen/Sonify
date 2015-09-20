@@ -108,7 +108,7 @@ public class Project {
 
         try {
 
-            reader = new BufferedReader( new FileReader( saveFile ) );
+            reader = new BufferedReader( new FileReader(saveFile) );
 
             name = reader.readLine();
             tempo = Integer.valueOf(reader.readLine());
@@ -153,6 +153,7 @@ public class Project {
 
                     for (Compound c : compoundsArray) {
                         if (c.getName().equals(compoundName)) compound = c;
+                        //System.out.println(compound.getName());
                     }
 
                     Phrase phrase = new Phrase(id, compound, color, x1, x2);

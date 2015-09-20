@@ -203,6 +203,8 @@ public class SoundPlayer {
         if (sequencer.isRunning( )) {
             audioPosition = (int)sequencer.getTickPosition( );
             progress.setValue(audioPosition);
+            app.getPlaybackLine().setX(app.getPlaybackLine().getX() + 5);
+            app.getPlaybackLine().repaint();
         }
         else {
             reset();

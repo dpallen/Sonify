@@ -219,6 +219,7 @@ public class DataChart {
                     if (p.getWidth() > highestWidth) highestWidth = p.getWidth();
                     peaksArray.add(p);
                     peakID++;
+                    break;
 
                 }
 

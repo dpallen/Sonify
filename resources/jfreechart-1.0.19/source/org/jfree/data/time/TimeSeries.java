@@ -669,7 +669,7 @@ public class TimeSeries extends Series implements Cloneable, Serializable {
             b.append(item.getPeriod().getClass().getName());
             b.append(", but the TimeSeries is expecting an instance of ");
             b.append(this.timePeriodClass.getName());
-            b.append(".");
+            b.append("");
             throw new SeriesException(b.toString());
         }
 
@@ -909,7 +909,7 @@ public class TimeSeries extends Series implements Cloneable, Serializable {
             String msg = "You are trying to add data where the time "
                     + "period class is " + periodClass.getName()
                     + ", but the TimeSeries is expecting an instance of "
-                    + this.timePeriodClass.getName() + ".";
+                    + this.timePeriodClass.getName() + "";
             throw new SeriesException(msg);
         }
         TimeSeriesDataItem overwritten = null;

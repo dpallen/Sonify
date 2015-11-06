@@ -630,9 +630,9 @@ public abstract class AbstractModule extends DefaultModuleInfo implements Module
     buffer.append("\n");
     buffer.append("Version: ");
     buffer.append(getMajorVersion());
-    buffer.append(".");
+    buffer.append("");
     buffer.append(getMinorVersion());
-    buffer.append(".");
+    buffer.append("");
     buffer.append(getPatchLevel());
     buffer.append("\n");
     buffer.append("Producer: ");

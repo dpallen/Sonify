@@ -15,7 +15,7 @@
 <!-- repository (which is shared with the JFreeChart project in a -->
 <!-- slightly messy way). -->
 
-<project name="jcommon" default="all" basedir="..">
+<project name="jcommon" default="all" basedir="../../">
 
   <!-- Initialisation. -->
   <target name="initialise" description="Initialise required settings.">
@@ -69,26 +69,26 @@
 
     <!-- copy across .properties files -->
     <copy todir="${builddir}/org/jfree/ui/">
-      <fileset dir="src/main/java/org/jfree/ui">
+      <fileset dir="../src/main/java/org/jfree/ui">
         <include name="*.properties"/>
       </fileset>
     </copy>
 
     <copy todir="${builddir}/org/jfree/ui/about/">
-      <fileset dir="src/main/java/org/jfree/ui/about">
+      <fileset dir="../src/main/java/org/jfree/ui/about">
         <include name="*.txt"/>
       </fileset>
     </copy>
 
     <!-- copy across .properties files -->
     <copy todir="${builddir}/org/jfree/base/">
-      <fileset dir="src/main/java/org/jfree/base">
+      <fileset dir="../src/main/java/org/jfree/base">
         <include name="*.properties"/>
       </fileset>
     </copy>
 
     <copy todir="${builddir}/org/jfree/base/log">
-      <fileset dir="src/main/java/org/jfree/base/log">
+      <fileset dir="../src/main/java/org/jfree/base/log">
         <include name="*.properties"/>
       </fileset>
     </copy>
@@ -120,7 +120,7 @@
 
     <!-- copy across .properties files -->
     <copy todir="${builddir}/org/jfree/xml/">
-      <fileset dir="src/main/java/org/jfree/xml">
+      <fileset dir="../src/main/java/org/jfree/xml">
         <include name="*.properties"/>
         <include name="*.dtd"/>
       </fileset>
@@ -141,10 +141,10 @@
     <mkdir dir="javadoc"/>
     <javadoc destdir="javadoc"
       windowtitle="JCommon Class Library (version ${jcommon.version})"
-      overview="src/main/java/overview.html"
+      overview="../src/main/java/overview.html"
       linksource="true">
       <classpath refid="build-xml.classpath"/>
-      <packageset dir="src/main/java" defaultexcludes="yes">
+      <packageset dir="../src/main/java" defaultexcludes="yes">
         <include name="org/jfree"/>
         <include name="org/jfree/base"/>
         <include name="org/jfree/date"/>
@@ -167,11 +167,11 @@
 
   <target name="fill-dist-dir">
     <!-- copy across README -->
-    <copy file="README.md"
+    <copy file="../README.md"
       tofile="distribution/README.md" failonerror="false"/>
 
     <!-- copy across LICENCE -->
-    <copy file="LICENSE"
+    <copy file="../LICENSE"
       tofile="distribution/LICENSE"/>
 
     <!-- copy across runtime jar file -->
@@ -183,26 +183,26 @@
       tofile="distribution/${jcommon-xml-jar-file}"/>
 
     <!-- copy across maven xml files -->
-    <copy file="pom.xml" tofile="distribution/pom.xml"/>
+    <copy file="../pom.xml" tofile="distribution/pom.xml"/>
 
     <!-- copy across junit jar file -->
     <copy file="${junit-dir}/${junit-jar-file}" tofile="distribution/lib/junit.jar"/>
 
     <!-- copy across source files -->
     <copy todir="distribution/src">
-      <fileset dir="src"/>
+      <fileset dir="../src"/>
     </copy>
 
     <!-- copy across ant build file (this file) -->
-    <copy file="ant/build.xml"
+    <copy file="build.xml"
       tofile="distribution/ant/build.xml" failonerror="false"/>
 
-    <copy file="ant/build.properties"
+    <copy file="build.properties"
       tofile="distribution/ant/build.properties"/>
 
     <!-- copy across checkstyle property file -->
     <copy todir="distribution/checkstyle">
-      <fileset dir="checkstyle"/>
+      <fileset dir="../checkstyle"/>
     </copy>
   </target>
 
@@ -259,7 +259,7 @@
     <!-- make a temporary distribution directory -->
     <mkdir dir="distribution"/>
     <!-- copy across LICENCE -->
-    <copy file="LICENSE" tofile="distribution/LICENSE"/>
+    <copy file="../LICENSE" tofile="distribution/LICENSE"/>
     
     <filterchain id="version.filters">
        <replacetokens>
@@ -279,7 +279,7 @@
     <!-- make a temporary distribution directory -->
     <mkdir dir="distribution"/>
     <!-- copy across LICENCE -->
-    <copy file="LICENSE" tofile="distribution/LICENSE"/>
+    <copy file="../LICENSE" tofile="distribution/LICENSE"/>
 
     <!-- copy across runtime jar file -->
     <copy file="${jcommon-xml-jar-file}" tofile="distribution/${jcommon-xml-jar-file}"/>

@@ -55,7 +55,7 @@ public final class ClassModelTags {
     public static final String INCLUDE_TAG = "include";
     
     /** Source attribute text. */
-    public static final String SOURCE_ATTR = "src";
+    public static final String SOURCE_ATTR = "jcommon-1.0.23/src";
     
     /** Object tag text. */
     public static final String OBJECT_TAG = "object";

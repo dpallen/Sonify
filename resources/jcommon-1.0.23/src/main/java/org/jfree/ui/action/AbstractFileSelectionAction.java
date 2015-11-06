@@ -95,7 +95,7 @@ public abstract class AbstractFileSelectionAction extends AbstractActionDowngrad
      * @return the working directory.
      */
     protected File getCurrentDirectory() {
-        return new File(".");
+        return new File("");
     }
 
     /**

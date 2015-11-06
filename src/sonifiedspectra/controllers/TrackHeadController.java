@@ -42,7 +42,7 @@ public class TrackHeadController implements MouseListener {
 
         if (trackHeadView.getTrack().isSelected()) {
             trackHeadView.setBackground(app.getActivePhrase().getUnselectedColor());
-            trackHeadView.setBorder(BorderFactory.createLineBorder(app.getActivePhrase().getSelectedColor(), 2, false));
+            trackHeadView.setBorder(BorderFactory.createLineBorder(app.getActivePhrase().getBorderColor(), 2, false));
             app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).setBorder(BorderFactory.createLineBorder(app.getActivePhrase().getBorderColor(), 2, false));
             app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).setBackground(app.getActivePhrase().getUnselectedColor());
             trackHeadView.repaint();

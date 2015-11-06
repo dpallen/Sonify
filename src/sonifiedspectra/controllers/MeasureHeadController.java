@@ -38,7 +38,7 @@ public class MeasureHeadController implements MouseListener {
 
         if (mhv.isSelected()) {
             mhv.setBackground(Color.decode("#B8B8B8"));
-            mhv.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
+            mhv.setBorder(BorderFactory.createLineBorder(app.getActivePhrase().getBorderColor(), 2, false));
             mhv.repaint();
         }
         else {

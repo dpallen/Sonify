@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.*;
+import java.net.URISyntaxException;
 
 /**
  * Created by Hvandenberg on 5/31/15.
@@ -70,6 +71,8 @@ public class OpenProjectController implements ActionListener, MouseListener {
             } catch (LineUnavailableException e1) {
                 e1.printStackTrace();
             } catch (InvalidMidiDataException e1) {
+                e1.printStackTrace();
+            } catch (URISyntaxException e1) {
                 e1.printStackTrace();
             }
             app.getTitleTextField().setText(app.getActiveProject().getName());

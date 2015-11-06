@@ -256,7 +256,7 @@ public class JavaSourceCollector implements SourceCollector {
             return newPackage;
         }
         else {
-            return packageName + "." + newPackage;
+            return packageName + "" + newPackage;
         }
     }
 

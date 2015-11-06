@@ -14,6 +14,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.net.URISyntaxException;
 
 public class NewProjectDialog extends JDialog {
 
@@ -47,6 +48,8 @@ public class NewProjectDialog extends JDialog {
                     e1.printStackTrace();
                 } catch (UnsupportedAudioFileException e1) {
                     e1.printStackTrace();
+                } catch (URISyntaxException e1) {
+                    e1.printStackTrace();
                 }
             }
         });
@@ -76,7 +79,7 @@ public class NewProjectDialog extends JDialog {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private void onOK() throws MidiUnavailableException, LineUnavailableException, IOException, FontFormatException, InvalidMidiDataException, UnsupportedAudioFileException {
+    private void onOK() throws MidiUnavailableException, LineUnavailableException, IOException, FontFormatException, InvalidMidiDataException, UnsupportedAudioFileException, URISyntaxException {
 
         Project newProject = new Project(projectNameTextField.getText());
 
@@ -104,7 +107,23 @@ public class NewProjectDialog extends JDialog {
         }
 
         app.getFrame().dispose();
-        app = new Sonify();
+        try {
+            app = new Sonify();
+        } catch (FontFormatException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (MidiUnavailableException e) {
+            e.printStackTrace();
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        } catch (InvalidMidiDataException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         app.getActiveProject().setName(name);
         app.getTitleTextField().setText(app.getActiveProject().getName());
         app.getFrame().setVisible(true);

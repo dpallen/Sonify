@@ -108,7 +108,7 @@ public final class DescriptionGenerator {
             ModelBuilder.getInstance().addAttributeHandlers(handlers);
         }
 
-        final String source = p.getProperty("sourcedirectory", ".");
+        final String source = p.getProperty("sourcedirectory", "");
         final String target = p.getProperty("targetfile", "model.xml");
         DescriptionModel model = null;
         try {

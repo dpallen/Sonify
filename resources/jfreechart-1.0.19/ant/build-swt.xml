@@ -1,4 +1,4 @@
-<project name="jfreechart-swt" default="all" basedir="..">
+<project name="jfreechart-swt" default="all" basedir="../../">
 
     <!-- Initialisation. -->
     <target name="initialise" description="Initialise required settings.">

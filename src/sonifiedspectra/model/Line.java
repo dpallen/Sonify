@@ -1,5 +1,7 @@
 package sonifiedspectra.model;
 
+import sun.plugin.dom.css.RGBColor;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -17,12 +19,13 @@ public class Line extends JPanel {
         this.x = x;
         this.y = y;
         this.color = color;
+        setBackground(new Color(1f,0f,0f,0f));
     }
 
     public void drawShape(Graphics g) {
         if (draw) {
             g.setColor(color);
-            g.fillOval(x, y, 2, 30);
+            g.fillOval(x, y, 5, 500);
         }
     }
 

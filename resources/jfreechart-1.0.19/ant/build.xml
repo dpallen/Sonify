@@ -14,7 +14,7 @@
 <!-- If you have comments about this script, please post a message -->
 <!-- on the JFreeChart developers mailing list. -->
 
-<project name="jfreechart" default="all" basedir="..">
+<project name="jfreechart" default="all" basedir="../../">
 
     <!-- Initialisation. -->
     <target name="initialise" description="Initialise required settings.">
@@ -322,7 +322,7 @@
     <!-- make a temporary distribution directory -->
     <mkdir dir="distribution"/>
     <!-- copy across LICENCE -->
-    <copy file="licence-LGPL.txt" tofile="distribution/LICENSE.txt"/>
+    <copy file="../licence-LGPL.txt" tofile="distribution/LICENSE.txt"/>
 
     <filterchain id="version.filters">
        <replacetokens>
@@ -330,7 +330,7 @@
          <token key="JCOMMON.VERSION" value="${jcommon.version}"/>
        </replacetokens>
     </filterchain>
-    <copy file="pom.xml" tofile="distribution/pom.xml">
+    <copy file="../pom.xml" tofile="distribution/pom.xml">
     <filterchain refid="version.filters"/>
     </copy>
 
@@ -383,7 +383,7 @@
                haltonerror="false"
                haltonfailure="false"
                fork="false"
-               dir=".">
+               dir="../">
 
             <sysproperty key="basedir" value="."/>
             <formatter type="plain" usefile="false"/>

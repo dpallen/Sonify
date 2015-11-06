@@ -112,7 +112,7 @@ public class DisplayChart extends HttpServlet {
 
         //  Replace ".." with ""
         //  This is to prevent access to the rest of the file system
-        filename = ServletUtilities.searchReplace(filename, "..", "");
+        filename = ServletUtilities.searchReplace(filename, "", "");
 
         //  Check the file exists
         File file = new File(System.getProperty("java.io.tmpdir"), filename);

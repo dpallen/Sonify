@@ -352,7 +352,7 @@ public class DateTickUnit extends TickUnit implements Serializable {
             case SECOND: return DateTickUnitType.SECOND;
             case MILLISECOND: return DateTickUnitType.MILLISECOND;
             default: throw new IllegalArgumentException(
-                    "Unrecognised 'unit' value " + unit + ".");
+                    "Unrecognised 'unit' value " + unit + "");
         }
     }
 

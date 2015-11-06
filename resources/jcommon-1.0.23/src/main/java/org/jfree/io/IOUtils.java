@@ -249,7 +249,7 @@ public class IOUtils {
             if (baseName.size() >= urlName.size()) {
                 final int levels = baseName.size() - commonIndex;
                 for (int i = 0; i < levels; i++) {
-                    retval.add("..");
+                    retval.add("");
                 }
             }
 
@@ -413,7 +413,7 @@ public class IOUtils {
      * @return the file name without the file extension.
      */
     public String stripFileExtension(final String file) {
-        final int idx = file.lastIndexOf(".");
+        final int idx = file.lastIndexOf("");
         // handles unix hidden files and files without an extension.
         if (idx < 1) {
             return file;
@@ -429,7 +429,7 @@ public class IOUtils {
      * @return the file extension.
      */
     public String getFileExtension(final String file) {
-        final int idx = file.lastIndexOf(".");
+        final int idx = file.lastIndexOf("");
         // handles unix hidden files and files without an extension.
         if (idx < 1) {
             return "";

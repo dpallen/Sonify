@@ -490,7 +490,7 @@ public final class ObjectUtilities {
       }
 
       final ArrayList versions = new ArrayList();
-      final StringTokenizer strtok = new StringTokenizer(version, ".");
+      final StringTokenizer strtok = new StringTokenizer(version, "");
       while (strtok.hasMoreTokens())
       {
         versions.add (strtok.nextToken());

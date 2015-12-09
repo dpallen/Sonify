@@ -73,7 +73,13 @@ public class Phrase extends jm.music.data.Phrase {
         newPhrase.setQRhythm(qRhythm);
         newPhrase.setBackgroundCol(color);
         for (Note note : notesArray) {
-            newPhrase.getNotesArray().add(new Note(note.getPitch() + note.getTranspose(), note.getPeak(), note.isFiller(), newPhrase));
+            Note newNote = new Note(note.getId(), note.getPeak(), note.isFiller(), newPhrase);
+            newNote.setPitch(note.getPitch());
+            newNote.setTranspose(note.getTranspose());
+            newNote.setRhythmValue(note.getRhythmValue());
+            newNote.setDynamic(note.getDynamic());
+            newPhrase.getNotesArray().add(newNote);
+
         }
         return newPhrase;
     }

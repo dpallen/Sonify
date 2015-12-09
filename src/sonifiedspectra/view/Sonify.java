@@ -1321,6 +1321,10 @@ public class Sonify {
 
         int j4 = 0;
         for (TrackView tv : trackViewArray) {
+            if (tv.getTrack().isSelected()) {
+                tv.setBackground(activePhrase.getUnselectedColor());
+                tv.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 2, false));
+            }
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                 pitv.adjustSize(j4);
                 if (pitv.getPhrase().isLoop()) pitv.getNameLabel().setForeground(Color.WHITE);
@@ -1338,6 +1342,20 @@ public class Sonify {
                 j4++;
             }
             j4 = 0;
+        }
+
+        for (TrackHeadView thv : trackHeadViewArray) {
+            if (thv.getTrack().isSelected()) {
+                thv.setBackground(activePhrase.getUnselectedColor());
+                thv.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 2, false));
+            }
+        }
+
+        for (MeasureHeadView mhv : measureHeadViewArray) {
+            if (mhv.isSelected()) {
+                mhv.setBackground(activePhrase.getUnselectedColor());
+                mhv.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 2, false));
+            }
         }
 
         if (isProject) {

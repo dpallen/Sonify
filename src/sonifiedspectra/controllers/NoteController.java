@@ -1,5 +1,8 @@
 package sonifiedspectra.controllers;
 
+import jm.music.data.Note;
+import jm.music.data.Score;
+import jm.util.Play;
 import org.jfree.chart.plot.XYPlot;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.NoteView;
@@ -58,6 +61,9 @@ public class NoteController implements MouseListener {
         app.updateIntervalMarker();
         app.getGraphPanel().repaint();
         app.getFrame().pack();
+
+        app.getSoundPlayer().updateNotePlayer(noteView.getNote());
+        app.getSoundPlayer().play();
 
     }
 

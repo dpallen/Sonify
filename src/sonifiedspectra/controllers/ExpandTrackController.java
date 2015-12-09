@@ -28,8 +28,8 @@ public class ExpandTrackController implements ActionListener, MouseListener {
         this.app = app;
         this.thv = thv;
 
-        collapsedIcon = new ImageIcon("resources/icons/collapsedicon.png");
-        expandedIcon = new ImageIcon("resources/icons/expandedicon.png");
+        collapsedIcon = new ImageIcon(getClass().getResource("/icons/collapsedicon.png"));
+        expandedIcon = new ImageIcon(getClass().getResource("/icons/expandedicon.png"));
     }
 
     @Override

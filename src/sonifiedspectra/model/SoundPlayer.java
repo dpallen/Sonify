@@ -303,6 +303,56 @@ public class SoundPlayer {
         }));
     }
 
+    public void updateNotePlayer(Note note) {
+
+        Score score = new Score();
+        Part newPart = new Part();
+        jm.music.data.Phrase newPhrase = new jm.music.data.Phrase();
+        jm.music.data.Note newNote = new jm.music.data.Note(note.getPitch() + note.getTranspose(), note.getRhythmValue(), note.getDynamic());
+        newPhrase.add(newNote);
+        newPhrase.setInstrument(app.getActivePhrase().getInstrument());
+        newPart.setInstrument(app.getActivePhrase().getInstrument());
+        newPart.add(newPhrase);
+        score.add(newPart);
+
+        score.setTempo(120);
+
+        Write.midi(score, app.getActiveProject().getDirectoryPath() + "/Midi/note.mid");
+
+        File midiFile = new File( app.getActiveProject().getDirectoryPath() + "/Midi/note.mid" );   // This is the file we'll be playing
+
+        // Read the sequence from the file and tell the sequencer about it
+        try {
+            setSequence(MidiSystem.getSequence(midiFile));
+        } catch (InvalidMidiDataException e1) {
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        try {
+            getSequencer().setSequence(getSequence());
+        } catch (InvalidMidiDataException e1) {
+            e1.printStackTrace();
+        }
+        setAudioLength((int) getSequence().getTickLength()); // Get sequence length
+
+        // Now create the basic GUI
+        getProgress().setMinimum(0);
+        getProgress().setMaximum(getAudioLength());
+        getProgress().setValue(0);
+        getTime().setText((getTimeString((int)
+                        getSequencer().getMicrosecondPosition(),
+                (int) getSequencer().getMicrosecondLength())));
+
+        // This timer calls the tick( ) method 10 times a second to keep
+        // our slider in sync with the music.
+        setTimer(new Timer(100, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                tick();
+            }
+        }));
+    }
+
     public void updateSoundPlayer() {
         System.out.println("Sampling phrase " + app.getActivePhrase().getId() + "...");
 

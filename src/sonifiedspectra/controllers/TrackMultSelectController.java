@@ -25,8 +25,8 @@ public class TrackMultSelectController implements ActionListener {
         this.app = app;
         this.project = project;
         this.checkBox = checkBox;
-        this.unselectedIcon = new ImageIcon("resources/icons/tracksmultselecticon.png");
-        this.selectedIcon = new ImageIcon("resources/icons/tracksmultselected.png");
+        this.selectedIcon = new ImageIcon(getClass().getResource("/icons/tracksmultselected.png"));
+        this.unselectedIcon = new ImageIcon(getClass().getResource("/icons/tracksmultselecticon.png"));
     }
 
     @Override

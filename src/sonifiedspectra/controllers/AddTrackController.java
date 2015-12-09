@@ -67,7 +67,7 @@ public class AddTrackController implements ActionListener, MouseListener {
         for (TrackHeadView thv1 : app.getTrackHeadViewArray()) {
             if (j1 % 2 != 0 && j1 != 0) thv1.setBackColor(Color.decode("#DDDDDD"));
             else thv1.setBackColor(Color.decode("#F5F5F5"));
-            thv1.updatePanel();
+            if (!thv1.getTrack().isSelected()) thv1.updatePanel();
             j1++;
         }
 
@@ -76,7 +76,7 @@ public class AddTrackController implements ActionListener, MouseListener {
         for (TrackView tv1 : app.getTrackViewArray()) {
             if (j2 % 2 != 0 && j2 != 0) tv1.setBackColor(Color.decode("#DDDDDD"));
             else tv1.setBackColor(Color.decode("#F5F5F5"));
-            tv1.updatePanel();
+            if (!tv1.getTrack().isSelected()) tv1.updatePanel();
             j2++;
         }
 

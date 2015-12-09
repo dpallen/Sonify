@@ -11,40 +11,14 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 
 public class BetterScrollBar extends BasicScrollBarUI {
 
-   /*@Override
-   protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-    	 g.setColor(Color.decode("#D8D8D8"));
-         g.fillRect(0, 0, 700, 20);
+    @Override
+    protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+    	 g.setColor(trackColor);
+         g.fillRect(0, 5, 700, 10);
     }
 
     @Override
-    protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-    	 if(thumbBounds.isEmpty() || !scrollbar.isEnabled())     {
-             return;
-         }
-
-         int w = thumbBounds.width;
-         int h = thumbBounds.height;
-
-         g.translate(thumbBounds.x, thumbBounds.y);
-
-         g.setColor(Color.decode("#A38F85"));
-         g.drawRect(0, 0, w-1, h-1);
-         g.setColor(thumbColor);
-         g.fillRoundRect(0, 0, w-1, h-1, 15, 15);
-
-         g.setColor(Color.decode("#A38F85"));
-         g.drawLine(1, 1, 1, h-2);
-         g.drawLine(2, 1, w-3, 1);
-
-         g.setColor(Color.decode("#A38F85"));
-         g.drawLine(2, h-2, w-2, h-2);
-         g.drawLine(w-2, 1, w-2, h-3);
-
-         g.translate(-thumbBounds.x, -thumbBounds.y);
-    }*/
-    
-	protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds)
+    protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds)
     {
         if(thumbBounds.isEmpty() || !scrollbar.isEnabled())     {
             return;
@@ -55,20 +29,19 @@ public class BetterScrollBar extends BasicScrollBarUI {
 
         g.translate(thumbBounds.x, thumbBounds.y);
 
-        g.setColor(Color.decode("#A38F85"));
-        g.drawRoundRect(0, 0, w-1, 10, 10, 10);
-        g.setColor(Color.decode("#A38F85"));
-        g.fillRoundRect(0, 0, w-1, 10, 10, 10);
+        g.setColor(thumbColor);
+        g.drawRoundRect(0, 5, w-1, 10, 10, 10);
+        g.fillRoundRect(0, 5, w-1, 10, 10, 10);
 
         g.translate(-thumbBounds.x, -thumbBounds.y);
     }
-    
+
     protected void configureScrollBarColors(){
-    	this.thumbColor = Color.decode("#A38F85");
-    	this.trackColor = Color.decode("#E5E3E3");
-    	
+        this.thumbColor = Color.decode("#979797");
+        this.trackColor = Color.decode("#F5F5F5");
+
     }
-    
+
     protected JButton createZeroButton() {
         JButton button = new JButton("zero button");
         Dimension zeroDim = new Dimension(0,0);

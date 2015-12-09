@@ -28,7 +28,7 @@ public class EditCompoundDialog extends JDialog {
         setBackground(Color.decode("#F5F5F5"));
         contentPane.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
 
-        Font hnt20 = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(new File("resources/HelveticaNeue-Thin.otf"))).deriveFont(Font.PLAIN, 20);
+        Font hnt20 = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/HelveticaNeue-Thin.otf")).deriveFont(Font.PLAIN, 20);
 
         titleLabel.setFont(hnt20);
         nameTextField.setText(app.getActivePhrase().getCompound().getName());

@@ -34,8 +34,6 @@ public class Compound {
 
     public void load() {
 
-        System.out.println("Called");
-
         this.dataChart = new DataChart(dataFile);
 
         // stores input stream

@@ -4,6 +4,7 @@ import org.jfree.chart.plot.XYPlot;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.NoteView;
 import sonifiedspectra.view.Sonify;
+import sonifiedspectra.view.TrackHeadView;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -27,16 +28,19 @@ public class NoteController implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
 
-        noteView.getNote().toggleSelected();
-
-        app.updateActivePhrase(noteView.getNote().getPhrase());
-
         if (!project.isNotesPanelMultipleSelection()) {
             for (NoteView nv : app.getNoteViewArray()) {
-                if (nv.getNote().getId() != noteView.getNote().getId()) nv.getNote().setSelected(false);
+                if (nv.getNote().getId() != noteView.getNote().getId()) {
+                    nv.getNote().setSelected(false);
+                }
                 nv.updatePanel();
             }
         }
+
+        noteView.getNote().toggleSelected();
+        noteView.updatePanel();
+
+        //app.updateActivePhrase(noteView.getNote().getPhrase());
 
         if (app.getActivePhrase().isValidTransposeSelection()) {
             app.getTransposeTextField().setText(String.valueOf(app.getActivePhrase().getSelectedNotes().get(0).getTranspose()));

@@ -32,7 +32,7 @@ public class PhraseInTrackView extends JPanel {
         nameLabel.setBounds(18, 0, 75, 15);
         add(nameLabel);
 
-        Icon removephrasefromtrackicon = new ImageIcon("resources/icons/removephrasefromtrackicon.png");
+        Icon removephrasefromtrackicon = new ImageIcon(getClass().getResource("/icons/removephrasefromtrackicon.png"));
         removeButton = new BetterButton(Color.decode("#F5F5F5"), 10, 10, 0);
         removeButton.setIcon(removephrasefromtrackicon);
         removeButton.setBounds(3, 2, 10, 10);

@@ -112,6 +112,7 @@ public class Sonify {
     private JCheckBox multipleSelectionCheckBox;
     private JCheckBox tracksMultSelectCheckbox;
     private JCheckBox leftOrRightCheckbox;
+    private JCheckBox selectAllOrNoneCheckbox;
 
     private JLabel spectrumLabel;
     private JLabel helpTextLabel;
@@ -191,9 +192,8 @@ public class Sonify {
             IOException, MidiUnavailableException, UnsupportedAudioFileException,
             LineUnavailableException, InvalidMidiDataException, URISyntaxException {
 
-        activeProject = new Project("My Project");
-
         initializeModel();
+
         try {
             initializeView();
         } catch (FontFormatException e) {
@@ -211,10 +211,13 @@ public class Sonify {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+
         initializeControllers();
 
-        soundPlayer = new SoundPlayer(new File( "midi/starwars.mid" ), activePhrase.getInstrument(), this, false);
-        loopDialog.setLoopPlayer(new SoundPlayer(new File( "midi/starwars.mid"), 0, this, true));
+        System.out.println(activeProject.getDirectoryPath());
+
+        soundPlayer = new SoundPlayer(new File(activeProject.getDirectoryPath() + "/Midi/starwars.mid"), activePhrase.getInstrument(), this, false);
+        loopDialog.setLoopPlayer(soundPlayer);
 
         updateActivePhrase(activePhrase);
         updateIntervalMarker();
@@ -224,8 +227,9 @@ public class Sonify {
     public void initializeModel() throws MidiUnavailableException {
 
         Synthesizer synthesizer = MidiSystem.getSynthesizer();
-
         instruments = synthesizer.getDefaultSoundbank().getInstruments();
+
+        activeProject = new Project("My Project");
 
         colorsArray = new ArrayList<String>();
         colorsArray.add("Red");
@@ -262,79 +266,57 @@ public class Sonify {
 
         }
 
+        Compound compound;
         int i = 0;
 
-        File dir = new File("compounds/");
-        File[] directoryListing = dir.listFiles();
+        File projectFolder = new File(System.getProperty("user.home") + "/Documents/Sonify/Demo");
+        if (projectFolder == null) {
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Choose Project Folder");
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+            fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+            int result = fileChooser.showOpenDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                System.out.println("getCurrentDirectory(): "
+                        + fileChooser.getCurrentDirectory());
+                System.out.println("getSelectedFile(): "
+                        + fileChooser.getSelectedFile());
+
+                projectFolder = fileChooser.getSelectedFile();
+
+            }
+
+        }
+
+        File[] directoryListing = new File(projectFolder + "/Compounds").listFiles();
         if (directoryListing != null) {
             for (File dataFile : directoryListing) {
-                Compound compound = new Compound(i, dataFile, "Infrared");
-                compound.load();
-                System.out.println(compound.getName());
-                compound.getDataChart().createChart();
-                compound.setPeaks(compound.getDataChart().process());
-                compoundComboBox.addItem(compound.getName());
-                activeProject.getCompoundsArray().add(compound);
-                i++;
+                if (!dataFile.isHidden()) {
+                    compound = new Compound(i, dataFile, "Infrared");
+                    compound.load();
+                    System.out.println("Added compound: " + compound.getName());
+                    compound.getDataChart().createChart();
+                    compound.setPeaks(compound.getDataChart().process());
+                    compoundComboBox.addItem(compound.getName());
+                    activeProject.getCompoundsArray().add(compound);
+                    i++;
+                }
             }
         } else {
+
         }
 
-        currentColorIndex = 0;
+        activeProject.setDirectoryPath(projectFolder.getPath());
+        activeProject.load(new File(projectFolder + "/project.son"));
+        activeProject.setSaveFile(new File(projectFolder + "/project.son"));
+
+        currentColorIndex = 2;
         measureScale = 25;
 
-        File activeProjectFile = new File("resources/projecttemplate.proj");
-
-        String activeProjectName = "";
-        BufferedReader reader;
-
-        try {
-            InputStream is = new FileInputStream(activeProjectFile);
-            reader = new BufferedReader(new InputStreamReader(is));
-            activeProjectName = reader.readLine();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(activeProjectName);
-
-        activeProject.load(activeProjectFile);
         activePhrase = activeProject.getPhrasesArray().get(0);
-
-/*
-        Phrase phrase = new Phrase(activeProject.getCurrentPhraseId(), activeProject.getCompoundsArray().get(0), colorsArray.get(currentColorIndex), 1500, 600);
-        phrase.initialize();
-        activeProject.incrementPhraseId();
-        activeProject.getPhrasesArray().add(phrase);
-        currentColorIndex++;
-        activePhrase = phrase;
-
-        Phrase phrase2 = new Phrase(activeProject.getCurrentPhraseId(), activeProject.getCompoundsArray().get(1), colorsArray.get(currentColorIndex), 2558, 2015);
-        phrase2.initialize();
-        phrase2.setInstrument(47);
-        activeProject.incrementPhraseId();
-        phrase2.setStartTime(2.5);
-        currentColorIndex++;
-        activeProject.getPhrasesArray().add(phrase2);
-
-        Track track1 = new Track(activeProject.getCurrentTrackId());
-        track1.setInstrument(0);
-        activeProject.incrementTrackId();
-        activeProject.getTracksArray().add(track1);
-        track1.getPhrases().add(phrase);
-
-        Track track2 = new Track(activeProject.getCurrentTrackId());
-        track2.setInstrument(47);
-        activeProject.incrementTrackId();
-        track2.getPhrases().add(phrase2);
-        activeProject.getTracksArray().add(track2);
-
-        Track track3 = new Track(activeProject.getCurrentTrackId());
-        activeProject.incrementTrackId();
-        track3.setInstrument(2);
-        activeProject.getTracksArray().add(track3);
-*/
 
     }
 
@@ -363,7 +345,7 @@ public class Sonify {
         isProject = true;
 
         compoundLabel = new JLabel("Compound:");
-        Font hnt20 = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(new File("resources/HelveticaNeue-Thin.otf"))).deriveFont(Font.PLAIN, 20);
+        Font hnt20 = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/HelveticaNeue-Thin.otf")).deriveFont(Font.PLAIN, 20);
         compoundLabel.setFont(hnt20);
         compoundLabel.setBounds(20, 15, 101, 24);
         frame.getContentPane().add(compoundLabel);
@@ -424,8 +406,15 @@ public class Sonify {
         notesLabel.setBounds(20, 460, 60, 24);
         frame.getContentPane().add(notesLabel);
 
+        selectAllOrNoneCheckbox = new JCheckBox();
+        Icon selicon = new ImageIcon(getClass().getResource("/icons/multseleccheckbox.png"));
+        selectAllOrNoneCheckbox.setIcon(selicon);
+        selectAllOrNoneCheckbox.setSelected(false);
+        selectAllOrNoneCheckbox.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+        selectAllOrNoneCheckbox.setBounds(200, 457, 32, 32);
+        frame.getContentPane().add(selectAllOrNoneCheckbox);
+
         multipleSelectionCheckBox = new JCheckBox();
-        Icon selicon;
         if (activeProject.isNotesPanelMultipleSelection()) selicon = new ImageIcon(getClass().getResource("/icons/multseleccheckboxselected.png"));
         else selicon = new ImageIcon(getClass().getResource("/icons/multseleccheckbox.png"));
         multipleSelectionCheckBox.setIcon(selicon);
@@ -1071,8 +1060,14 @@ public class Sonify {
         chPanel.addMouseListener(new HelpTextController(this, HelpStrings.CHART_PANEL));
         graphPanel.addMouseListener(new HelpTextController(this, HelpStrings.GRAPH_PANEL));
 
+        selectAllOrNoneCheckbox.addActionListener(new SelectAllOrNoneController(this, activeProject, selectAllOrNoneCheckbox));
+        selectAllOrNoneCheckbox.addMouseListener(new HelpTextController(this, HelpStrings.SELECT_ALL_NONE));
+
         multipleSelectionCheckBox.addActionListener(new MultipleNoteSelectionController(this, activeProject, multipleSelectionCheckBox));
         multipleSelectionCheckBox.addMouseListener(new HelpTextController(this, HelpStrings.MULT_SELEC));
+
+        transposeTextField.addMouseListener(new HelpTextController(this, HelpStrings.TRANSPOSE_TEXT));
+        transposeTextField.addActionListener(new TransposeTextFieldController(this));
 
         TransposeButtonController transposeUpButtonController = new TransposeButtonController(this, activeProject, 0);
         transposeUpButton.addMouseListener(new HelpTextController(this, HelpStrings.TRANSPOSE_UP));
@@ -1298,6 +1293,7 @@ public class Sonify {
 
         for (Note note : activePhrase.getNotesArray()) {
             NoteView noteView = new NoteView(note);
+            System.out.println(note.toString());
             noteView.setBounds(10 + 44 * i, 10, 34, 67);
             noteView.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 1, true));
             noteView.updatePanel();
@@ -1472,7 +1468,7 @@ public class Sonify {
             MidiUnavailableException, UnsupportedAudioFileException, LineUnavailableException,
             InvalidMidiDataException {
 
-        showSplashScreen();
+        //showSplashScreen();
 
         EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -1488,7 +1484,7 @@ public class Sonify {
     }
 
     public static void showSplashScreen() {
-        JWindow splash = new JWindow();
+        /*JWindow splash = new JWindow();
         BufferedImage splashScreenImg;
         try {
             splashScreenImg = ImageIO.read(new File("resources/icons/sonifysplashscreen.png"));
@@ -1510,7 +1506,7 @@ public class Sonify {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        splash.dispose();
+        splash.dispose();*/
     }
 
     //Getters and Setters

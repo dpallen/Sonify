@@ -16,7 +16,7 @@ public class SSComboBoxRenderer extends JLabel implements ListCellRenderer {
     public SSComboBoxRenderer() throws FileNotFoundException, FontFormatException, IOException {
         setOpaque(true);
 
-        Font hnt2 = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(new File("resources/HelveticaNeue-Thin.otf"))).deriveFont(Font.PLAIN, 12);
+        Font hnt2 = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/HelveticaNeue-Thin.otf")).deriveFont(Font.PLAIN, 12);
         setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         setBounds(123, 11, 158, 32);
         setForeground(Color.decode("#000000"));

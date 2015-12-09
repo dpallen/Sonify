@@ -1,5 +1,6 @@
 package sonifiedspectra.controllers;
 
+import sonifiedspectra.model.Compound;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.Sonify;
 
@@ -34,7 +35,62 @@ public class OpenProjectController implements ActionListener, MouseListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        JFileChooser fc = new JFileChooser();
+        Compound compound;
+        int i = 0;
+
+        File projectFolder = new File(System.getProperty("user.home") + "/Documents/Sonify/Demo");
+        if (projectFolder == null) {
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Choose Project Folder");
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+            fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+            int result = fileChooser.showOpenDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                System.out.println("getCurrentDirectory(): "
+                        + fileChooser.getCurrentDirectory());
+                System.out.println("getSelectedFile(): "
+                        + fileChooser.getSelectedFile());
+
+                projectFolder = fileChooser.getSelectedFile();
+
+            }
+
+        }
+
+        app.setCompoundComboBox(new JComboBox());
+        for (Compound c : app.getActiveProject().getCompoundsArray()) {
+            app.getCompoundComboBox().addItem(c.getName());
+        }
+        app.getCompoundComboBox().setBounds(123, 11, 158, 32);
+
+        File[] directoryListing = new File(projectFolder + "/Compounds").listFiles();
+        if (directoryListing != null) {
+            for (File dataFile : directoryListing) {
+                if (!dataFile.isHidden()) {
+                    compound = new Compound(i, dataFile, "Infrared");
+                    compound.load();
+                    System.out.println("Added compound: " + compound.getName());
+                    compound.getDataChart().createChart();
+                    compound.setPeaks(compound.getDataChart().process());
+                    app.getCompoundComboBox().addItem(compound.getName());
+                    app.getActiveProject().getCompoundsArray().add(compound);
+                    i++;
+                }
+            }
+        } else {
+
+        }
+
+        app.getActiveProject().setDirectoryPath(projectFolder.getPath());
+        app.getActiveProject().load(new File(projectFolder + "/project.son"));
+        app.getActiveProject().setSaveFile(new File(projectFolder + "/project.son"));
+
+        app.setActivePhrase(app.getActiveProject().getPhrasesArray().get(0));
+
+        /*JFileChooser fc = new JFileChooser();
         File directory = new File("projects/");
         fc.setCurrentDirectory(directory);
 
@@ -86,7 +142,7 @@ public class OpenProjectController implements ActionListener, MouseListener {
 
         }
 
-        System.out.println(returnVal);
+        System.out.println(returnVal);*/
     }
 
     @Override

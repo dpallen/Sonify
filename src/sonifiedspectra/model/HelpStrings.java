@@ -42,4 +42,6 @@ public interface HelpStrings {
     String PITV = "Represents phrase. Click the x button to remove the phrase from its track. Use the menu buttons on the right to adjust phrase parameters.";
     String MEASURES = "Opens measure settings panel.";
     String CHART_PANEL = "Displays spectrum for active compound. Click on the graph to adjust phrase x and y values. Drag a box to zoom in, drag left to zoom out.";
+    String SELECT_ALL_NONE = "Toggles select all notes or select none.";
+    String TRANSPOSE_TEXT = "Press \"Enter\" to save transpose value to selected notes. You can type any integer.";
 }

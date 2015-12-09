@@ -111,11 +111,11 @@ public class SoundPlayer {
             public void actionPerformed(ActionEvent e) {
                 if (playing) {
                     stop();
-                    Icon playIcon = new ImageIcon("resources/icons/playicon.png");
+                    Icon playIcon = new ImageIcon(getClass().getResource("/icons/playicon.png"));
                     play.setIcon(playIcon);
                 } else {
                     play();
-                    Icon pauseIcon = new ImageIcon("resources/icons/pauseicon.png");
+                    Icon pauseIcon = new ImageIcon(getClass().getResource("/icons/pauseicon.png"));
                     play.setIcon(pauseIcon);
                 }
             }
@@ -178,7 +178,7 @@ public class SoundPlayer {
         sequencer.setTickPosition(0);
         audioPosition = 0;
         progress.setValue(0);
-        Icon playIcon = new ImageIcon("resources/icons/playicon.png");
+        Icon playIcon = new ImageIcon(getClass().getResource("/icons/playicon.png"));
         app.getPlayButton().setIcon(playIcon);
         app.getPlayButton().repaint();
         app.getLoopDialog().getPlayButton().setIcon(playIcon);
@@ -352,7 +352,7 @@ public class SoundPlayer {
 
         }
 
-        System.out.println("Printing sampled notes...");
+        /*System.out.println("Printing sampled notes...");
         for (Part part : score.getPartArray()) {
             System.out.println("Part: " + part.getInstrument());
             for (jm.music.data.Phrase phrase  : part.getPhraseArray()) {
@@ -363,11 +363,11 @@ public class SoundPlayer {
                 }
             }
         }
-        System.out.println("End printing.");
+        System.out.println("End printing.");*/
 
-        Write.midi(score, "midi/" + app.getActivePhrase().getCompound().getName() + app.getActivePhrase().getId() + ".mid");
+        Write.midi(score, app.getActiveProject().getDirectoryPath() + "/Midi/active.mid");
 
-        File midiFile = new File( "midi/" + app.getActivePhrase().getCompound().getName() + app.getActivePhrase().getId() + ".mid" );   // This is the file we'll be playing
+        File midiFile = new File( app.getActiveProject().getDirectoryPath() + "/Midi/active.mid" );   // This is the file we'll be playing
 
         app.getActivePhrase().setMidiFile(midiFile);
 

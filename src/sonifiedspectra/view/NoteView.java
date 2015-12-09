@@ -38,9 +38,6 @@ public class NoteView extends JPanel {
         if (note.isSelected()) {
             setBackground(note.getPhrase().getUnselectedColor());
             if (note.isFiller()) {
-                /*Border out = BorderFactory.createLineBorder(note.getPhrase().getBorderColor(), 2, true);
-                Border in = new EmptyBorder(10,10,10,10);
-                setBorder(new CompoundBorder(out, in));*/
                 setBorder(BorderFactory.createLineBorder(note.getPhrase().getBorderColor(), 3, true));
                 setBackground(Color.BLACK);
             }

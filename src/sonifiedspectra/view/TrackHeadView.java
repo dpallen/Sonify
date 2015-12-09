@@ -37,7 +37,7 @@ public class TrackHeadView extends JPanel {
         instrumentComboBox.setFont(new Font(instrumentComboBox.getFont().getName(), Font.PLAIN, 10));
         add(instrumentComboBox);
 
-        Font hnt20 = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(new File("resources/HelveticaNeue-Thin.otf"))).deriveFont(Font.PLAIN, 20);
+        Font hnt20 = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/HelveticaNeue-Thin.otf")).deriveFont(Font.PLAIN, 20);
         trackNumberLabel = new JLabel("0");
         trackNumberLabel.setFont(hnt20);
         trackNumberLabel.setBounds(0, 30, 40, 40);
@@ -56,7 +56,7 @@ public class TrackHeadView extends JPanel {
         volumeSlider.setValue(track);
         add(volumeSlider);*/
 
-        Icon collapsedIcon = new ImageIcon("resources/icons/collapsedicon.png");
+        Icon collapsedIcon = new ImageIcon(getClass().getResource("/icons/collapsedicon.png"));
         expandButton = new BetterButton(Color.decode("#F5F5F5"), 25, 25, 6);
         expandButton.setIcon(collapsedIcon);
         expandButton.setBounds(110, 38, 25, 25);

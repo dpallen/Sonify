@@ -18,6 +18,7 @@ public class Project {
     private int movePitvFactor;
     private int numMeasures;
     private int id;
+    private String directoryPath;
 
     private File saveFile;
 
@@ -26,7 +27,6 @@ public class Project {
 
     public Project(String name) {
         this.name = name;
-        this.saveFile = new File(String.valueOf(id));
         compoundsArray = new ArrayList<Compound>();
         phrasesArray = new ArrayList<Phrase>();
         tracksArray = new ArrayList<Track>();
@@ -47,7 +47,7 @@ public class Project {
     }
 
     public void save() throws IOException {
-        saveFile = new File("projects/" + name + ".proj");
+        saveFile = new File(directoryPath + "/project.son");
 
         FileWriter fw = new FileWriter(saveFile);
         BufferedWriter bw = new BufferedWriter(fw);
@@ -200,7 +200,7 @@ public class Project {
                             if (peakId == p.getId()) peak = p;
                         }
 
-                        Note note = new Note(id, peak, filler, phrase);
+                        Note note = new Note(noteId, peak, filler, phrase);
                         note.setPitch(pitch);
                         note.setRhythmValue(rhythmValue);
                         note.setTranspose(transpose);
@@ -401,5 +401,13 @@ public class Project {
 
     public void setSaveFile(File saveFile) {
         this.saveFile = saveFile;
+    }
+
+    public String getDirectoryPath() {
+        return directoryPath;
+    }
+
+    public void setDirectoryPath(String directoryPath) {
+        this.directoryPath = directoryPath;
     }
 }

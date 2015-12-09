@@ -9,9 +9,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Created by Hvandenberg on 5/31/15.
+ * Created by Hvandenberg on 12/9/15.
  */
-public class MultipleNoteSelectionController implements ActionListener {
+public class SelectAllOrNoneController implements ActionListener {
 
     private Sonify app;
     private Project project;
@@ -19,7 +19,7 @@ public class MultipleNoteSelectionController implements ActionListener {
     private Icon selectedIcon;
     private Icon unselectedIcon;
 
-    public MultipleNoteSelectionController(Sonify app, Project project, JCheckBox checkBox) {
+    public SelectAllOrNoneController(Sonify app, Project project, JCheckBox checkBox) {
         this.app = app;
         this.project = project;
         this.checkBox = checkBox;
@@ -29,16 +29,18 @@ public class MultipleNoteSelectionController implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        project.toggleMultipleSelection();
 
-        boolean isFirst = true;
-
-        if (!project.isNotesPanelMultipleSelection() && app.getActivePhrase().getSelectedNotes().size() > 1) {
+        if (checkBox.isSelected()) {
             for (NoteView nv : app.getNoteViewArray()) {
-                if (nv.getNote().isSelected()) {
-                    if (isFirst) isFirst = false;
-                    else nv.getNote().setSelected(false);
-                }
+                nv.getNote().setSelected(true);
+                nv.updatePanel();
+            }
+            app.updateIntervalMarker();
+        }
+
+        else {
+            for (NoteView nv : app.getNoteViewArray()) {
+                nv.getNote().setSelected(false);
                 nv.updatePanel();
             }
             app.updateIntervalMarker();
@@ -50,11 +52,12 @@ public class MultipleNoteSelectionController implements ActionListener {
     }
 
     public void updateIcon() {
-        if (project.isNotesPanelMultipleSelection()) {
+        if (checkBox.isSelected()) {
             checkBox.setIcon(selectedIcon);
         }
         else {
             checkBox.setIcon(unselectedIcon);
         }
     }
+
 }

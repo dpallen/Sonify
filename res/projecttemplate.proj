@@ -1,0 +1,71 @@
+New Project
+120
+4
+2
+3
+30
+0,0,84,36,0,1500.0,600.0,144.65902928460002,7.7151482284998565,true,false,false,Red,C,Major,1/16,Cellulose,0.0,-1
+0,0,135,0,false,false,81,0.25,100
+1,0,136,0,false,false,80,0.25,100
+2,0,137,0,false,false,79,0.25,100
+3,0,138,0,false,false,75,1.25,100
+4,0,139,0,false,false,73,0.75,100
+5,0,140,0,false,false,72,0.5,100
+6,0,141,0,false,false,71,0.75,100
+7,0,142,0,false,false,75,0.75,100
+8,0,143,0,false,false,75,0.5,100
+9,0,144,0,false,false,76,0.5,100
+10,0,145,0,false,false,66,0.75,100
+11,0,146,0,false,false,56,0.75,100
+12,0,147,0,false,false,39,0.75,100
+13,0,148,0,false,false,36,1.75,100
+14,0,149,0,false,false,65,1.25,100
+15,0,150,0,false,false,71,0.75,100
+16,0,151,0,false,false,54,2.0,100
+17,0,152,0,false,false,48,0.75,100
+End Phrase
+1,47,84,36,0,2558.0,2015.0,111.86964931349985,5.786361171400131,true,true,false,Orange,C,Major,1/16,Lignin,0.5,-1
+0,0,80,1,false,false,77,2.0,100
+1,0,81,1,false,false,79,0.25,100
+2,0,82,1,false,false,79,0.5,100
+3,0,83,1,false,false,79,0.5,100
+4,0,84,1,false,false,79,0.25,100
+5,0,85,1,false,false,79,0.25,100
+6,0,86,1,false,false,79,0.25,100
+7,0,87,1,false,false,79,0.25,100
+8,0,88,1,false,false,79,0.25,100
+9,0,89,1,false,false,79,0.25,100
+10,0,90,1,false,false,80,0.25,100
+11,0,91,1,false,false,80,0.5,100
+12,0,92,1,false,false,80,0.5,100
+13,0,93,1,false,false,80,0.25,100
+14,0,94,1,false,false,80,0.25,100
+15,0,95,1,false,false,80,0.5,100
+16,0,96,1,false,false,79,0.5,100
+17,0,97,1,false,false,80,0.25,100
+18,0,98,1,false,false,79,0.75,100
+19,0,99,1,false,false,80,1.0,100
+20,0,100,1,false,false,81,0.5,100
+21,0,101,1,false,false,81,0.5,100
+22,0,102,1,false,false,81,0.25,100
+23,0,103,1,false,false,81,0.25,100
+24,0,104,1,false,false,81,0.25,100
+25,0,105,1,false,false,82,0.25,100
+26,0,106,1,false,false,81,0.5,100
+27,0,107,1,false,false,82,0.5,100
+28,0,108,1,false,false,81,0.5,100
+29,0,109,1,false,false,81,0.5,100
+30,0,110,1,false,false,81,0.5,100
+31,0,111,1,false,false,82,0.25,100
+32,0,112,1,false,false,82,0.5,100
+33,0,113,1,false,false,82,0.5,100
+End Phrase
+Tracks
+0,false,true,false,0
+0,-1,0.0
+End Track
+1,false,true,false,47
+1,-1,2.5
+End Track
+2,false,true,false,2
+End Track

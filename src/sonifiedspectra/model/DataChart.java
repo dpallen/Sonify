@@ -149,6 +149,10 @@ public class DataChart {
         plot.setRenderer(renderer);
 
         NumberAxis domain = (NumberAxis) plot.getDomainAxis();
+        int domainX1 = (int) lowestX - 100;
+        if (domainX1 < 0) domainX1 = 0;
+        int domainX2 = (int) highestX + 100;
+        if (domainX2 > 4000) domainX2 = 4000;
         domain.setRange(300, 4000);
         domain.setTickUnit(new NumberTickUnit(500));
         DecimalFormat format = new DecimalFormat("####");
@@ -195,6 +199,16 @@ public class DataChart {
 
             line = reader.readLine();
             array = line.split(",");
+            /*for (int i = 0; i < line.length(); i++) {
+                if (line.substring(i, 1).equals(" ")) {
+                    array = line.split(" ");
+                    break;
+                }
+                else if (line.substring(i, 1).equals("\t")) {
+                    array = line.split("\t");
+                    break;
+                }
+            }*/
 
             x = Double.parseDouble( String.valueOf( array[0] ) );
             y = Double.parseDouble( String.valueOf( array[1] ) );
@@ -211,6 +225,10 @@ public class DataChart {
             while( (line = reader.readLine()) != null ) {
 
                 array = line.split(",");
+                /*for (int i = 0; i < line.length(); i++) {
+                    if (line.substring(i, 1).equals(" ")) array = line.split(" ");
+                    else if (line.substring(i, 1).equals("\t")) array = line.split("\t");
+                }*/
 
                 if ( String.valueOf( array[0] ).equals( "eof" ) ) {
 

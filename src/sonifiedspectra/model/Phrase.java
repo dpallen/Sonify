@@ -63,7 +63,7 @@ public class Phrase extends jm.music.data.Phrase {
 
     public Phrase copy() {
         Phrase newPhrase = new Phrase(id, compound, color, x1, x2);
-        newPhrase.setParentPhrase(this);
+        //newPhrase.setParentPhrase(this);
         newPhrase.setMinPitch(minPitch);
         newPhrase.setMaxPitch(maxPitch);
         newPhrase.setQuantized(quantized);
@@ -72,7 +72,9 @@ public class Phrase extends jm.music.data.Phrase {
         newPhrase.setQuality(quality);
         newPhrase.setQRhythm(qRhythm);
         newPhrase.setBackgroundCol(color);
-        newPhrase.initialize();
+        for (Note note : notesArray) {
+            newPhrase.getNotesArray().add(new Note(note.getPitch() + note.getTranspose(), note.getPeak(), note.isFiller(), newPhrase));
+        }
         return newPhrase;
     }
 
@@ -201,6 +203,14 @@ public class Phrase extends jm.music.data.Phrase {
 
         for (Note n : getSelectedNotes()) {
             n.transposeDown();
+        }
+
+    }
+
+    public void transposeSelectedNotes(int val) {
+
+        for (Note n : getSelectedNotes()) {
+            n.setTranspose(val);
         }
 
     }

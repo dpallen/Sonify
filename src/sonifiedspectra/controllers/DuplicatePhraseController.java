@@ -49,45 +49,23 @@ public class DuplicatePhraseController implements MouseListener {
 
                 }
             }
+
             int i = 0;
 
-                tv.initialize();
-                for (PhraseInTrackView pitv2 : tv.getPhraseInTrackViewArray()) {
-                  //pitv2.setBounds((int) ((pitv2.getPhrase().getStartTime() * 4) * 25), i * 15, pitv2.getAdjustedWidth(), 15);
-                    pitv2.addMouseListener(new PhraseInTrackController(app, app.getActiveProject(), pitv2));
-                    pitv2.addMouseListener(new HelpTextController(app, HelpStrings.PITV));
-                    RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(app, app.getActiveProject(), pitv2, tv);
-                    pitv2.getRemoveButton().addMouseListener(new HelpTextController(app, HelpStrings.REMOVE_PHRASE_FROM_TRACK));
-                    pitv2.getRemoveButton().addActionListener(removePhraseFromTrackController);
-                    pitv2.getRemoveButton().addMouseListener(removePhraseFromTrackController);
-                    System.out.println("Pitv " + pitv2.getPhrase().getId() + "-  Start time: " + pitv2.getPhrase().getStartTime() + ", End time: " + pitv2.getPhrase().getEndTime());
-                    i++;
-                }
-                tv.repaint();
+            tv.initialize();
+            for (PhraseInTrackView pitv2 : tv.getPhraseInTrackViewArray()) {
 
-            /*for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
-                if (pitv.isSelected()) {
+                pitv2.addMouseListener(new PhraseInTrackController(app, app.getActiveProject(), pitv2));
+                pitv2.addMouseListener(new HelpTextController(app, HelpStrings.PITV));
+                RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(app, app.getActiveProject(), pitv2, tv);
+                pitv2.getRemoveButton().addMouseListener(new HelpTextController(app, HelpStrings.REMOVE_PHRASE_FROM_TRACK));
+                pitv2.getRemoveButton().addActionListener(removePhraseFromTrackController);
+                pitv2.getRemoveButton().addMouseListener(removePhraseFromTrackController);
+                System.out.println("Pitv " + pitv2.getPhrase().getId() + "-  Start time: " + pitv2.getPhrase().getStartTime() + ", End time: " + pitv2.getPhrase().getEndTime());
+                i++;
 
-                    double time = pitv.getPhrase().getEndTime();
-
-                    for (int i = 0; i < multiplier; i++) {
-                        Phrase newPhrase = app.getActivePhrase().copy();
-                        newPhrase.setId(app.getActiveProject().getCurrentPhraseId());
-                        newPhrase.setStartTime(time);
-                        app.getActiveProject().incrementPhraseId();
-                        tv.getTrack().getPhrases().add(newPhrase);
-                        PhraseInTrackView newPITV = new PhraseInTrackView(pitv.getPhrase());
-                        if (!newPhrase.isLoop()) newPITV.getNameLabel().setText(newPhrase.getCompound().getName());
-                        else newPITV.getNameLabel().setText("Loop");
-                        newPITV.setBounds((int) ((newPhrase.getStartTime() * 4) * 25), i * 15, newPITV.getAdjustedWidth(), 15);
-                        tv.getPhraseInTrackViewArray().add(newPITV);
-                        tv.add(newPITV);
-                        newPITV.addMouseListener(new PhraseInTrackController(app, app.getActiveProject(), newPITV));
-                        RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(app, app.getActiveProject(), newPITV, tv);
-                        newPITV.getRemoveButton().addMouseListener(new HelpTextController(app, HelpStrings.REMOVE_PHRASE_FROM_TRACK));
-                        newPITV.getRemoveButton().addActionListener(removePhraseFromTrackController);
-                        newPITV.getRemoveButton().addMouseListener(removePhraseFromTrackController);
-                    }*/
+            }
+            tv.repaint();
 
             app.getSoundPlayer().reset();
             app.getSoundPlayer().updateSoundPlayer();

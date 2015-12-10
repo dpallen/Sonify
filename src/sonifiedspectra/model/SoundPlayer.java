@@ -9,6 +9,8 @@ import jm.music.data.Part;
 import jm.music.data.Score;
 import jm.music.tools.Mod;
 import jm.util.Write;
+import org.jfree.chart.plot.Marker;
+import org.jfree.chart.plot.XYPlot;
 import sonifiedspectra.view.BetterButton;
 import sonifiedspectra.view.Sonify;
 import sonifiedspectra.view.TrackHeadView;
@@ -18,10 +20,13 @@ import javax.sound.sampled.*;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**
  * This class is a Swing component that can load and play a sound clip,
@@ -38,6 +43,14 @@ public class SoundPlayer {
     private Sequence sequence;       // The contents of a MIDI file
     private Sequencer sequencer;     // We play MIDI Sequences with a Sequencer
     private boolean playing = false; // whether the sound is currently playing
+    private ArrayList<Integer> noteOnArray;
+    private int currentNoteOnIndex;
+    private Marker lastMarker;
+    private boolean notePlayer;
+
+    public static final int NOTE_ON = 0x90;
+    public static final int NOTE_OFF = 0x80;
+    public static final String[] NOTE_NAMES = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 
     // Length and position of the sound are measured in milliseconds for
     // sampled sounds and MIDI "ticks" for MIDI sounds
@@ -62,6 +75,8 @@ public class SoundPlayer {
             MidiUnavailableException,
             InvalidMidiDataException {
         this.app = app;
+        currentNoteOnIndex = 0;
+        noteOnArray = new ArrayList<>();
         // First, get a Sequencer to play sequences of MIDI events
         // That is, to send events to a Synthesizer at the right time.
         sequencer = MidiSystem.getSequencer();  // Used to play sequences
@@ -127,7 +142,7 @@ public class SoundPlayer {
         stop.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 reset();
-                Icon playIcon = new ImageIcon("resources/icons/playicon.png");
+                Icon playIcon = new ImageIcon(getClass().getResource("/icons/playicon.png"));
                 play.setIcon(playIcon);
                 if (!loop2) tempo.setValue(app2.getActiveProject().getTempo());
             }
@@ -156,6 +171,49 @@ public class SoundPlayer {
         // Now add additional controls based on the type of the sound
         if (!loop) {addMidiControls();
         app.getPlaybackPanel().add(time);}
+
+        sequencer.addMetaEventListener(
+                new MetaEventListener()
+                {
+                    public void meta(MetaMessage message)
+                    {
+                        System.out.println("%%% MetaMessage: " + message);
+                        System.out.println("%%% MetaMessage type: " + message.getType());
+                        System.out.println("%%% MetaMessage length: " + message.getLength());
+                    }
+                });
+
+        int[] anControllers = { 1, 2, 4 };
+
+        sequencer.addControllerEventListener(
+                new ControllerEventListener()
+                {
+                    public void controlChange(ShortMessage message)
+                    {
+                        System.out.println("%%% ShortMessage: " + message);
+                        System.out.println("%%% ShortMessage controller: " + message.getData1());
+                        System.out.println("%%% ShortMessage value: " + message.getData2());
+
+                        if (message.getCommand() == NOTE_ON) {
+                            int key = message.getData1();
+                            int octave = (key / 12)-1;
+                            int note = key % 12;
+                            String noteName = NOTE_NAMES[note];
+                            int velocity = message.getData2();
+                            System.out.println("Note on, " + noteName + octave + " key=" + key + " velocity: " + velocity);
+                        } else if (message.getCommand() == NOTE_OFF) {
+                            int key = message.getData1();
+                            int octave = (key / 12)-1;
+                            int note = key % 12;
+                            String noteName = NOTE_NAMES[note];
+                            int velocity = message.getData2();
+                            System.out.println("Note off, " + noteName + octave + " key=" + key + " velocity: " + velocity);
+                        } else {
+                            System.out.println("Command:" + message.getCommand());
+                        }
+                    }
+                },
+                anControllers);
     }
 
     /** Start playing the sound at the current position */
@@ -175,14 +233,19 @@ public class SoundPlayer {
     /** Stop playing the sound and reset the position to 0 */
     public void reset( ) {
         stop( );
+        currentNoteOnIndex = 0;
         sequencer.setTickPosition(0);
         audioPosition = 0;
         progress.setValue(0);
+        Line line = app.getPlaybackLine();
+        line.setBounds(0 - app.getTracksScrollPane().getHorizontalScrollBar().getValue(), line.getY(), line.getWidth(), line.getHeight());
+        line.repaint();
         Icon playIcon = new ImageIcon(getClass().getResource("/icons/playicon.png"));
         app.getPlayButton().setIcon(playIcon);
         app.getPlayButton().repaint();
         app.getLoopDialog().getPlayButton().setIcon(playIcon);
         app.getLoopDialog().getPlayButton().repaint();
+        app.updateIntervalMarker();
     }
 
     /** Skip to the specified position */
@@ -201,10 +264,44 @@ public class SoundPlayer {
     // If the sound has finished, it resets to the beginning
     public void tick( ) {
         if (sequencer.isRunning( )) {
-            audioPosition = (int)sequencer.getTickPosition( );
+            audioPosition = (int) sequencer.getTickPosition( );
             progress.setValue(audioPosition);
-            app.getPlaybackLine().setX(app.getPlaybackLine().getX() + 5);
-            app.getPlaybackLine().repaint();
+            if (!notePlayer && app.isProject()) {
+                Line line = app.getPlaybackLine();
+                line.setBounds(audioPosition / 20 - app.getTracksScrollPane().getHorizontalScrollBar().getValue(), line.getY(), line.getWidth(), line.getHeight());
+                app.getPlaybackLinePanel().repaint();
+                line.repaint();
+            }
+            if (!notePlayer && !app.isProject()) {
+                if (noteOnArray.size() > 0) {
+                    if (sequencer.getTickPosition() >= noteOnArray.get(currentNoteOnIndex)) {
+                        System.out.println(noteOnArray.get(currentNoteOnIndex));
+
+                        Marker newMarker = app.addNoteMarker(app.getNoteViewArray().get(currentNoteOnIndex / 2).getNote());
+
+                        app.getNoteViewArray().get(currentNoteOnIndex / 2).setBackground(app.getActivePhrase().getUnselectedColor());
+                        if (!app.getNoteViewArray().get(currentNoteOnIndex / 2).getNote().isFiller()) {
+                            XYPlot plot = app.getActivePhrase().getCompound().getDataChart().getDataChart().getXYPlot();
+                            plot.addDomainMarker(newMarker);
+                        }
+                        app.getNoteViewArray().get(currentNoteOnIndex / 2).repaint();
+
+                        if (currentNoteOnIndex / 2 >= 1) {
+                            app.getNoteViewArray().get(currentNoteOnIndex / 2 - 1).setBackground(Color.decode("#F5F5F5"));
+                            if (app.getActivePhrase() != null && !app.getNoteViewArray().get(currentNoteOnIndex / 2 - 1).getNote().isFiller()) {
+                                XYPlot plot = app.getActivePhrase().getCompound().getDataChart().getDataChart().getXYPlot();
+                                plot.removeDomainMarker(lastMarker);
+                            }
+                            app.getNoteViewArray().get(currentNoteOnIndex / 2 - 1).repaint();
+                        }
+
+                        lastMarker = newMarker;
+                        app.getChPanel().repaint();
+                        app.getFrame().pack();
+                        currentNoteOnIndex++;
+                    }
+                }
+            }
         }
         else {
             reset();
@@ -249,27 +346,7 @@ public class SoundPlayer {
 
     }
 
-    public void updateLoopPlayer(Phrase phrase) {
-
-        Score score = new Score();
-        Part newPart = new Part();
-        jm.music.data.Phrase newPhrase = new jm.music.data.Phrase();
-        for (Note note : phrase.getNotesArray()) {
-            jm.music.data.Note newNote = new jm.music.data.Note(note.getPitch() + note.getTranspose(), note.getRhythmValue(), note.getDynamic());
-            newPhrase.add(newNote);
-        }
-        newPhrase.setInstrument(phrase.getInstrument());
-        newPart.setInstrument(phrase.getInstrument());
-        newPart.add(newPhrase);
-        score.add(newPart);
-
-        score.setTempo(120);
-
-        Write.midi(score, "midi/loop.mid");
-
-        File midiFile = new File( "midi/loop.mid" );   // This is the file we'll be playing
-
-        phrase.setMidiFile(midiFile);
+    public void updateLoopPlayer(File midiFile) {
 
         // Read the sequence from the file and tell the sequencer about it
         try {
@@ -301,9 +378,11 @@ public class SoundPlayer {
                 tick();
             }
         }));
+
     }
 
     public void updateNotePlayer(Note note) {
+        notePlayer = true;
 
         Score score = new Score();
         Part newPart = new Part();
@@ -354,6 +433,7 @@ public class SoundPlayer {
     }
 
     public void updateSoundPlayer() {
+        notePlayer = false;
         System.out.println("Sampling phrase " + app.getActivePhrase().getId() + "...");
 
         int[] scale = getScale(String.valueOf(app.getQualityComboBox().getSelectedItem()));
@@ -419,8 +499,6 @@ public class SoundPlayer {
 
         File midiFile = new File( app.getActiveProject().getDirectoryPath() + "/Midi/active.mid" );   // This is the file we'll be playing
 
-        app.getActivePhrase().setMidiFile(midiFile);
-
         // Read the sequence from the file and tell the sequencer about it
         try {
             setSequence(MidiSystem.getSequence(midiFile));
@@ -435,6 +513,51 @@ public class SoundPlayer {
             e1.printStackTrace();
         }
         setAudioLength((int) getSequence().getTickLength()); // Get sequence length
+
+        noteOnArray = new ArrayList<>();
+
+        int trackNumber = 0;
+        for (javax.sound.midi.Track track :  sequence.getTracks()) {
+            trackNumber++;
+            System.out.println("Track " + trackNumber + ": size = " + track.size());
+            System.out.println();
+            for (int i = 0; i < track.size(); i++) {
+                MidiEvent event = track.get(i);
+                System.out.print("@" + event.getTick() + " ");
+                MidiMessage message = event.getMessage();
+                if (message instanceof ShortMessage) {
+                    ShortMessage sm = (ShortMessage) message;
+                    System.out.print("Channel: " + sm.getChannel() + " ");
+                    if (sm.getCommand() == NOTE_ON) {
+                        noteOnArray.add((int) event.getTick());
+                        int key = sm.getData1();
+                        int octave = (key / 12) - 1;
+                        int note = key % 12;
+                        String noteName = NOTE_NAMES[note];
+                        int velocity = sm.getData2();
+
+                        System.out.println("Note on, " + noteName + octave + " key=" + key + " velocity: " + velocity);
+                    } else if (sm.getCommand() == NOTE_OFF) {
+                        int key = sm.getData1();
+                        int octave = (key / 12) - 1;
+                        int note = key % 12;
+                        String noteName = NOTE_NAMES[note];
+                        int velocity = sm.getData2();
+                        System.out.println("Note off, " + noteName + octave + " key=" + key + " velocity: " + velocity);
+                    } else {
+                        System.out.println("Command:" + sm.getCommand());
+                    }
+                } else {
+                    System.out.println("Other message: " + message.getClass());
+                }
+            }
+        }
+
+        for (int i = 0; i < noteOnArray.size(); i++) {
+            System.out.println(noteOnArray.get(i));
+        }
+
+        System.out.println(noteOnArray.size() + ", " + app.getActivePhrase().getNotesArray().size());
 
         // Now create the basic GUI
         getProgress().setMinimum(0);

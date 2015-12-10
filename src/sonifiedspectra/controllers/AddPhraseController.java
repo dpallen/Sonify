@@ -33,9 +33,14 @@ public class AddPhraseController implements ActionListener, MouseListener {
 
         for (Compound c : project.getCompoundsArray()) {
 
-            if (String.valueOf(app.getCompoundComboBox().getSelectedItem()).equals(c.getName())) compound = c;
+            if (String.valueOf(app.getCompoundComboBox().getSelectedItem()).equals(c.getName())) {
+                compound = c;
+            }
 
         }
+
+        if (compound != null) System.out.println( compound.getName() + " found.");
+        else System.out.println("Could not find active compound.");
 
         Phrase newPhrase = new Phrase(app.getActiveProject().getCurrentPhraseId(), compound, app.getColorsArray().get(app.getCurrentColorIndex()), 2500, 1000);
         app.incrementColorIndex();

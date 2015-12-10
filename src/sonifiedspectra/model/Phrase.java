@@ -40,6 +40,10 @@ public class Phrase extends jm.music.data.Phrase {
 
     private File midiFile;
 
+    public Phrase() {
+        this.loop = true;
+    }
+
     public Phrase(int id, Compound compound, String color, double x1, double x2) {
         this.id = id;
         this.instrument = 0;
@@ -63,7 +67,7 @@ public class Phrase extends jm.music.data.Phrase {
 
     public Phrase copy() {
         Phrase newPhrase = new Phrase(id, compound, color, x1, x2);
-        //newPhrase.setParentPhrase(this);
+        newPhrase.setParentPhrase(this);
         newPhrase.setMinPitch(minPitch);
         newPhrase.setMaxPitch(maxPitch);
         newPhrase.setQuantized(quantized);
@@ -91,6 +95,7 @@ public class Phrase extends jm.music.data.Phrase {
             System.out.println("Initializing phrase...");
             System.out.println("    ID: " + id);
             System.out.println("    Compound name: " + compound.getName());
+            System.out.println("    Total peaks in compound: " + compound.getDataChart().getPeaksArray().size());
             System.out.println("    x1: " + x1);
             System.out.println("    x2: " + x2);
 
@@ -98,6 +103,7 @@ public class Phrase extends jm.music.data.Phrase {
             int endIndex = 0;
 
             for (Peak p : compound.getDataChart().getPeaksArray()) {
+                System.out.println(p.toString());
                 if (x1 < p.getX1() && x1 > p.getX2()) {
                     startIndex = compound.getDataChart().getPeaksArray().indexOf(p);
                     System.out.println("    First peak index: " + startIndex);
@@ -127,6 +133,8 @@ public class Phrase extends jm.music.data.Phrase {
 
                 if (newNote.getPeak().getWidth() > highestWidth) highestWidth = newNote.getPeak().getWidth();
                 if (newNote.getPeak().getWidth() < lowestWidth) lowestWidth = newNote.getPeak().getWidth();
+
+                System.out.println(newNote.toString());
 
                 notesArray.add(newNote);
             }

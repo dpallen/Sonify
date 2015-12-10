@@ -41,17 +41,17 @@ public class AddPhraseToTrackController implements ActionListener, MouseListener
                         int startTime = app.getSelectedMeasures().get(j)-1;
                         if (startTime < 0) startTime = 0;
                         Phrase newPhrase = app.getActivePhrase().copy();
-                        newPhrase.setId(app.getActiveProject().getCurrentPhraseId());
+                        //newPhrase.setId(app.getActiveProject().getCurrentPhraseId());
                         newPhrase.setStartTime(startTime);
-                        app.getActiveProject().incrementPhraseId();
+                        //app.getActiveProject().incrementPhraseId();
                         tv.getTrack().getPhrases().add(newPhrase);
                     }
                 }
 
                 else {
                     Phrase newPhrase = app.getActivePhrase().copy();
-                    newPhrase.setId(app.getActiveProject().getCurrentPhraseId());
-                    app.getActiveProject().incrementPhraseId();
+                    //newPhrase.setId(app.getActiveProject().getCurrentPhraseId());
+                    //app.getActiveProject().incrementPhraseId();
                     tv.getTrack().getPhrases().add(newPhrase);
                 }
 

@@ -66,7 +66,8 @@ public class PhraseInTrackView extends JPanel {
     }
 
     public int getAdjustedWidth() {
-        return (int) (app.getMeasureScale() * phrase.getBeatLength2());
+        if (!phrase.isLoop()) return (int) (app.getMeasureScale() * phrase.getBeatLength2());
+        else return (int) (app.getMeasureScale() * phrase.getBeatLength());
     }
 
     public JLabel getNameLabel() {

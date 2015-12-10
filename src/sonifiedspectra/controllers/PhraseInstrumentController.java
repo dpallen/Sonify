@@ -20,5 +20,9 @@ public class PhraseInstrumentController implements ItemListener {
     public void itemStateChanged(ItemEvent e) {
 
         app.getActivePhrase().setInstrument(app.getInstrumentComboBox().getSelectedIndex());
+
+        app.getSoundPlayer().reset();
+        app.getSoundPlayer().updateSoundPlayer();
+
     }
 }

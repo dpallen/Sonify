@@ -40,11 +40,11 @@ public class LoopController implements ActionListener, MouseListener {
             }
         }
 
-        app.getLoopDialog().getMeasureLabel().setText((app.getLoopDialog().getLoopsArray()
-                .get(app.getLoopDialog().getLoopComboBox().getSelectedIndex()).getBeatLength2() / 4) + " measures");
+        //app.getLoopDialog().getMeasureLabel().setText((app.getLoopDialog().getLoopsArray()
+        //        .get(app.getLoopDialog().getLoopComboBox().getSelectedIndex()).getBeatLength2() / 4) + " measures");
 
-        app.getLoopDialog().getLoopPlayer().updateLoopPlayer(app.getLoopDialog().getLoopsArray()
-                .get(app.getLoopDialog().getLoopComboBox().getSelectedIndex()));
+        /*app.getLoopDialog().getLoopPlayer().updateLoopPlayer(app.getLoopDialog().getLoopsArray()
+                .get(app.getLoopDialog().getLoopComboBox().getSelectedIndex()));*/
 
         app.getLoopDialog().setVisible(!app.getLoopDialog().isVisible());
     }

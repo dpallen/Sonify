@@ -1,5 +1,8 @@
 package sonifiedspectra.view;
 
+import jm.music.data.*;
+import jm.music.data.Phrase;
+import jm.util.Read;
 import sonifiedspectra.controllers.*;
 import sonifiedspectra.model.*;
 
@@ -35,11 +38,11 @@ public class LoopDialog extends JDialog {
 
     private SoundPlayer loopPlayer;
 
-    private ArrayList<Phrase> loopsArray;
+    private ArrayList<File> midiLoops;
 
     public LoopDialog(Sonify app) throws IOException, FontFormatException, MidiUnavailableException, UnsupportedAudioFileException, LineUnavailableException, InvalidMidiDataException {
         this.app = app;
-        this.loopsArray = new ArrayList<Phrase>();
+        this.midiLoops = new ArrayList<File>();
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -49,13 +52,10 @@ public class LoopDialog extends JDialog {
 
         titleLabel.setFont(hnt20);
 
-        createLoops();
+        loadLoops();
 
-        int i = 0;
-
-        for (Phrase p : loopsArray) {
-            loopComboBox.addItem("Loop " + (i + 1));
-            i++;
+        for (File f : midiLoops) {
+            loopComboBox.addItem(f.getName());
         }
 
         loopComboBox.addItemListener(new LoopComboBoxController(app, app.getActiveProject(), loopComboBox));
@@ -64,7 +64,7 @@ public class LoopDialog extends JDialog {
         progress.setBounds(10, 5, 250, 27);
         playPanel.add(progress);
 
-        Icon playicon = new ImageIcon("resources/icons/playicon.png");
+        Icon playicon = new ImageIcon(getClass().getResource("/icons/playicon.png"));
         playButton = new BetterButton(Color.decode("#F5F5F5"), 40, 40, 16);
         playButton.setIcon(playicon);
         playButton.setBounds(90, 50, 40, 40);
@@ -73,7 +73,7 @@ public class LoopDialog extends JDialog {
         playButton.setFocusPainted(false);
         playPanel.add(playButton);
 
-        Icon stopicon = new ImageIcon("resources/icons/stopicon.png");
+        Icon stopicon = new ImageIcon(getClass().getResource("/icons/stopicon.png"));
         stopButton = new BetterButton(Color.decode("#F5F5F5"), 40, 40, 16);
         stopButton.setIcon(stopicon);
         stopButton.setBounds(145, 50, 40, 40);
@@ -117,7 +117,13 @@ public class LoopDialog extends JDialog {
     }
 
     private void onOK() {
-        Phrase phrase = loopsArray.get(loopComboBox.getSelectedIndex());
+
+        Phrase phrase = new sonifiedspectra.model.Phrase();
+        Read.midi(phrase, String.valueOf(midiLoops.get(loopComboBox.getSelectedIndex())));
+        phrase.setInstrument(127);
+
+        for (jm.music.data.Note n : phrase.getNoteArray()) System.out.println("Note");
+        System.out.println("Heeeeeel");
 
         boolean done = false;
 
@@ -129,18 +135,17 @@ public class LoopDialog extends JDialog {
                 if (app.getSelectedMeasures().size() > 0) {
                     for (int j = 0; j < app.getSelectedMeasures().size(); j++) {
                         Phrase newPhrase = phrase.copy();
-                        newPhrase.setId(app.getActiveProject().getCurrentPhraseId());
                         newPhrase.setStartTime(app.getSelectedMeasures().get(j));
-                        app.getActiveProject().incrementPhraseId();
-                        tv.getTrack().getPhrases().add(newPhrase);
+                        sonifiedspectra.model.Phrase newPhrase2 = (sonifiedspectra.model.Phrase) newPhrase;
+                        newPhrase2.setLoop(true);
+                        tv.getTrack().getPhrases().add(newPhrase2);
                     }
                 }
 
                 else {
-                    Phrase newPhrase = phrase;
-                    newPhrase.setId(app.getActiveProject().getCurrentPhraseId());
-                    app.getActiveProject().incrementPhraseId();
-                    tv.getTrack().getPhrases().add(newPhrase);
+                    sonifiedspectra.model.Phrase newPhrase2 = (sonifiedspectra.model.Phrase) phrase;
+                    newPhrase2.setLoop(true);
+                    tv.getTrack().getPhrases().add(newPhrase2);
                 }
 
                 tv.initialize();
@@ -161,7 +166,9 @@ public class LoopDialog extends JDialog {
             app.getActiveProject().incrementTrackId();
             app.getActiveProject().getTracksArray().add(newTrack);
 
-            newTrack.getPhrases().add(phrase);
+            sonifiedspectra.model.Phrase newPhrase2 = (sonifiedspectra.model.Phrase) phrase;
+            newPhrase2.setLoop(true);
+            newTrack.getPhrases().add((sonifiedspectra.model.Phrase) newPhrase2);
 
             TrackView tv = new TrackView(newTrack, app);
             tv.setBounds(0, 70 * (app.getActiveProject().getTracksArray().size() - 1), 100 * app.getActiveProject().getNumMeasures(), 70);
@@ -195,17 +202,15 @@ public class LoopDialog extends JDialog {
             app.getInTracksPanel().setPreferredSize(new Dimension(app.getInTracksPanel().getWidth(),
                     70 * app.getActiveProject().getTracksArray().size()));
 
-            int u = 0;
-
             tv.initialize();
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
+                System.out.println("Pitv check");
                 pitv.setBounds(pitv.getX(), pitv.getY(), pitv.getAdjustedWidth(), pitv.getHeight());
                 pitv.addMouseListener(new PhraseInTrackController(app, app.getActiveProject(), pitv));
                 RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(app, app.getActiveProject(), pitv, tv);
                 pitv.getRemoveButton().addMouseListener(new HelpTextController(app, HelpStrings.REMOVE_PHRASE_FROM_TRACK));
                 pitv.getRemoveButton().addActionListener(removePhraseFromTrackController);
                 pitv.getRemoveButton().addMouseListener(removePhraseFromTrackController);
-                u++;
             }
             tv.repaint();
         }
@@ -229,57 +234,28 @@ public class LoopDialog extends JDialog {
             j2++;
         }
 
-        app.updateActivePhrase(app.getActivePhrase());
-        app.updateIntervalMarker();
-        app.getSoundPlayer().reset();
-        app.getSoundPlayer().updateSoundPlayer();
         app.getFrame().pack();
 
         setVisible(false);
-
-        int k1 = 0;
-
-        for (TrackView tv3 : app.getTrackViewArray()) {
-            System.out.println("TrackView: " + k1);
-            System.out.println("Size of Pitv Array: " + tv3.getPhraseInTrackViewArray().size());
-            for (PhraseInTrackView pitv : tv3.getPhraseInTrackViewArray()) pitv.print();
-            k1++;
-        }
     }
 
     private void onCancel() {
+        loopPlayer.reset();
         setVisible(false);
     }
 
-    public void createLoops() {
+    public void loadLoops() {
 
-        sonifiedspectra.model.Phrase loop1 = new sonifiedspectra.model.Phrase(-1, null, "Black", 0, 0);
-
-        for (int i = 0; i < 4; i++) {
-            Note note = new Note(-1, null, false, loop1);
-            note.setPitch(60);
-            note.setRhythmValue(2);
-            note.setDynamic(100);
-            loop1.getNotesArray().add(note);
+        File[] directoryListing = new File(app.getActiveProject().getDirectoryPath() + "/Midi/Loops").listFiles();
+        if (directoryListing != null) {
+            for (File dataFile : directoryListing) {
+                if (!dataFile.isHidden()) {
+                    System.out.println("Added loop: " + dataFile.getName());
+                    midiLoops.add(dataFile);
+                }
+            }
         }
-        loop1.setInstrument(50);
-        loop1.setLoop(true);
-
-        loopsArray.add(loop1);
-
-        sonifiedspectra.model.Phrase loop2 = new sonifiedspectra.model.Phrase(-1, null, "Black", 0, 0);
-
-        for (int i = 0; i < 8; i++) {
-            Note note = new Note(-1, null, false, loop2);
-            note.setPitch(50);
-            note.setRhythmValue(1);
-            note.setDynamic(100);
-            loop2.getNotesArray().add(note);
-        }
-        loop2.setInstrument(50);
-        loop2.setLoop(true);
-
-        loopsArray.add(loop2);
+        else System.out.println("Loop directory is null.");
 
     }
 
@@ -299,12 +275,12 @@ public class LoopDialog extends JDialog {
         this.selectedLabel = selectedLabel;
     }
 
-    public ArrayList<Phrase> getLoopsArray() {
-        return loopsArray;
+    public ArrayList<File> getLoopsArray() {
+        return midiLoops;
     }
 
-    public void setLoopsArray(ArrayList<Phrase> loopsArray) {
-        this.loopsArray = loopsArray;
+    public void setLoopsArray(ArrayList<File> midiLoops) {
+        this.midiLoops = midiLoops;
     }
 
     public JLabel getMeasureLabel() {

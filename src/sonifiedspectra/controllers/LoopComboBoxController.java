@@ -6,6 +6,7 @@ import sonifiedspectra.view.Sonify;
 import javax.swing.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 
 /**
  * Created by Hvandenberg on 6/4/15.
@@ -26,7 +27,7 @@ public class LoopComboBoxController implements ItemListener {
     public void itemStateChanged(ItemEvent e) {
 
         app.getLoopDialog().getLoopPlayer().reset();
-        app.getLoopDialog().getLoopPlayer().updateLoopPlayer(app.getLoopDialog().getLoopsArray()
+        app.getLoopDialog().getLoopPlayer().updateLoopPlayer( app.getLoopDialog().getLoopsArray()
                 .get(loopComboBox.getSelectedIndex()));
     }
 }

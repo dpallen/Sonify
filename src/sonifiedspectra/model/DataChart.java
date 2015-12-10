@@ -55,52 +55,6 @@ public class DataChart {
     }
 
     /**
-     * Parses the input lines from the input file and stores the data as coordinate pairs
-     * in the data series array for the line graph
-     */
-    public void load() {
-
-        // stores input stream
-        InputStream is;
-
-        try {
-
-            // sets input stream as given file
-            is = new FileInputStream( file );
-
-            Scanner scan = new Scanner(is);
-            String[] array;
-
-            // reads each line of file and stores the data in the data series array
-            while ( scan.hasNextLine() ) {
-
-                String line = scan.nextLine();
-
-                if (line.contains(",")) {
-
-                    array = line.split(",");
-
-                } else array = line.split("\t");
-
-                Object[] data = new Object[array.length];
-
-                for (int i = 0; i < array.length; i++) data[i] = array[i];
-
-                Double x = Double.parseDouble(array[0]);
-                Double y = Double.parseDouble(array[1]);
-
-                dataSeries.add(x, y);
-
-            }
-
-        }
-        catch(Exception ex) {
-            ex.printStackTrace();
-        }
-
-    }
-
-    /**
      * Creates and customizes the data chart
      * @return the data chart
      */
@@ -149,11 +103,6 @@ public class DataChart {
         plot.setRenderer(renderer);
 
         NumberAxis domain = (NumberAxis) plot.getDomainAxis();
-        int domainX1 = (int) lowestX - 100;
-        if (domainX1 < 0) domainX1 = 0;
-        int domainX2 = (int) highestX + 100;
-        if (domainX2 > 4000) domainX2 = 4000;
-        domain.setRange(300, 4000);
         domain.setTickUnit(new NumberTickUnit(500));
         DecimalFormat format = new DecimalFormat("####");
         domain.setNumberFormatOverride(format);
@@ -198,20 +147,22 @@ public class DataChart {
             reader = new BufferedReader(new FileReader( file ));
 
             line = reader.readLine();
-            array = line.split(",");
-            /*for (int i = 0; i < line.length(); i++) {
-                if (line.substring(i, 1).equals(" ")) {
-                    array = line.split(" ");
-                    break;
-                }
-                else if (line.substring(i, 1).equals("\t")) {
-                    array = line.split("\t");
-                    break;
-                }
-            }*/
+            if (line.contains(",")) array = line.split(",");
+            else if (line.contains(" ")) array = line.split(" ");
+            else if (line.contains("\t")) array = line.split("\t");
+            else {
+                System.out.println("Invalid compound file - " + file.getName());
+                return null;
+            }
 
-            x = Double.parseDouble( String.valueOf( array[0] ) );
-            y = Double.parseDouble( String.valueOf( array[1] ) );
+            String xString = String.valueOf( array[0] );
+            String yString = String.valueOf( array[1] );
+
+            if (!xString.contains("."))  xString += ".0";
+            if (!yString.contains("."))  yString += ".0";
+
+            x = Double.parseDouble( xString );
+            y = Double.parseDouble( yString );
 
             highestX = x;
             lowestX = x;
@@ -224,11 +175,9 @@ public class DataChart {
 
             while( (line = reader.readLine()) != null ) {
 
-                array = line.split(",");
-                /*for (int i = 0; i < line.length(); i++) {
-                    if (line.substring(i, 1).equals(" ")) array = line.split(" ");
-                    else if (line.substring(i, 1).equals("\t")) array = line.split("\t");
-                }*/
+                if (line.contains(",")) array = line.split(",");
+                else if (line.contains(" ")) array = line.split(" ");
+                else array = line.split("\t");
 
                 if ( String.valueOf( array[0] ).equals( "eof" ) ) {
 
@@ -241,9 +190,14 @@ public class DataChart {
 
                 }
 
+                xString = String.valueOf( array[0] );
+                yString = String.valueOf( array[1] );
 
-                x = Double.parseDouble( String.valueOf( array[0] ) );
-                y = Double.parseDouble( String.valueOf( array[1] ) );
+                if (!xString.contains("."))  xString += ".0";
+                if (!yString.contains("."))  yString += ".0";
+
+                x = Double.parseDouble( xString );
+                y = Double.parseDouble( yString );
 
                 if ( x > highestX ) highestX = x;
                 if ( x < lowestX ) lowestX = x;
@@ -251,8 +205,6 @@ public class DataChart {
                 if ( y < lowestY ) lowestY = y;
 
                 if ( direction == 0 && y < lastY ) {
-
-                    System.out.println( "Maxed" );
 
                     peakMax = y;
                     direction = 1;
@@ -301,6 +253,24 @@ public class DataChart {
 
         System.out.println( highestX + " + " + lowestX );
         System.out.println( highestY + " + " + lowestY );
+
+        int id = 0;
+        if (peaksArray.size() > 1) {
+            if (peaksArray.get(0).getX1() < peaksArray.get(1).getX1()) {
+                ArrayList<Peak> rightOrder = new ArrayList<Peak>();
+                for (int i = peaksArray.size() - 1; i > 0; i--) {
+                    double temp = peaksArray.get(i).getX1();
+                    peaksArray.get(i).setX1(peaksArray.get(i).getX2());
+                    peaksArray.get(i).setX2(temp);
+                    rightOrder.add(peaksArray.get(i));
+                    peaksArray.get(i).setId(id);
+                    id++;
+                }
+                peaksArray = rightOrder;
+            }
+        }
+
+        for (Peak p : peaksArray) System.out.println(p.toString());
 
         return peaksArray;
 

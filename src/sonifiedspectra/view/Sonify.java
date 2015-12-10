@@ -85,6 +85,7 @@ public class Sonify {
     private JPanel phrasesPanel;
     private JPanel rootPanel;
     private JPanel playbackPanel;
+    private JPanel playbackLinePanel;
 
     private JScrollPane trackHeadScrollPane;
     private JScrollPane measureHeadScrollPane;
@@ -217,7 +218,7 @@ public class Sonify {
         System.out.println(activeProject.getDirectoryPath());
 
         soundPlayer = new SoundPlayer(new File(activeProject.getDirectoryPath() + "/Midi/starwars.mid"), activePhrase.getInstrument(), this, false);
-        loopDialog.setLoopPlayer(soundPlayer);
+        loopDialog.setLoopPlayer(new SoundPlayer(new File(activeProject.getDirectoryPath() + "/Midi/Loops/090 S01 Intro.mid"), 50, this, true));
 
         updateActivePhrase(activePhrase);
         updateIntervalMarker();
@@ -297,16 +298,17 @@ public class Sonify {
                 if (!dataFile.isHidden()) {
                     compound = new Compound(i, dataFile, "Infrared");
                     compound.load();
-                    System.out.println("Added compound: " + compound.getName());
                     compound.getDataChart().createChart();
-                    compound.setPeaks(compound.getDataChart().process());
-                    compoundComboBox.addItem(compound.getName());
-                    activeProject.getCompoundsArray().add(compound);
-                    i++;
+                    ArrayList<Peak> peaks = compound.getDataChart().process();
+                    if (peaks != null) {
+                        compound.setPeaks(peaks);
+                        compoundComboBox.addItem(compound.getName());
+                        activeProject.getCompoundsArray().add(compound);
+                        i++;
+                        System.out.println("Added compound: " + compound.getName());
+                    }
                 }
             }
-        } else {
-
         }
 
         activeProject.setDirectoryPath(projectFolder.getPath());
@@ -326,7 +328,7 @@ public class Sonify {
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setTitle("Sonified Spectra - Musical Spectroscopic Analysis");
-        frame.setSize(1185, 800);
+        frame.setSize(1280, 740);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setUndecorated(false);
@@ -338,7 +340,7 @@ public class Sonify {
         frame.getContentPane().setBackground(Color.decode("#E5E5E5"));
 
         this.mainView = (JPanel) frame.getContentPane();
-        mainView.setPreferredSize(new Dimension(1280, 800));
+        mainView.setPreferredSize(new Dimension(1280, 740));
 
         buttonBackgroundColor = Color.decode("#F5F5F5");
         buttonHighlightColor = Color.decode("#CAEFFF");
@@ -660,13 +662,18 @@ public class Sonify {
         helpTextPane.setBounds(924, 11, 350, 32);
         frame.getContentPane().add(helpTextPane);
 
+        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setBounds(535, 52, 700, 477);
+        layeredPane.setLayout(null);
+        frame.getContentPane().add(layeredPane);
+
         outTracksPanel = new JPanel();
         outTracksPanel.setLayout(null);
         outTracksPanel.setBorder(null);
-        outTracksPanel.setBounds(535, 52, 700, 477);
+        outTracksPanel.setBounds(0, 0, 700, 477);
         outTracksPanel.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         outTracksPanel.setBackground(Color.decode("#F5F5F5"));
-        frame.getContentPane().add(outTracksPanel);
+        layeredPane.add(outTracksPanel, 0);
 
         JLabel trackOptionsLabel = new JLabel("Tracks:");
         trackOptionsLabel.setBounds(2, 8, 50, 14);
@@ -817,15 +824,19 @@ public class Sonify {
         inTracksPanel.setPreferredSize(new Dimension(100 * activeProject.getNumMeasures(),
                 70 * trackViewArray.size()));
 
-        JPanel playbackLinePanel = new JPanel();
-        playbackLinePanel.setBounds(0, 0, inTracksPanel.getWidth(), inTracksPanel.getHeight());
+        playbackLinePanel = new JPanel();
+        playbackLinePanel.setBackground(new Color(0, 0, 0, 0));
+        playbackLinePanel.setLayout(null);
+        playbackLinePanel.setPreferredSize(new Dimension(550, 477));
+        playbackLinePanel.setBounds(150, 0, 550, 477);
         playbackLinePanel.setOpaque(false);
-        inTracksPanel.add(playbackLinePanel);
+        layeredPane.add(playbackLinePanel, 100);
+        layeredPane.moveToFront(playbackLinePanel);
 
-        playbackLine = new Line(5, 0, Color.BLUE);
-        playbackLine.setBounds(0, 0, 5, 500);
+        playbackLine = new Line(5);
+        playbackLine.setBackground(activePhrase.getBorderColor());
+        playbackLine.repaint();
         playbackLinePanel.add(playbackLine);
-        playbackLinePanel.repaint();
 
         playbackLabel = new JLabel("Playback:");
         playbackLabel.setFont(hnt20);
@@ -1254,8 +1265,7 @@ public class Sonify {
 
         qualityComboBox.addItemListener(new ItemListener() {
             @Override
-            public void itemStateChanged(ItemEvent e) {
-                soundPlayer.reset();
+            public void itemStateChanged(ItemEvent e) {soundPlayer.reset();
                 soundPlayer.updateSoundPlayer();
             }
         });
@@ -1279,8 +1289,14 @@ public class Sonify {
         temp = true;
 
         for (PhraseView pv : phraseViewArray) {
-            if (pv.getPhrase().getId() != activePhrase.getId()) pv.getPhrase().setSelected(false);
-            else activePhrase.setSelected(true);
+            if (pv.getPhrase().getParentPhrase() == null) {
+                if (pv.getPhrase().getId() != activePhrase.getId()) pv.getPhrase().setSelected(false);
+                else activePhrase.setSelected(true);
+            }
+            else {
+                if (pv.getPhrase().getParentPhrase().getId() != activePhrase.getId()) pv.getPhrase().getParentPhrase().setSelected(false);
+                else activePhrase.setSelected(true);
+            }
             pv.updatePanel();
         }
 
@@ -1370,6 +1386,8 @@ public class Sonify {
         soundPlayer.reset();
         soundPlayer.updateSoundPlayer();
 
+        playbackLine.setBackground(activePhrase.getBorderColor());
+
         frame.pack();
 
     }
@@ -1415,6 +1433,8 @@ public class Sonify {
     public Marker addNoteMarker(Note n) {
 
         Color color = new Color(0, 0, 0);
+
+        System.out.println(n.getPeak().toString());
 
         double x1 = n.getPeak().getX1();
         double x2 = n.getPeak().getX2();
@@ -1505,7 +1525,7 @@ public class Sonify {
         /*JWindow splash = new JWindow();
         BufferedImage splashScreenImg;
         try {
-            splashScreenImg = ImageIO.read(new File("resources/icons/sonifysplashscreen.png"));
+            splashScreenImg = ImageIO.read(new File(getClass().getResource("/icons/sonifysplashscreen.png"));
             splash.getContentPane().add(new JLabel(new ImageIcon(splashScreenImg)));
         } catch (IOException e) {
             e.printStackTrace();
@@ -2435,5 +2455,13 @@ public class Sonify {
 
     public void setPlaybackLine(Line playbackLine) {
         this.playbackLine = playbackLine;
+    }
+
+    public JPanel getPlaybackLinePanel() {
+        return playbackLinePanel;
+    }
+
+    public void setPlaybackLinePanel(JPanel playbackLinePanel) {
+        this.playbackLinePanel = playbackLinePanel;
     }
 }

@@ -56,7 +56,6 @@ public class TransposeButtonController implements ActionListener, MouseListener 
         }
         else app.getTransposeTextField().setText("-");
         app.refreshSelectedNotes();
-        app.getSoundPlayer().updateSoundPlayer();
         app.getFrame().pack();
     }
 

@@ -52,11 +52,9 @@ public class Compound {
 
                 String line = scan.nextLine();
 
-                if (line.contains(",")) {
-
-                    array = line.split(",");
-
-                } else array = line.split("\t");
+                if (line.contains(",")) array = line.split(",");
+                else if (line.contains(" ")) array = line.split(" ");
+                else array = line.split("\t");
 
                 Object[] data = new Object[array.length];
 

@@ -152,8 +152,11 @@ public class Project {
                     Compound compound = null;
 
                     for (Compound c : compoundsArray) {
-                        if (c.getName().equals(compoundName)) compound = c;
-                        //System.out.println(compound.getName());
+                        if (c.getName().equals(compoundName)) {
+                            compound = c;
+                            System.out.println(compound.getPeaks().size());
+                            System.out.println("Comp: " + compound.getName());
+                        }
                     }
 
                     Phrase phrase = new Phrase(id, compound, color, x1, x2);
@@ -198,6 +201,7 @@ public class Project {
 
                         for (Peak p : compound.getPeaks()) {
                             if (peakId == p.getId()) peak = p;
+                            System.out.println(p.toString());
                         }
 
                         Note note = new Note(noteId, peak, filler, phrase);

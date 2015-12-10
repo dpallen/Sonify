@@ -85,17 +85,17 @@ public class NewProjectDialog extends JDialog {
 
         String name = projectNameTextField.getText();
 
-        File trgDir = new File("projects/");
-        File srcDir = new File("resources/projecttemplate.proj");
+        /*File trgDir = new File("projects/");
+        File srcDir = new File(getClass().getResource("/projecttemplate.proj"));
         FileUtils.copyFileToDirectory(srcDir, trgDir);
 
         File newSrcFile = new File("projects/" + projectNameTextField.getText() + ".proj");
-        File srcFile = new File("projects/projecttemplate.proj");
+        File srcFile = new File(getClass().getResource("/projecttemplate.proj");
 
         newProject.load(srcDir);
         srcFile.renameTo(newSrcFile);
 
-        File saveFile = new File("resources/activeproject.txt");
+        File saveFile = new File(getClass().getResource("/activeproject.txt");
         FileWriter fw = null;
         try {
             fw = new FileWriter(saveFile);
@@ -104,7 +104,7 @@ public class NewProjectDialog extends JDialog {
             bw.close();
         } catch (IOException e1) {
             e1.printStackTrace();
-        }
+        }*/
 
         app.getFrame().dispose();
         try {

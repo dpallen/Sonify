@@ -43,9 +43,10 @@ public class TrackMultSelectController implements ActionListener {
                     else {
                         thv.getTrack().setSelected(false);
                         app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(thv)).setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
+                        app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(thv)).setBackground(thv.getBackColor());
                     }
                 }
-                thv.updatePanel();
+                if (!thv.getTrack().isSelected()) thv.updatePanel();
             }
         }
 
@@ -58,7 +59,7 @@ public class TrackMultSelectController implements ActionListener {
                         app.getMeasureHeadViewArray().get(app.getMeasureHeadViewArray().indexOf(mhv)).setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
                     }
                 }
-                mhv.updatePanel();
+                if (!mhv.isSelected()) mhv.updatePanel();
             }
         }
 

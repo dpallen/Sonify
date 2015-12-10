@@ -32,6 +32,7 @@ public class PhraseInTrackController implements MouseListener {
 
         for (TrackView tv : app.getTrackViewArray()) {
             for (PhraseInTrackView pitv2 : tv.getPhraseInTrackViewArray()) {
+                System.out.println(pitv2.getPhrase().getId());
                 pitv2.setSelected(false);
                 pitv2.setBackground(pitv2.getPhrase().getUnselectedColor());
                 pitv2.repaint();
@@ -59,10 +60,12 @@ public class PhraseInTrackController implements MouseListener {
 
         Phrase tempPhrase;
 
-        if (pitv.getPhrase().getParentPhrase() != null) tempPhrase = pitv.getPhrase().getParentPhrase();
-        else tempPhrase = pitv.getPhrase();
+        tempPhrase = pitv.getPhrase();
 
-        if (!tempPhrase.isSelected()) {
+        System.out.println("Temp: " + tempPhrase.getId() + ", selected: " + tempPhrase.isSelected());
+        if (tempPhrase.getParentPhrase() != null) System.out.println("Temp parent: " + tempPhrase.getParentPhrase().getId() + ", selected: " + tempPhrase.getParentPhrase().isSelected());
+
+        if (!tempPhrase.isSelected() || (tempPhrase.getParentPhrase() != null && !tempPhrase.getParentPhrase().isSelected())) {
             tempPhrase.setSelected(true);
 
             app.updateActivePhrase(tempPhrase);

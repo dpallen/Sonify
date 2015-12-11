@@ -41,7 +41,7 @@ public class TrackView extends JPanel {
             PhraseInTrackView pitv = new PhraseInTrackView(app, phrase);
             if (!phrase.isLoop()) pitv.getNameLabel().setText(phrase.getCompound().getName());
             else pitv.getNameLabel().setText("Loop");
-            pitv.setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), i * 15, pitv.getAdjustedWidth(), 15);
+            pitv.setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), 70, pitv.getAdjustedWidth(), 70);
             phraseInTrackViewArray.add(pitv);
             add(pitv);
             i++;
@@ -91,11 +91,11 @@ public class TrackView extends JPanel {
 
     public void updatePanel() {
         if (track.isSelected()) {
-            //setBackground(Color.decode("#B8B8B8"));
+            setBackground(Color.decode("#B8B8B8"));
             setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
         }
         else {
-            setBackground(backColor);
+            //setBackground(backColor);
             setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
         }
     }

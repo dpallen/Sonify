@@ -17,13 +17,16 @@ public class PhraseInTrackView extends JPanel {
     private Phrase phrase;
     private BetterButton removeButton;
     private boolean selected;
+    private float alpha;
 
     public PhraseInTrackView(Sonify app, Phrase phrase) {
         this.app = app;
         this.phrase = phrase;
         selected = false;
         setLayout(null);
-        setBackground(phrase.getUnselectedColor());
+        Color unselectedColor = phrase.getUnselectedColor();
+        setBackground(new Color(unselectedColor.getRed(), unselectedColor.getGreen(), unselectedColor.getBlue()));
+        setAlpha(0.4f);
         setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
 
         if (phrase.getCompound() != null) nameLabel = new JLabel(phrase.getCompound().getName());
@@ -48,7 +51,7 @@ public class PhraseInTrackView extends JPanel {
     }
 
     public void adjustSize(int j4) {
-        setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), j4 * 15, getAdjustedWidth(), 15);
+        setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), j4 * 70, getAdjustedWidth(), 70);
         //removeButton.setBounds(getAdjustedWidth() - 15, removeButton.getY(), removeButton.getWidth(), removeButton.getHeight());
     }
 
@@ -68,6 +71,30 @@ public class PhraseInTrackView extends JPanel {
     public int getAdjustedWidth() {
         if (!phrase.isLoop()) return (int) (app.getMeasureScale() * phrase.getBeatLength2());
         else return (int) (app.getMeasureScale() * phrase.getBeatLength());
+    }
+
+    public void setAlpha(float value) {
+        if (alpha != value) {
+            alpha = Math.min(Math.max(0f, value), 1f);
+            setOpaque(alpha == 1.0f);
+            repaint();
+        }
+    }
+
+    public float getAlpha() {
+        return alpha;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setComposite(AlphaComposite.SrcOver.derive(getAlpha()));
+        g2d.setColor(getBackground());
+        g2d.fillRect(0, 0, getWidth(), getHeight());
+        g2d.dispose();
+
     }
 
     public JLabel getNameLabel() {

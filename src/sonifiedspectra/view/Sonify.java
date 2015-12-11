@@ -585,7 +585,7 @@ public class Sonify {
             PhraseView phraseView = new PhraseView(phrase);
             phraseView.setBackground(phraseView.getPhrase().getUnselectedColor());
             phraseView.updatePanel();
-            phraseView.setBounds(10 + 110 * j, 5, 100, 70);
+            phraseView.setBounds(10 + 130 * j, 5, 120, 70);
             j++;
             phraseViewArray.add(phraseView);
             phrasesPanel.add(phraseView);
@@ -1338,8 +1338,8 @@ public class Sonify {
         int j4 = 0;
         for (TrackView tv : trackViewArray) {
             if (tv.getTrack().isSelected()) {
-                tv.setBackground(activePhrase.getUnselectedColor());
-                tv.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 2, false));
+                //tv.setBackground(activePhrase.getUnselectedColor());
+                tv.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 3, false));
             }
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                 pitv.adjustSize(j4);
@@ -1363,7 +1363,7 @@ public class Sonify {
         for (TrackHeadView thv : trackHeadViewArray) {
             if (thv.getTrack().isSelected()) {
                 thv.setBackground(activePhrase.getUnselectedColor());
-                thv.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 2, false));
+                thv.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 3, false));
             }
         }
 

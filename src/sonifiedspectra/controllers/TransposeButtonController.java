@@ -49,6 +49,12 @@ public class TransposeButtonController implements ActionListener, MouseListener 
             else p.transposeSelectedNotesDown();
 
         }
+
+        if (app.getActivePhrase().getSelectedNotes().size() == 1) {
+            app.getSoundPlayer().updateNotePlayer(app.getActivePhrase().getSelectedNotes().get(0));
+            app.getSoundPlayer().play();
+        }
+
         if (app.getActivePhrase().isValidTransposeSelection()) {
             app.getTransposeTextField().setText(String.valueOf(app.getActivePhrase().getSelectedNotes().get(0).getTranspose()));
             if (app.getActivePhrase().getSelectedNotes().get(0).getTranspose() == 0) app.getTransposeTextField().setForeground(Color.BLACK);

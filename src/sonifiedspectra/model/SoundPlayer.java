@@ -154,7 +154,11 @@ public class SoundPlayer {
             public void stateChanged(ChangeEvent e) {
                 int value = progress.getValue();
                 // Update the time label
-                time.setText(getTimeString((int) sequencer.getMicrosecondPosition(), (int) sequencer.getMicrosecondLength()));
+                if (!notePlayer && app.isProject()) {
+                    time.setText(getTimeString((int) sequencer.getMicrosecondPosition(), (int) sequencer.getMicrosecondLength()));
+                    app.getPlaybackLine().setBounds((int) sequencer.getTickPosition() / 20 - app.getTracksScrollPane().getHorizontalScrollBar().getValue(), app.getPlaybackLine().getY(), app.getPlaybackLine().getWidth(), app.getPlaybackLine().getHeight());
+                    app.getPlaybackLine().repaint();
+                }
                 // If we're not already there, skip there.
                 if (value != audioPosition) skip(value);
             }
@@ -275,7 +279,6 @@ public class SoundPlayer {
             if (!notePlayer && !app.isProject()) {
                 if (noteOnArray.size() > 0) {
                     if (sequencer.getTickPosition() >= noteOnArray.get(currentNoteOnIndex)) {
-                        System.out.println(noteOnArray.get(currentNoteOnIndex));
 
                         Marker newMarker = app.addNoteMarker(app.getNoteViewArray().get(currentNoteOnIndex / 2).getNote());
 
@@ -519,15 +522,15 @@ public class SoundPlayer {
         int trackNumber = 0;
         for (javax.sound.midi.Track track :  sequence.getTracks()) {
             trackNumber++;
-            System.out.println("Track " + trackNumber + ": size = " + track.size());
-            System.out.println();
+            //System.out.println("Track " + trackNumber + ": size = " + track.size());
+            //System.out.println();
             for (int i = 0; i < track.size(); i++) {
                 MidiEvent event = track.get(i);
-                System.out.print("@" + event.getTick() + " ");
+                //System.out.print("@" + event.getTick() + " ");
                 MidiMessage message = event.getMessage();
                 if (message instanceof ShortMessage) {
                     ShortMessage sm = (ShortMessage) message;
-                    System.out.print("Channel: " + sm.getChannel() + " ");
+                    //System.out.print("Channel: " + sm.getChannel() + " ");
                     if (sm.getCommand() == NOTE_ON) {
                         noteOnArray.add((int) event.getTick());
                         int key = sm.getData1();
@@ -535,20 +538,19 @@ public class SoundPlayer {
                         int note = key % 12;
                         String noteName = NOTE_NAMES[note];
                         int velocity = sm.getData2();
-
-                        System.out.println("Note on, " + noteName + octave + " key=" + key + " velocity: " + velocity);
+                        //System.out.println("Note on, " + noteName + octave + " key=" + key + " velocity: " + velocity);
                     } else if (sm.getCommand() == NOTE_OFF) {
                         int key = sm.getData1();
                         int octave = (key / 12) - 1;
                         int note = key % 12;
                         String noteName = NOTE_NAMES[note];
                         int velocity = sm.getData2();
-                        System.out.println("Note off, " + noteName + octave + " key=" + key + " velocity: " + velocity);
+                        //System.out.println("Note off, " + noteName + octave + " key=" + key + " velocity: " + velocity);
                     } else {
-                        System.out.println("Command:" + sm.getCommand());
+                        //System.out.println("Command:" + sm.getCommand());
                     }
                 } else {
-                    System.out.println("Other message: " + message.getClass());
+                    //System.out.println("Other message: " + message.getClass());
                 }
             }
         }

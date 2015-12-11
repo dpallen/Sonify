@@ -44,7 +44,7 @@ public class TrackHeadController implements MouseListener {
             trackHeadView.setBackground(app.getActivePhrase().getUnselectedColor());
             trackHeadView.setBorder(BorderFactory.createLineBorder(app.getActivePhrase().getBorderColor(), 2, false));
             app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).setBorder(BorderFactory.createLineBorder(app.getActivePhrase().getBorderColor(), 2, false));
-            app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).setBackground(app.getActivePhrase().getUnselectedColor());
+            //app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).setBackground(app.getActivePhrase().getUnselectedColor());
             trackHeadView.repaint();
             app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).repaint();
         }
@@ -52,7 +52,7 @@ public class TrackHeadController implements MouseListener {
             trackHeadView.setBackground(trackHeadView.getBackColor());
             app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
             trackHeadView.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
-            app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).setBackground(trackHeadView.getBackColor());
+            //app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).setBackground(trackHeadView.getBackColor());
             app.getTrackViewArray().get(app.getTrackHeadViewArray().indexOf(trackHeadView)).repaint();
         }
         app.getFrame().pack();

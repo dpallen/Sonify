@@ -200,8 +200,10 @@ public class Project {
                         Peak peak = null;
 
                         for (Peak p : compound.getPeaks()) {
-                            if (peakId == p.getId()) peak = p;
-                            System.out.println(p.toString());
+                            if (peakId == p.getId()) {
+                                peak = p;
+                                System.out.println(peak.toString());
+                            }
                         }
 
                         Note note = new Note(noteId, peak, filler, phrase);

@@ -50,14 +50,14 @@ public class AddPhraseController implements ActionListener, MouseListener {
         PhraseView phraseView = new PhraseView(newPhrase);
         phraseView.setBackground(phraseView.getPhrase().getUnselectedColor());
         phraseView.updatePanel();
-        phraseView.setBounds(10 + 110 * (app.getPhraseViewArray().size()), 5, 100, 70);
+        phraseView.setBounds(10 + 130 * (app.getPhraseViewArray().size()), 5, 120, 70);
         phraseView.addMouseListener(new HelpTextController(app, HelpStrings.PHRASE_VIEW));
         phraseView.addMouseListener(new PhraseController(app.getActiveProject(), app, phraseView));
 
         app.getPhraseViewArray().add(phraseView);
         app.getPhrasesPanel().add(phraseView);
         app.getActiveProject().getPhrasesArray().add(newPhrase);
-        app.getPhrasesPanel().setPreferredSize(new Dimension(10 + 110 * app.getActiveProject().getPhrasesArray().size(), 100));
+        app.getPhrasesPanel().setPreferredSize(new Dimension(10 + 130 * app.getActiveProject().getPhrasesArray().size(), 100));
         app.updateActivePhrase(newPhrase);
         app.updateIntervalMarker();
         app.getSoundPlayer().reset();

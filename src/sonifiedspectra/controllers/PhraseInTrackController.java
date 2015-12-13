@@ -35,7 +35,7 @@ public class PhraseInTrackController implements MouseListener {
                 System.out.println(pitv2.getPhrase().getId());
                 pitv2.setSelected(false);
                 Color unselectedColor = pitv2.getPhrase().getUnselectedColor();
-                pitv2.setBackground(new Color(unselectedColor.getRed(), unselectedColor.getGreen(), unselectedColor.getBlue()));
+                pitv2.getTopPanel().setBackground(new Color(unselectedColor.getRed(), unselectedColor.getGreen(), unselectedColor.getBlue()));
                 pitv2.repaint();
             }
         }
@@ -44,23 +44,24 @@ public class PhraseInTrackController implements MouseListener {
 
         if (pitv.isSelected()) {
             Color selectedColor = pitv.getPhrase().getSelectedColor();
-            pitv.setBackground(new Color(selectedColor.getRed(), selectedColor.getGreen(), selectedColor.getBlue()));
+            pitv.getTopPanel().setBackground(new Color(selectedColor.getRed(), selectedColor.getGreen(), selectedColor.getBlue()));
             if (pitv.getPhrase().isLoop()) {
                 pitv.getNameLabel().setForeground(Color.BLACK);
-                pitv.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
+                pitv.getTopPanel().setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
             }
             pitv.repaint();
         }
         else {
             Color unselectedColor = pitv.getPhrase().getUnselectedColor();
-
-            pitv.setBackground(new Color(unselectedColor.getRed(), unselectedColor.getGreen(), unselectedColor.getBlue()));
+            pitv.getTopPanel().setBackground(new Color(unselectedColor.getRed(), unselectedColor.getGreen(), unselectedColor.getBlue()));
             if (pitv.getPhrase().isLoop()) {
                 pitv.getNameLabel().setForeground(Color.WHITE);
-                pitv.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
+                pitv.getTopPanel().setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
             }
             pitv.repaint();
         }
+
+        pitv.getLayeredPane().moveToFront(pitv.getTopPanel());
 
         Phrase tempPhrase;
 
@@ -114,9 +115,10 @@ public class PhraseInTrackController implements MouseListener {
         if (!pitv.isSelected()) {
             Color selectedColor = pitv.getPhrase().getSelectedColor();
             System.out.println(selectedColor.toString());
-            pitv.setBackground(new Color(selectedColor.getRed(), selectedColor.getGreen(), selectedColor.getBlue(), 200));
-            pitv.setBorder(BorderFactory.createLineBorder(pitv.getPhrase().getBorderColor(), 2, false));
+            pitv.getTopPanel().setBackground(new Color(selectedColor.getRed(), selectedColor.getGreen(), selectedColor.getBlue(), 200));
+            pitv.getTopPanel().setBorder(BorderFactory.createLineBorder(pitv.getPhrase().getBorderColor(), 2, false));
             if (pitv.getPhrase().isLoop()) pitv.getNameLabel().setForeground(Color.BLACK);
+            pitv.getLayeredPane().moveToFront(pitv.getTopPanel());
             pitv.repaint();
             app.getFrame().pack();
         }
@@ -127,9 +129,10 @@ public class PhraseInTrackController implements MouseListener {
         if (!pitv.isSelected()) {
             Color unselectedColor = pitv.getPhrase().getUnselectedColor();
             System.out.println(unselectedColor.toString());
-            pitv.setBackground(new Color(unselectedColor.getRed(), unselectedColor.getGreen(), unselectedColor.getBlue()));
-            pitv.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
+            pitv.getTopPanel().setBackground(new Color(unselectedColor.getRed(), unselectedColor.getGreen(), unselectedColor.getBlue()));
+            pitv.getTopPanel().setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
             if (pitv.getPhrase().isLoop()) pitv.getNameLabel().setForeground(Color.WHITE);
+            pitv.getLayeredPane().moveToFront(pitv.getTopPanel());
             pitv.repaint();
             app.getFrame().pack();
         }

@@ -1,10 +1,24 @@
 package sonifiedspectra.view;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.plot.IntervalMarker;
+import org.jfree.chart.plot.Marker;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RectangleInsets;
 import sonifiedspectra.controllers.RemovePhraseFromTrackController;
+import sonifiedspectra.model.Note;
 import sonifiedspectra.model.Phrase;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.DecimalFormat;
 
 /**
  * Created by Hvandenberg on 6/2/15.
@@ -19,21 +33,38 @@ public class PhraseInTrackView extends JPanel {
     private boolean selected;
     private float alpha;
 
+    private ChartPanel chPanel;
+    private GlassPanel graphPanel;
+    private JFreeChart dataChart;
+    private GlassPanel topPanel;
+    private JLayeredPane layeredPane;
+
     public PhraseInTrackView(Sonify app, Phrase phrase) {
         this.app = app;
         this.phrase = phrase;
         selected = false;
         setLayout(null);
+        setAlpha(0.2f);
+
+        layeredPane = new JLayeredPane();
+        layeredPane.setBounds(0, 0, 200, 70);
+        layeredPane.setLayout(null);
+        add(layeredPane);
+
+        topPanel = new GlassPanel();
+        topPanel.setLayout(null);
+        topPanel.setBounds(0, 0, 200, 70);
         Color unselectedColor = phrase.getUnselectedColor();
-        setBackground(new Color(unselectedColor.getRed(), unselectedColor.getGreen(), unselectedColor.getBlue()));
-        setAlpha(0.4f);
-        setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+        topPanel.setBackground(new Color(unselectedColor.getRed(), unselectedColor.getGreen(), unselectedColor.getBlue()));
+        topPanel.setAlpha(0.34f);
+        topPanel.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+        layeredPane.add(topPanel, 100);
 
         if (phrase.getCompound() != null) nameLabel = new JLabel(phrase.getCompound().getName());
         else nameLabel = new JLabel("Loop");
         nameLabel.setFont(new Font("Serif", Font.PLAIN, 10));
         nameLabel.setBounds(18, 0, 75, 15);
-        add(nameLabel);
+        topPanel.add(nameLabel);
 
         Icon removephrasefromtrackicon = new ImageIcon(getClass().getResource("/icons/removephrasefromtrackicon.png"));
         removeButton = new BetterButton(Color.decode("#F5F5F5"), 10, 10, 0);
@@ -42,7 +73,24 @@ public class PhraseInTrackView extends JPanel {
         removeButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         removeButton.setBorderPainted(true);
         removeButton.setFocusPainted(false);
-        add(removeButton);
+        topPanel.add(removeButton);
+
+        chPanel = new ChartPanel(createChart());
+        chPanel.setPreferredSize(new Dimension(200, 70));
+        chPanel.setVisible(true);
+        chPanel.setBounds(0, 0, 200, 70);
+        chPanel.setDomainZoomable(true);
+        chPanel.setOpaque(false);
+        graphPanel = new GlassPanel();
+        graphPanel.setLayout(new BorderLayout());
+        graphPanel.setBounds(-15, -5, 200, 80);
+        graphPanel.setAlpha(0.6f);
+        graphPanel.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+        graphPanel.removeAll();
+        graphPanel.add(chPanel, BorderLayout.CENTER);
+        layeredPane.add(graphPanel, 0);
+
+        layeredPane.moveToFront(topPanel);
 
     }
 
@@ -50,10 +98,27 @@ public class PhraseInTrackView extends JPanel {
         selected = !selected;
     }
 
-    public void adjustSize(int j4) {
-        setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), j4 * 70, getAdjustedWidth(), 70);
+    public void adjustSize(boolean expanded) {
+        if (!expanded) {
+            setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), 0, getAdjustedWidth(), 70);
+            graphPanel.setBounds(-15, -5, getAdjustedWidth() + 30, 80);
+            chPanel.setBounds(0, 0, getAdjustedWidth(), 70);
+            topPanel.setBounds(0, 0, getAdjustedWidth(), 70);
+            layeredPane.setBounds(0, 0, getAdjustedWidth(), 70);
+            layeredPane.repaint();
+        }
+        else {
+            setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), 0, getAdjustedWidth(), 200);
+            graphPanel.setBounds(-15, -5, getAdjustedWidth() + 30, 210);
+            chPanel.setBounds(0, 0, getAdjustedWidth(), 200);
+            topPanel.setBounds(0, 0, getAdjustedWidth(), 200);
+            layeredPane.setBounds(0, 0, getAdjustedWidth(), 200);
+            layeredPane.repaint();
+        }
         //removeButton.setBounds(getAdjustedWidth() - 15, removeButton.getY(), removeButton.getWidth(), removeButton.getHeight());
     }
+
+
 
     public void print() {
         System.out.println("Pitv phrase id: " + phrase.getId());
@@ -97,6 +162,92 @@ public class PhraseInTrackView extends JPanel {
 
     }
 
+    /**
+     * Creates and customizes the data chart
+     * @return the data chart
+     */
+    public JFreeChart createChart() {
+
+        XYSeriesCollection dataSet = new XYSeriesCollection();
+        dataSet.addSeries( phrase.getCompound().getDataChart().getDataSeries() );
+
+        // create the chart...
+        JFreeChart chart = ChartFactory.createXYLineChart(
+                null,                      // chart title
+                null,        // x axis label
+                null,          // y axis label
+                dataSet,                    // data
+                PlotOrientation.VERTICAL,
+                false,                      // include legend
+                false,                       // tooltips
+                false                       // urls
+        );
+
+        // NOW DO SOME OPTIONAL CUSTOMISATION OF THE CHART...
+        //chart.setBackgroundPaint(Color.decode("#F5F5F5"));
+        chart.setBorderVisible(false);
+
+        // get a reference to the plot for further customisation...
+        XYPlot plot = chart.getXYPlot();
+        plot.setBackgroundPaint(phrase.getUnselectedColor());
+        plot.setBackgroundAlpha(0.2f);
+        plot.setDomainCrosshairVisible(false);
+        plot.setRangeCrosshairVisible(false);
+        plot.setDomainGridlinePaint(Color.BLACK);
+        plot.setRangeGridlinePaint(Color.BLACK);
+
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+        renderer.setSeriesLinesVisible(0, true);
+        renderer.setSeriesShapesVisible(0, false);
+        plot.setRenderer(renderer);
+
+        NumberAxis domain = (NumberAxis) plot.getDomainAxis();
+        domain.setTickUnit(new NumberTickUnit(500));
+        domain.setRange(phrase.getX2(), phrase.getX1());
+        DecimalFormat format = new DecimalFormat("####");
+        domain.setNumberFormatOverride(format);
+        domain.setUpperMargin(.05);
+        domain.setInverted(true);
+        domain.setVisible(false);
+
+        NumberAxis range = (NumberAxis) plot.getRangeAxis();
+        range.setInverted(true);
+        DecimalFormat format2 = new DecimalFormat("#.###");
+        range.setNumberFormatOverride(format2);
+        range.setVisible(false);
+
+        chart.setPadding(new RectangleInsets(0, 0, 0, 0));
+
+        dataChart = chart;
+
+        return dataChart;
+
+    }
+
+    public Marker addNoteMarker(Note n) {
+
+        Color color = new Color(0, 0, 0);
+
+        System.out.println(n.getPeak().toString());
+
+        double x1 = n.getPeak().getX1();
+        double x2 = n.getPeak().getX2();
+
+        if (phrase.getNotesArray().indexOf(n) == 0) x1 = phrase.getX1();
+
+        if (phrase.getNotesArray().indexOf(n) == phrase.getNotesArray().size() - 1)
+            x2 = phrase.getX2();
+
+        Marker newMarker = new IntervalMarker(x2, x1);
+
+        newMarker.setStroke(new BasicStroke(50));
+        newMarker.setPaint(Color.BLACK);
+        newMarker.setAlpha(1);
+
+        return newMarker;
+
+    }
+
     public JLabel getNameLabel() {
         return nameLabel;
     }
@@ -127,5 +278,45 @@ public class PhraseInTrackView extends JPanel {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public ChartPanel getChPanel() {
+        return chPanel;
+    }
+
+    public void setChPanel(ChartPanel chPanel) {
+        this.chPanel = chPanel;
+    }
+
+    public GlassPanel getGraphPanel() {
+        return graphPanel;
+    }
+
+    public void setGraphPanel(GlassPanel graphPanel) {
+        this.graphPanel = graphPanel;
+    }
+
+    public JFreeChart getDataChart() {
+        return dataChart;
+    }
+
+    public void setDataChart(JFreeChart dataChart) {
+        this.dataChart = dataChart;
+    }
+
+    public GlassPanel getTopPanel() {
+        return topPanel;
+    }
+
+    public void setTopPanel(GlassPanel topPanel) {
+        this.topPanel = topPanel;
+    }
+
+    public JLayeredPane getLayeredPane() {
+        return layeredPane;
+    }
+
+    public void setLayeredPane(JLayeredPane layeredPane) {
+        this.layeredPane = layeredPane;
     }
 }

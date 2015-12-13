@@ -330,7 +330,7 @@ public class Sonify {
         frame.setTitle("Sonified Spectra - Musical Spectroscopic Analysis");
         frame.setSize(1280, 740);
         frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
+        //frame.setResizable(false);
         frame.setUndecorated(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(null);
@@ -1148,8 +1148,8 @@ public class Sonify {
 
         for (TrackView tv : trackViewArray) {
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
-                pitv.addMouseListener(new PhraseInTrackController(this, activeProject, pitv));
-                pitv.addMouseListener(new HelpTextController(this, HelpStrings.PITV));
+                pitv.getTopPanel().addMouseListener(new PhraseInTrackController(this, activeProject, pitv));
+                pitv.getTopPanel().addMouseListener(new HelpTextController(this, HelpStrings.PITV));
                 RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(this, activeProject, pitv, tv);
                 pitv.getRemoveButton().addMouseListener(new HelpTextController(this, HelpStrings.REMOVE_PHRASE_FROM_TRACK));
                 pitv.getRemoveButton().addActionListener(removePhraseFromTrackController);
@@ -1342,17 +1342,17 @@ public class Sonify {
                 tv.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 3, false));
             }
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
-                pitv.adjustSize(j4);
+                pitv.adjustSize(false);
                 if (pitv.getPhrase().isLoop()) pitv.getNameLabel().setForeground(Color.WHITE);
                 if (activePhrase.getId() == pitv.getPhrase().getId() || (pitv.getPhrase().getParentPhrase() != null && activePhrase.getId() == pitv.getPhrase().getParentPhrase().getId())) {
                     if (!pitv.getPhrase().isLoop()) {
                         pitv.getNameLabel().setText(activePhrase.getCompound().getName());
                     }
-                    pitv.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 2, false));
+                    pitv.getTopPanel().setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 2, false));
                     pitv.repaint();
                 }
                 else {
-                    pitv.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
+                    pitv.getTopPanel().setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
                     pitv.repaint();
                 }
                 j4++;

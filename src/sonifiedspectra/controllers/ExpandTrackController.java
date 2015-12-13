@@ -1,6 +1,7 @@
 package sonifiedspectra.controllers;
 
 import sonifiedspectra.model.Project;
+import sonifiedspectra.view.PhraseInTrackView;
 import sonifiedspectra.view.Sonify;
 import sonifiedspectra.view.TrackHeadView;
 import sonifiedspectra.view.TrackView;
@@ -51,6 +52,9 @@ public class ExpandTrackController implements ActionListener, MouseListener {
                 TrackView trackView = app.getTrackViewArray().get(i);
                 trackView.setBounds(trackView.getX(), trackView.getY() + thv.getExpandedHeight() - 70, trackView.getWidth(), trackView.getHeight());
                 temp.setBounds(temp.getX(), temp.getY() + thv.getExpandedHeight() - 70, temp.getWidth(), temp.getHeight());
+                for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
+                    pitv.adjustSize(true);
+                }
                 trackView.repaint();
                 temp.repaint();
             }
@@ -74,6 +78,9 @@ public class ExpandTrackController implements ActionListener, MouseListener {
                 TrackView trackView = app.getTrackViewArray().get(i);
                 trackView.setBounds(trackView.getX(), trackView.getY() - (thv.getExpandedHeight() - 70), trackView.getWidth(), trackView.getHeight());
                 temp.setBounds(temp.getX(), temp.getY() - (thv.getExpandedHeight() - 70), temp.getWidth(), temp.getHeight());
+                for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
+                    pitv.adjustSize(false);
+                }
                 temp.repaint();
                 trackView.repaint();
             }

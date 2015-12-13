@@ -25,7 +25,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -45,6 +44,8 @@ public class SoundPlayer {
     private boolean playing = false; // whether the sound is currently playing
     private ArrayList<Integer> noteOnArray;
     private int currentNoteOnIndex;
+    private ArrayList<ArrayList<Integer>> projectNoteOnArray;
+    private ArrayList<Integer> projectNoteOnIndices;
     private Marker lastMarker;
     private boolean notePlayer;
 
@@ -77,6 +78,8 @@ public class SoundPlayer {
         this.app = app;
         currentNoteOnIndex = 0;
         noteOnArray = new ArrayList<>();
+        projectNoteOnIndices = new ArrayList<>();
+        projectNoteOnArray = new ArrayList<ArrayList<Integer>>();
         // First, get a Sequencer to play sequences of MIDI events
         // That is, to send events to a Synthesizer at the right time.
         sequencer = MidiSystem.getSequencer();  // Used to play sequences
@@ -238,6 +241,7 @@ public class SoundPlayer {
     public void reset( ) {
         stop( );
         currentNoteOnIndex = 0;
+        for (Integer i : projectNoteOnIndices) i = 0;
         sequencer.setTickPosition(0);
         audioPosition = 0;
         progress.setValue(0);
@@ -275,6 +279,41 @@ public class SoundPlayer {
                 line.setBounds(audioPosition / 20 - app.getTracksScrollPane().getHorizontalScrollBar().getValue(), line.getY(), line.getWidth(), line.getHeight());
                 app.getPlaybackLinePanel().repaint();
                 line.repaint();
+
+                /*int i = 0;
+                for (ArrayList array : projectNoteOnArray) {
+                    if (array.size() > 5) {
+                        System.out.println(array.size());
+                        if (projectNoteOnIndices.get(i) < array.size() && sequencer.getTickPosition() >= (int) array.get(projectNoteOnIndices.get(i))) {
+                            System.out.println(array.get(projectNoteOnIndices.get(i)));
+                            Note note = app.getActiveProject().getTracksArray().get(i).getPhrases().get(0).getNotesArray().get(currentNoteOnIndex / 2);
+                            Marker newMarker = app.addNoteMarker(note);
+
+                            //app.getNoteViewArray().get(currentNoteOnIndex / 2).setBackground(app.getActivePhrase().getUnselectedColor());
+                            if (!note.isFiller()) {
+                                XYPlot plot = app.getTrackViewArray().get(i).getPhraseInTrackViewArray().get(0).getDataChart().getXYPlot();
+                                plot.addDomainMarker(newMarker);
+                            }
+                            //app.getNoteViewArray().get(currentNoteOnIndex / 2).repaint();
+
+                            /*if (currentNoteOnIndex / 2 >= 1) {
+                                app.getNoteViewArray().get(currentNoteOnIndex / 2 - 1).setBackground(Color.decode("#F5F5F5"));
+                                if (app.getActivePhrase() != null && !app.getNoteViewArray().get(currentNoteOnIndex / 2 - 1).getNote().isFiller()) {
+                                    XYPlot plot = app.getActivePhrase().getCompound().getDataChart().getDataChart().getXYPlot();
+                                    plot.removeDomainMarker(lastMarker);
+                                }
+                                app.getNoteViewArray().get(currentNoteOnIndex / 2 - 1).repaint();
+                            }
+
+                            //lastMarker = newMarker;
+                            app.getChPanel().repaint();
+                            app.getFrame().pack();
+                            projectNoteOnIndices.set(i, projectNoteOnIndices.get(i) + 1);
+                        }
+                    }
+                    i++;
+                }*/
+
             }
             if (!notePlayer && !app.isProject()) {
                 if (noteOnArray.size() > 0) {
@@ -517,13 +556,16 @@ public class SoundPlayer {
         }
         setAudioLength((int) getSequence().getTickLength()); // Get sequence length
 
-        noteOnArray = new ArrayList<>();
+        noteOnArray = new ArrayList<Integer>();
+        projectNoteOnArray = new ArrayList<ArrayList<Integer>>();
+        projectNoteOnIndices = new ArrayList<Integer>();
 
         int trackNumber = 0;
         for (javax.sound.midi.Track track :  sequence.getTracks()) {
-            trackNumber++;
-            //System.out.println("Track " + trackNumber + ": size = " + track.size());
-            //System.out.println();
+            projectNoteOnArray.add(new ArrayList<Integer>());
+            projectNoteOnIndices.add(0);
+            System.out.println("Track " + trackNumber + ": size = " + track.size());
+            System.out.println();
             for (int i = 0; i < track.size(); i++) {
                 MidiEvent event = track.get(i);
                 //System.out.print("@" + event.getTick() + " ");
@@ -532,7 +574,8 @@ public class SoundPlayer {
                     ShortMessage sm = (ShortMessage) message;
                     //System.out.print("Channel: " + sm.getChannel() + " ");
                     if (sm.getCommand() == NOTE_ON) {
-                        noteOnArray.add((int) event.getTick());
+                        if (!app.isProject()) noteOnArray.add((int) event.getTick());
+                        else projectNoteOnArray.get(trackNumber).add((int) event.getTick());
                         int key = sm.getData1();
                         int octave = (key / 12) - 1;
                         int note = key % 12;
@@ -553,10 +596,17 @@ public class SoundPlayer {
                     //System.out.println("Other message: " + message.getClass());
                 }
             }
+            trackNumber++;
         }
 
         for (int i = 0; i < noteOnArray.size(); i++) {
-            System.out.println(noteOnArray.get(i));
+            System.out.println("Phrase note: " + i + ", " + noteOnArray.get(i));
+        }
+
+        for (int i = 0; i < projectNoteOnArray.size(); i++) {
+            for (int j = 0; j < projectNoteOnArray.get(i).size(); j++) {
+                System.out.println("Track " + i + ", note " + j + ", " + projectNoteOnArray.get(i).get(j));
+            }
         }
 
         System.out.println(noteOnArray.size() + ", " + app.getActivePhrase().getNotesArray().size());

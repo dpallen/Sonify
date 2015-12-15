@@ -45,4 +45,5 @@ public interface HelpStrings {
     String SELECT_ALL_NONE = "Toggles select all notes or select none.";
     String TRANSPOSE_TEXT = "Press \"Enter\" to save transpose value to selected notes. You can type any integer.";
     String MEASURE_SCALE = "Zoom in and out on tracks";
+    String NOTE_VOLUME = "Change volume of selected notes.";
 }

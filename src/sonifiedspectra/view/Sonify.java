@@ -15,6 +15,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicSliderUI;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -499,7 +500,8 @@ public class Sonify {
         notesPanel.setPreferredSize(new Dimension(10 + 44 * activePhrase.getNotesArray().size(), 100));
 
         noteVolumeSlider = new JSlider();
-        noteVolumeSlider.setBounds(465, 490, 55, 100);
+        noteVolumeSlider.setBounds(472, 490, 55, 100);
+        noteVolumeSlider.setUI(new coloredThumbSliderUI1(noteVolumeSlider, activePhrase.getSelectedColor()));
         noteVolumeSlider.setOrientation(SwingConstants.VERTICAL);
         noteVolumeSlider.setMinimum(0);
         noteVolumeSlider.setMaximum(127);
@@ -852,6 +854,7 @@ public class Sonify {
         frame.getContentPane().add(playbackPanel);
 
         playbackSlider = new JSlider();
+        playbackSlider.setUI(new coloredThumbSliderUI2(noteVolumeSlider, activePhrase.getSelectedColor()));
         playbackSlider.setBounds(10, 15, 680, 27);
         playbackPanel.add(playbackSlider);
 
@@ -987,6 +990,7 @@ public class Sonify {
 
         measureZoomSlider = new JSlider();
         measureZoomSlider.setBounds(1240, 225, 32, 100);
+        measureZoomSlider.setUI(new coloredThumbSliderUI1(noteVolumeSlider, activePhrase.getSelectedColor()));
         measureZoomSlider.setOrientation(SwingConstants.VERTICAL);
         measureZoomSlider.setMinimum(5);
         measureZoomSlider.setMaximum(80);
@@ -1105,7 +1109,7 @@ public class Sonify {
         fillerButton.addMouseListener(fillerController);
 
         noteVolumeSlider.addChangeListener(new NoteVolumeController(this, activeProject));
-        noteVolumeSlider.addMouseListener(new HelpTextController(this, "Test"));
+        noteVolumeSlider.addMouseListener(new HelpTextController(this, HelpStrings.NOTE_VOLUME));
 
         instrumentComboBox.addItemListener(new PhraseInstrumentController(this));
 
@@ -1321,7 +1325,6 @@ public class Sonify {
 
         for (Note note : activePhrase.getNotesArray()) {
             NoteView noteView = new NoteView(note);
-            System.out.println(note.toString());
             noteView.setBounds(10 + 44 * i, 10, 34, 67);
             noteView.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 1, true));
             noteView.updatePanel();
@@ -1395,6 +1398,11 @@ public class Sonify {
         soundPlayer.reset();
         soundPlayer.updateSoundPlayer();
 
+        noteVolumeSlider.setUI(new coloredThumbSliderUI1(noteVolumeSlider, activePhrase.getSelectedColor()));
+        measureZoomSlider.setUI(new coloredThumbSliderUI1(noteVolumeSlider, activePhrase.getSelectedColor()));
+        soundPlayer.getProgress().setUI(new coloredThumbSliderUI2(noteVolumeSlider, activePhrase.getSelectedColor()));
+        soundPlayer.getTempo().setUI(new coloredThumbSliderUI2(noteVolumeSlider, activePhrase.getSelectedColor()));
+
         playbackLine.setBackground(activePhrase.getBorderColor());
 
         frame.pack();
@@ -1420,13 +1428,9 @@ public class Sonify {
 
         if (activePhrase.getCompound().getDataChart() != null) {
 
-            System.out.println("Adding interval marker to graph...");
-
             XYPlot plot = activePhrase.getCompound().getDataChart().getDataChart().getXYPlot();
 
             plot.clearDomainMarkers();
-
-            System.out.println(activePhrase.getSelectedNotes().size() + " notes to add.");
 
             for ( Note n : activePhrase.getSelectedNotes() ) {
 
@@ -1442,8 +1446,6 @@ public class Sonify {
     public Marker addNoteMarker(Note n) {
 
         Color color = new Color(0, 0, 0);
-
-        System.out.println(n.getPeak().toString());
 
         double x1 = n.getPeak().getX1();
         double x2 = n.getPeak().getX2();
@@ -1554,6 +1556,74 @@ public class Sonify {
             e.printStackTrace();
         }
         splash.dispose();*/
+    }
+
+    class coloredThumbSliderUI1 extends BasicSliderUI {
+
+        Color thumbColor;
+        coloredThumbSliderUI1(JSlider s, Color tColor) {
+            super(s);
+            thumbColor=tColor;
+        }
+
+        public void paint( Graphics g, JComponent c ) {
+            recalculateIfInsetsChanged();
+            recalculateIfOrientationChanged();
+            Rectangle clip = g.getClipBounds();
+
+            if ( slider.getPaintTrack() && clip.intersects( trackRect ) ) {
+                paintTrack( g );
+            }
+            if ( slider.getPaintTicks() && clip.intersects( tickRect ) ) {
+                paintTicks( g );
+            }
+            if ( slider.getPaintLabels() && clip.intersects( labelRect ) ) {
+                paintLabels( g );
+            }
+            if ( slider.hasFocus() && clip.intersects( focusRect ) ) {
+                paintFocus( g );
+            }
+            if ( clip.intersects( thumbRect ) ) {
+                Color savedColor = slider.getBackground();
+                slider.setBackground(thumbColor);
+                paintThumb( g );
+                slider.setBackground(new Color(229, 229, 229));
+            }
+        }
+    }
+
+    class coloredThumbSliderUI2 extends BasicSliderUI {
+
+        Color thumbColor;
+        coloredThumbSliderUI2(JSlider s, Color tColor) {
+            super(s);
+            thumbColor=tColor;
+        }
+
+        public void paint( Graphics g, JComponent c ) {
+            recalculateIfInsetsChanged();
+            recalculateIfOrientationChanged();
+            Rectangle clip = g.getClipBounds();
+
+            if ( slider.getPaintTrack() && clip.intersects( trackRect ) ) {
+                paintTrack( g );
+            }
+            if ( slider.getPaintTicks() && clip.intersects( tickRect ) ) {
+                paintTicks( g );
+            }
+            if ( slider.getPaintLabels() && clip.intersects( labelRect ) ) {
+                paintLabels( g );
+            }
+            if ( slider.hasFocus() && clip.intersects( focusRect ) ) {
+                paintFocus( g );
+            }
+            if ( clip.intersects( thumbRect ) ) {
+                Color savedColor = slider.getBackground();
+                slider.setBackground(thumbColor);
+                paintThumb( g );
+                slider.setBackground(new Color(245, 245, 245));
+            }
+        }
     }
 
     //Getters and Setters

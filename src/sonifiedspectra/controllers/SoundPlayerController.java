@@ -29,7 +29,10 @@ public class SoundPlayerController implements ActionListener, MouseListener {
         if (app.getSoundPlayer() != null) {
             if (type == 0) {
                 if (app.getSoundPlayer().isPlaying()) app.getSoundPlayer().stop();
-                else app.getSoundPlayer().play();
+                else {
+                    if (app.getSoundPlayer().isNotePlayer()) app.getSoundPlayer().updateSoundPlayer();
+                    app.getSoundPlayer().play();
+                }
             }
             else app.getSoundPlayer().reset();
         }

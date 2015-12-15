@@ -67,6 +67,8 @@ public class GraphController implements ChartMouseListener {
                         p.setX2(x);
 
                     p.initialize();
+                    System.out.println("Phrase x2: " + p.getX2());
+                    System.out.println("Note x2: " + p.getNotesArray().get(p.getNotesArray().size() - 1).getPeak().getX2());
                     p.setSelectedNotes(selectedNotes);
 
                 }

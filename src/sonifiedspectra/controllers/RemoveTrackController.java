@@ -63,7 +63,8 @@ public class RemoveTrackController implements ActionListener, MouseListener {
 
             for (TrackHeadView thv : app.getTrackHeadViewArray()) {
                 thv.setBounds(thv.getX(), y2, thv.getWidth(), thv.getHeight());
-                thv.getTrackNumberLabel().setText(String.valueOf(j1 + 1));
+                thv.getTrack().setId(j1);
+                thv.getTrackNumberLabel().setText(Integer.toString(thv.getTrack().getId() + 1));
                 if (j1 % 2 != 0 && j1 != 0) thv.setBackColor(Color.decode("#DDDDDD"));
                 else thv.setBackColor(Color.decode("#F5F5F5"));
                 thv.updatePanel();
@@ -71,6 +72,8 @@ public class RemoveTrackController implements ActionListener, MouseListener {
                 y2 += 70;
                 j1++;
             }
+
+            app.getActiveProject().setCurrentTrackId(app.getActiveProject().getTracksArray().size());
 
             int j2 = 0;
 

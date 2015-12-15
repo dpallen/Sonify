@@ -74,8 +74,24 @@ public class AddPhraseToTrackController implements ActionListener, MouseListener
             app.getActiveProject().incrementTrackId();
             app.getActiveProject().getTracksArray().add(newTrack);
 
-            Phrase newPhrase = app.getActivePhrase().copy();
-            newTrack.getPhrases().add(newPhrase);
+            if (app.getSelectedMeasures().size() > 0) {
+                for (int j = 0; j < app.getSelectedMeasures().size(); j++) {
+                    int startTime = app.getSelectedMeasures().get(j)-1;
+                    if (startTime < 0) startTime = 0;
+                    Phrase newPhrase = app.getActivePhrase().copy();
+                    //newPhrase.setId(app.getActiveProject().getCurrentPhraseId());
+                    newPhrase.setStartTime(startTime);
+                    //app.getActiveProject().incrementPhraseId();
+                    newTrack.getPhrases().add(newPhrase);
+                }
+            }
+
+            else {
+                Phrase newPhrase = app.getActivePhrase().copy();
+                //newPhrase.setId(app.getActiveProject().getCurrentPhraseId());
+                //app.getActiveProject().incrementPhraseId();
+                newTrack.getPhrases().add(newPhrase);
+            }
 
             TrackView tv = new TrackView(newTrack, app);
             tv.setBounds(0, 70 * (app.getActiveProject().getTracksArray().size() - 1), 100 * app.getActiveProject().getNumMeasures(), 70);
@@ -93,7 +109,7 @@ public class AddPhraseToTrackController implements ActionListener, MouseListener
                 e1.printStackTrace();
             }
             thv.setBounds(0, 70 * (app.getActiveProject().getTracksArray().size() - 1), 150, 70);
-            thv.getTrackNumberLabel().setText(String.valueOf(app.getActiveProject().getTracksArray().size()));
+            thv.getTrackNumberLabel().setText(Integer.toString(thv.getTrack().getId() + 1));
             thv.addMouseListener(new HelpTextController(app, HelpStrings.TRACK_HEAD));
             thv.addMouseListener(new TrackHeadController(app, app.getActiveProject(), thv));
             thv.getInstrumentComboBox().addItemListener(new TrackInstrumentController(app, app.getActiveProject(), thv));

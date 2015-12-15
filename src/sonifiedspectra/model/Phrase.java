@@ -92,32 +92,32 @@ public class Phrase extends jm.music.data.Phrase {
 
         if (!loop) {
 
-            System.out.println("Initializing phrase...");
+            /*System.out.println("Initializing phrase...");
             System.out.println("    ID: " + id);
             System.out.println("    Compound name: " + compound.getName());
             System.out.println("    Total peaks in compound: " + compound.getDataChart().getPeaksArray().size());
             System.out.println("    x1: " + x1);
-            System.out.println("    x2: " + x2);
+            System.out.println("    x2: " + x2);*/
 
             int startIndex = 0;
             int endIndex = 0;
 
             for (Peak p : compound.getDataChart().getPeaksArray()) {
-                System.out.println(p.toString());
+                //System.out.println(p.toString());
                 if (x1 < p.getX1() && x1 > p.getX2()) {
                     startIndex = compound.getDataChart().getPeaksArray().indexOf(p);
-                    System.out.println("    First peak index: " + startIndex);
+                    //System.out.println("    First peak index: " + startIndex);
                 }
                 if (x2 < p.getX1() && x2 > p.getX2()) {
                     endIndex = compound.getDataChart().getPeaksArray().indexOf(p);
-                    System.out.println("    Last peak index: " + endIndex);
+                    //System.out.println("    Last peak index: " + endIndex);
                 }
             }
 
             notesArray = new ArrayList<Note>();
 
             int noteID = 0;
-            System.out.println("    Adding notes:");
+            //System.out.println("    Adding notes:");
 
             for (int i = startIndex; i < endIndex; i++) {
                 Note newNote = new Note(noteID, compound.getDataChart().getPeaksArray().get(i), false, this);
@@ -134,7 +134,7 @@ public class Phrase extends jm.music.data.Phrase {
                 if (newNote.getPeak().getWidth() > highestWidth) highestWidth = newNote.getPeak().getWidth();
                 if (newNote.getPeak().getWidth() < lowestWidth) lowestWidth = newNote.getPeak().getWidth();
 
-                System.out.println(newNote.toString());
+                //System.out.println(newNote.toString());
 
                 notesArray.add(newNote);
             }
@@ -142,15 +142,17 @@ public class Phrase extends jm.music.data.Phrase {
             for (Note note : notesArray) {
 
                 note.setRhythmValue(scaleRhythmValue(note.getPeak().getWidth()));
-                System.out.println("        Note " + note.getId() + " - pitch: " + note.getPitch() + " (" +
+                /*System.out.println("        Note " + note.getId() + " - pitch: " + note.getPitch() + " (" +
                         note.convertPitchToString() + "), rhythm value: " + note.getRhythmValue() + ", peak width: " +
-                        note.getPeak().getWidth() + ", dynamic: " + note.getDynamic());
+                        note.getPeak().getWidth() + ", dynamic: " + note.getDynamic());*/
             }
 
-            System.out.println("    Highest width: " + highestWidth + ", lowest width: " + lowestWidth);
+            //setX2(notesArray.get(notesArray.size() - 1).getPeak().getX2());
+
+            /*System.out.println("    Highest width: " + highestWidth + ", lowest width: " + lowestWidth);
             System.out.println("    Total notes added: " + notesArray.size());
             System.out.println();
-            System.out.println("Phrase initialized.");
+            System.out.println("Phrase initialized.");*/
 
         }
 

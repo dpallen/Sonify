@@ -44,6 +44,10 @@ public class ExpandTrackController implements ActionListener, MouseListener {
             thv.setBounds(thv.getX(), thv.getY(), thv.getWidth(), thv.getExpandedHeight());
             TrackView tv = app.getTrackViewArray().get(thv.getTrack().getId());
             tv.setBounds(tv.getX(), tv.getY(), tv.getWidth(), thv.getExpandedHeight());
+            for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
+                pitv.adjustSize(true);
+                pitv.repaint();
+            }
             thv.repaint();
             tv.repaint();
 
@@ -54,6 +58,7 @@ public class ExpandTrackController implements ActionListener, MouseListener {
                 temp.setBounds(temp.getX(), temp.getY() + thv.getExpandedHeight() - 70, temp.getWidth(), temp.getHeight());
                 for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                     pitv.adjustSize(true);
+                    pitv.repaint();
                 }
                 trackView.repaint();
                 temp.repaint();
@@ -70,6 +75,10 @@ public class ExpandTrackController implements ActionListener, MouseListener {
             thv.setBounds(thv.getX(), thv.getY(), thv.getWidth(), 70);
             TrackView tv = app.getTrackViewArray().get(thv.getTrack().getId());
             tv.setBounds(tv.getX(), tv.getY(), tv.getWidth(), 70);
+            for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
+                pitv.adjustSize(false);
+                pitv.repaint();
+            }
             thv.repaint();
             tv.repaint();
 
@@ -80,6 +89,7 @@ public class ExpandTrackController implements ActionListener, MouseListener {
                 temp.setBounds(temp.getX(), temp.getY() - (thv.getExpandedHeight() - 70), temp.getWidth(), temp.getHeight());
                 for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                     pitv.adjustSize(false);
+                    pitv.repaint();
                 }
                 temp.repaint();
                 trackView.repaint();

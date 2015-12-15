@@ -55,6 +55,7 @@ public class PhraseInTrackView extends JPanel {
         topPanel.setLayout(null);
         topPanel.setBounds(0, 0, 200, 70);
         Color unselectedColor = phrase.getUnselectedColor();
+        System.out.println(unselectedColor.toString());
         topPanel.setBackground(new Color(unselectedColor.getRed(), unselectedColor.getGreen(), unselectedColor.getBlue()));
         topPanel.setAlpha(0.34f);
         topPanel.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
@@ -62,36 +63,44 @@ public class PhraseInTrackView extends JPanel {
 
         if (phrase.getCompound() != null) nameLabel = new JLabel(phrase.getCompound().getName());
         else nameLabel = new JLabel("Loop");
-        nameLabel.setFont(new Font("Serif", Font.PLAIN, 10));
-        nameLabel.setBounds(18, 0, 75, 15);
+        nameLabel.setFont(new Font("Serif", Font.PLAIN, 15));
+        nameLabel.setBounds(25, -7, 500, 40);
         topPanel.add(nameLabel);
 
         Icon removephrasefromtrackicon = new ImageIcon(getClass().getResource("/icons/removephrasefromtrackicon.png"));
-        removeButton = new BetterButton(Color.decode("#F5F5F5"), 10, 10, 0);
+        removeButton = new BetterButton(Color.decode("#F5F5F5"), 15, 15, 0);
         removeButton.setIcon(removephrasefromtrackicon);
-        removeButton.setBounds(3, 2, 10, 10);
+        removeButton.setBounds(5, 5, 15, 15);
         removeButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         removeButton.setBorderPainted(true);
         removeButton.setFocusPainted(false);
         topPanel.add(removeButton);
 
-        chPanel = new ChartPanel(createChart());
-        chPanel.setPreferredSize(new Dimension(200, 70));
-        chPanel.setVisible(true);
-        chPanel.setBounds(0, 0, 200, 70);
-        chPanel.setDomainZoomable(true);
-        chPanel.setOpaque(false);
-        graphPanel = new GlassPanel();
-        graphPanel.setLayout(new BorderLayout());
-        graphPanel.setBounds(-15, -5, 200, 80);
-        graphPanel.setAlpha(0.6f);
-        graphPanel.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        graphPanel.removeAll();
-        graphPanel.add(chPanel, BorderLayout.CENTER);
-        layeredPane.add(graphPanel, 0);
+        updateChart();
 
         layeredPane.moveToFront(topPanel);
 
+    }
+
+    public void updateChart() {
+        if (!phrase.isLoop()) {
+
+            chPanel = new ChartPanel(createChart());
+            chPanel.setPreferredSize(new Dimension(200, 70));
+            chPanel.setVisible(true);
+            chPanel.setBounds(0, 0, 200, 70);
+            chPanel.setDomainZoomable(true);
+            chPanel.setOpaque(false);
+            graphPanel = new GlassPanel();
+            graphPanel.setLayout(new BorderLayout());
+            graphPanel.setBounds(-15, -5, 200, 80);
+            graphPanel.setAlpha(0.6f);
+            graphPanel.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
+            graphPanel.removeAll();
+            graphPanel.add(chPanel, BorderLayout.CENTER);
+            layeredPane.add(graphPanel, 0);
+
+        }
     }
 
     public void toggleSelected() {
@@ -99,22 +108,30 @@ public class PhraseInTrackView extends JPanel {
     }
 
     public void adjustSize(boolean expanded) {
+        layeredPane.removeAll();
+        layeredPane.add(topPanel, 100);
+        updateChart();
         if (!expanded) {
             setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), 0, getAdjustedWidth(), 70);
-            graphPanel.setBounds(-15, -5, getAdjustedWidth() + 30, 80);
-            chPanel.setBounds(0, 0, getAdjustedWidth(), 70);
+            if (!phrase.isLoop()) {
+                graphPanel.setBounds(-15, -5, getAdjustedWidth() + 30, 80);
+                chPanel.setBounds(0, 0, getAdjustedWidth(), 70);
+            }
             topPanel.setBounds(0, 0, getAdjustedWidth(), 70);
             layeredPane.setBounds(0, 0, getAdjustedWidth(), 70);
             layeredPane.repaint();
         }
         else {
             setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), 0, getAdjustedWidth(), 200);
-            graphPanel.setBounds(-15, -5, getAdjustedWidth() + 30, 210);
-            chPanel.setBounds(0, 0, getAdjustedWidth(), 200);
+            if (!phrase.isLoop()) {
+                graphPanel.setBounds(-15, -5, getAdjustedWidth() + 30, 210);
+                chPanel.setBounds(0, 0, getAdjustedWidth(), 200);
+            }
             topPanel.setBounds(0, 0, getAdjustedWidth(), 200);
             layeredPane.setBounds(0, 0, getAdjustedWidth(), 200);
             layeredPane.repaint();
         }
+        layeredPane.moveToFront(topPanel);
         //removeButton.setBounds(getAdjustedWidth() - 15, removeButton.getY(), removeButton.getWidth(), removeButton.getHeight());
     }
 
@@ -135,7 +152,8 @@ public class PhraseInTrackView extends JPanel {
 
     public int getAdjustedWidth() {
         if (!phrase.isLoop()) return (int) (app.getMeasureScale() * phrase.getBeatLength2());
-        else return (int) (app.getMeasureScale() * phrase.getBeatLength());
+        //else return (int) (app.getMeasureScale() * phrase.getBeatLength());
+        else return 200;
     }
 
     public void setAlpha(float value) {

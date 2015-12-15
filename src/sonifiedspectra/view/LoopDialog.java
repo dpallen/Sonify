@@ -118,9 +118,9 @@ public class LoopDialog extends JDialog {
 
     private void onOK() {
 
-        Phrase phrase = new sonifiedspectra.model.Phrase();
+        sonifiedspectra.model.Phrase phrase = new sonifiedspectra.model.Phrase();
         Read.midi(phrase, String.valueOf(midiLoops.get(loopComboBox.getSelectedIndex())));
-        phrase.setInstrument(127);
+        //phrase.setInstrument(127);
 
         for (jm.music.data.Note n : phrase.getNoteArray()) System.out.println("Note");
         System.out.println("Heeeeeel");
@@ -128,29 +128,32 @@ public class LoopDialog extends JDialog {
         boolean done = false;
 
         for (TrackView tv : app.getTrackViewArray()) {
-            if (tv.getTrack().getInstrument() == phrase.getInstrument()) {
+            if (tv.getTrack().isLoop()) {
 
                 done = true;
 
                 if (app.getSelectedMeasures().size() > 0) {
                     for (int j = 0; j < app.getSelectedMeasures().size(); j++) {
-                        Phrase newPhrase = phrase.copy();
+                        sonifiedspectra.model.Phrase newPhrase = phrase.copy();
                         newPhrase.setStartTime(app.getSelectedMeasures().get(j));
-                        sonifiedspectra.model.Phrase newPhrase2 = (sonifiedspectra.model.Phrase) newPhrase;
-                        newPhrase2.setLoop(true);
-                        tv.getTrack().getPhrases().add(newPhrase2);
+                        newPhrase.setBackgroundCol("");
+                        newPhrase.setLoop(true);
+                        tv.getTrack().getPhrases().add(newPhrase);
                     }
                 }
 
                 else {
-                    sonifiedspectra.model.Phrase newPhrase2 = (sonifiedspectra.model.Phrase) phrase;
-                    newPhrase2.setLoop(true);
-                    tv.getTrack().getPhrases().add(newPhrase2);
+                    sonifiedspectra.model.Phrase newPhrase = phrase;
+                    newPhrase.setBackgroundCol("");
+                    newPhrase.setLoop(true);
+                    newPhrase.setStartTime(0);
+                    tv.getTrack().getPhrases().add(newPhrase);
                 }
 
                 tv.initialize();
                 for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
-                    pitv.addMouseListener(new PhraseInTrackController(app, app.getActiveProject(), pitv));
+                    pitv.getTopPanel().addMouseListener(new PhraseInTrackController(app, app.getActiveProject(), pitv));
+                    pitv.getTopPanel().addMouseListener(new HelpTextController(app, HelpStrings.PITV));
                     RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(app, app.getActiveProject(), pitv, tv);
                     pitv.getRemoveButton().addMouseListener(new HelpTextController(app, HelpStrings.REMOVE_PHRASE_FROM_TRACK));
                     pitv.getRemoveButton().addActionListener(removePhraseFromTrackController);
@@ -162,13 +165,16 @@ public class LoopDialog extends JDialog {
 
         if (!done) {
             Track newTrack = new Track(app.getActiveProject().getCurrentTrackId());
+            newTrack.setLoop(true);
             newTrack.setInstrument(phrase.getInstrument());
             app.getActiveProject().incrementTrackId();
             app.getActiveProject().getTracksArray().add(newTrack);
 
-            sonifiedspectra.model.Phrase newPhrase2 = (sonifiedspectra.model.Phrase) phrase;
-            newPhrase2.setLoop(true);
-            newTrack.getPhrases().add((sonifiedspectra.model.Phrase) newPhrase2);
+            sonifiedspectra.model.Phrase newPhrase = phrase;
+            newPhrase.setBackgroundCol("");
+            newPhrase.setLoop(true);
+            newPhrase.setStartTime(0);
+            newTrack.getPhrases().add(newPhrase);
 
             TrackView tv = new TrackView(newTrack, app);
             tv.setBounds(0, 70 * (app.getActiveProject().getTracksArray().size() - 1), 100 * app.getActiveProject().getNumMeasures(), 70);
@@ -203,10 +209,11 @@ public class LoopDialog extends JDialog {
                     70 * app.getActiveProject().getTracksArray().size()));
 
             tv.initialize();
+            System.out.println(tv.getPhraseInTrackViewArray().size());
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
-                System.out.println("Pitv check");
-                pitv.setBounds(pitv.getX(), pitv.getY(), pitv.getAdjustedWidth(), pitv.getHeight());
-                pitv.addMouseListener(new PhraseInTrackController(app, app.getActiveProject(), pitv));
+                pitv.adjustSize(false);
+                pitv.getTopPanel().addMouseListener(new PhraseInTrackController(app, app.getActiveProject(), pitv));
+                pitv.getTopPanel().addMouseListener(new HelpTextController(app, HelpStrings.PITV));
                 RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(app, app.getActiveProject(), pitv, tv);
                 pitv.getRemoveButton().addMouseListener(new HelpTextController(app, HelpStrings.REMOVE_PHRASE_FROM_TRACK));
                 pitv.getRemoveButton().addActionListener(removePhraseFromTrackController);
@@ -234,6 +241,8 @@ public class LoopDialog extends JDialog {
             j2++;
         }
 
+        app.getSoundPlayer().reset();
+        app.getSoundPlayer().updateSoundPlayer();
         app.getFrame().pack();
 
         setVisible(false);

@@ -58,6 +58,7 @@ public class AddPhraseToTrackController implements ActionListener, MouseListener
                 tv.initialize();
                 for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                     pitv.getTopPanel().addMouseListener(new PhraseInTrackController(app, app.getActiveProject(), pitv));
+                    pitv.getTopPanel().addMouseListener(new HelpTextController(app, HelpStrings.PITV));
                     RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(app, app.getActiveProject(), pitv, tv);
                     pitv.getRemoveButton().addMouseListener(new HelpTextController(app, HelpStrings.REMOVE_PHRASE_FROM_TRACK));
                     pitv.getRemoveButton().addActionListener(removePhraseFromTrackController);
@@ -73,7 +74,8 @@ public class AddPhraseToTrackController implements ActionListener, MouseListener
             app.getActiveProject().incrementTrackId();
             app.getActiveProject().getTracksArray().add(newTrack);
 
-            newTrack.getPhrases().add(app.getActivePhrase());
+            Phrase newPhrase = app.getActivePhrase().copy();
+            newTrack.getPhrases().add(newPhrase);
 
             TrackView tv = new TrackView(newTrack, app);
             tv.setBounds(0, 70 * (app.getActiveProject().getTracksArray().size() - 1), 100 * app.getActiveProject().getNumMeasures(), 70);
@@ -110,6 +112,7 @@ public class AddPhraseToTrackController implements ActionListener, MouseListener
 
             tv.initialize();
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
+                pitv.adjustSize(tv.getTrack().isExpanded());
                 pitv.getTopPanel().addMouseListener(new PhraseInTrackController(app, app.getActiveProject(), pitv));
                 pitv.getTopPanel().addMouseListener(new HelpTextController(app, HelpStrings.PITV));
                 RemovePhraseFromTrackController removePhraseFromTrackController = new RemovePhraseFromTrackController(app, app.getActiveProject(), pitv, tv);

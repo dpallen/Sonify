@@ -276,7 +276,7 @@ public class SoundPlayer {
             progress.setValue(audioPosition);
             if (!notePlayer && app.isProject()) {
                 Line line = app.getPlaybackLine();
-                line.setBounds(audioPosition / 20 - app.getTracksScrollPane().getHorizontalScrollBar().getValue(), line.getY(), line.getWidth(), line.getHeight());
+                line.setBounds(audioPosition / (500 * 1 / app.getMeasureScale()) - app.getTracksScrollPane().getHorizontalScrollBar().getValue(), line.getY(), line.getWidth(), line.getHeight());
                 app.getPlaybackLinePanel().repaint();
                 line.repaint();
 
@@ -327,8 +327,8 @@ public class SoundPlayer {
                             plot.addDomainMarker(newMarker);
                         }
                         app.getNoteViewArray().get(currentNoteOnIndex / 2).repaint();
-
-                        if (currentNoteOnIndex / 2 >= 1) {
+                        System.out.println(Math.ceil(currentNoteOnIndex / 2));
+                        if (Math.ceil(currentNoteOnIndex / 2) >= 1) {
                             app.getNoteViewArray().get(currentNoteOnIndex / 2 - 1).setBackground(Color.decode("#F5F5F5"));
                             if (app.getActivePhrase() != null && !app.getNoteViewArray().get(currentNoteOnIndex / 2 - 1).getNote().isFiller()) {
                                 XYPlot plot = app.getActivePhrase().getCompound().getDataChart().getDataChart().getXYPlot();
@@ -489,6 +489,7 @@ public class SoundPlayer {
                 Part newPart = new Part("", 0, channel);
                 for (sonifiedspectra.model.Phrase phrase : track.getPhrases()) {
                     jm.music.data.Phrase newPhrase = new jm.music.data.Phrase();
+                    System.out.println("Track: " + track.getId() + ", phrase: " + phrase.getId());
                     for (Note note : phrase.getNotesArray()) {
                         jm.music.data.Note newNote = new jm.music.data.Note(note.getPitch() + note.getTranspose(), note.getRhythmValue(), note.getDynamic());
                         newPhrase.add(newNote);

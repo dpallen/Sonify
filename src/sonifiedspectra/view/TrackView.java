@@ -41,7 +41,7 @@ public class TrackView extends JPanel {
             PhraseInTrackView pitv = new PhraseInTrackView(app, phrase);
             if (!phrase.isLoop()) pitv.getNameLabel().setText(phrase.getCompound().getName());
             else pitv.getNameLabel().setText("Loop");
-            pitv.setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), 70, pitv.getAdjustedWidth(), 70);
+            pitv.setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), 0, pitv.getAdjustedWidth(), 70);
             phraseInTrackViewArray.add(pitv);
             add(pitv);
             i++;

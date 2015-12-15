@@ -108,6 +108,7 @@ public class Sonify {
 
     private JSlider playbackSlider;
     private JSlider noteVolumeSlider;
+    private JSlider measureZoomSlider;
 
     private JCheckBox quantizeCheckBox;
     private JCheckBox multipleSelectionCheckBox;
@@ -984,6 +985,14 @@ public class Sonify {
         measuresButton.setFocusPainted(false);
         frame.getContentPane().add(measuresButton);
 
+        measureZoomSlider = new JSlider();
+        measureZoomSlider.setBounds(1240, 225, 32, 100);
+        measureZoomSlider.setOrientation(SwingConstants.VERTICAL);
+        measureZoomSlider.setMinimum(5);
+        measureZoomSlider.setMaximum(80);
+        measureZoomSlider.setValue(25);
+        frame.getContentPane().add(measureZoomSlider);
+
         fillerDialog = new FillerNotesDialog(this);
         fillerDialog.pack();
         final int width = fillerDialog.getWidth();
@@ -1211,6 +1220,9 @@ public class Sonify {
         measuresButton.addMouseListener(new HelpTextController(this, HelpStrings.MEASURES));
         measuresButton.addMouseListener(new MeasuresController(this));
 
+        measureZoomSlider.addChangeListener(new MeasureScaleController(this, activeProject));
+        measureZoomSlider.addMouseListener(new HelpTextController(this, HelpStrings.MEASURE_SCALE));
+
         AddTrackController addTrackController = new AddTrackController(this, activeProject);
         addTrackButton.addMouseListener(new HelpTextController(this, HelpStrings.ADD_TRACK));
         addTrackButton.addActionListener(addTrackController);
@@ -1335,14 +1347,13 @@ public class Sonify {
                     activePhrase.getCompound().getName());
         }
 
-        int j4 = 0;
         for (TrackView tv : trackViewArray) {
             if (tv.getTrack().isSelected()) {
                 //tv.setBackground(activePhrase.getUnselectedColor());
                 tv.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 3, false));
             }
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
-                pitv.adjustSize(false);
+                pitv.adjustSize(tv.getTrack().isExpanded());
                 if (pitv.getPhrase().isLoop()) pitv.getNameLabel().setForeground(Color.WHITE);
                 if (activePhrase.getId() == pitv.getPhrase().getId() || (pitv.getPhrase().getParentPhrase() != null && activePhrase.getId() == pitv.getPhrase().getParentPhrase().getId())) {
                     if (!pitv.getPhrase().isLoop()) {
@@ -1355,9 +1366,7 @@ public class Sonify {
                     pitv.getTopPanel().setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
                     pitv.repaint();
                 }
-                j4++;
             }
-            j4 = 0;
         }
 
         for (TrackHeadView thv : trackHeadViewArray) {
@@ -2463,5 +2472,21 @@ public class Sonify {
 
     public void setPlaybackLinePanel(JPanel playbackLinePanel) {
         this.playbackLinePanel = playbackLinePanel;
+    }
+
+    public JSlider getMeasureZoomSlider() {
+        return measureZoomSlider;
+    }
+
+    public void setMeasureZoomSlider(JSlider measureZoomSlider) {
+        this.measureZoomSlider = measureZoomSlider;
+    }
+
+    public JCheckBox getSelectAllOrNoneCheckbox() {
+        return selectAllOrNoneCheckbox;
+    }
+
+    public void setSelectAllOrNoneCheckbox(JCheckBox selectAllOrNoneCheckbox) {
+        this.selectAllOrNoneCheckbox = selectAllOrNoneCheckbox;
     }
 }

@@ -14,6 +14,7 @@ public class Track extends Part{
     private boolean live;
     private boolean expanded;
     private int id;
+    private boolean loop;
 
     public Track(int id) {
         this.id = id;
@@ -21,10 +22,11 @@ public class Track extends Part{
         this.selected = false;
         this.live = true;
         this.expanded = false;
+        this.loop = false;
     }
 
     public String saveString() {
-        String saveString = id + "," + selected + "," + live + "," + expanded + "," + getInstrument();
+        String saveString = id + "," + selected + "," + live + "," + expanded + "," + getInstrument() + ", " + loop;
         return saveString;
     }
 
@@ -74,5 +76,13 @@ public class Track extends Part{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean isLoop() {
+        return loop;
+    }
+
+    public void setLoop(boolean loop) {
+        this.loop = loop;
     }
 }

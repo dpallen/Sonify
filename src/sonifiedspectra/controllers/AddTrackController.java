@@ -30,12 +30,12 @@ public class AddTrackController implements ActionListener, MouseListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        Track newTrack = new Track(app.getActiveProject().getCurrentTrackId());
+        Track newTrack = new Track(app.getActiveProject().getTracksArray().size());
         app.getActiveProject().incrementTrackId();
         app.getActiveProject().getTracksArray().add(newTrack);
 
         TrackView tv = new TrackView(newTrack, app);
-        tv.setBounds(0, 70 * (app.getActiveProject().getTracksArray().size() - 1), 100 * app.getActiveProject().getNumMeasures(), 70);
+        tv.setBounds(0, getNewTrackY(), 100 * app.getActiveProject().getNumMeasures(), 70);
 
         app.getTrackViewArray().add(tv);
         app.getInTracksPanel().add(tv);
@@ -49,7 +49,7 @@ public class AddTrackController implements ActionListener, MouseListener {
         } catch (FontFormatException e1) {
             e1.printStackTrace();
         }
-        thv.setBounds(0, 70 * (app.getActiveProject().getTracksArray().size() - 1), 150, 70);
+        thv.setBounds(0, getNewTrackY(), 150, 70);
         thv.getTrackNumberLabel().setText(String.valueOf(app.getActiveProject().getTracksArray().size()));
         thv.addMouseListener(new HelpTextController(app, HelpStrings.TRACK_HEAD));
         thv.addMouseListener(new TrackHeadController(app, app.getActiveProject(), thv));
@@ -120,6 +120,19 @@ public class AddTrackController implements ActionListener, MouseListener {
         app.getAddTrackButton().setCol(app.getButtonBackgroundColor());
         app.getAddTrackButton().repaint();
         app.getFrame().pack();
+    }
+
+    public int getNewTrackY() {
+        int y = 0;
+
+        for (TrackHeadView thv : app.getTrackHeadViewArray()) {
+            if (thv.getTrack().isExpanded()) y += thv.getExpandedHeight();
+            else y += thv.getHeight();
+        }
+
+        System.out.println(y);
+
+        return y;
     }
 
 }

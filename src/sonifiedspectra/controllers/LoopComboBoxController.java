@@ -1,5 +1,6 @@
 package sonifiedspectra.controllers;
 
+import jm.music.data.Part;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.Sonify;
 
@@ -27,7 +28,7 @@ public class LoopComboBoxController implements ItemListener {
     public void itemStateChanged(ItemEvent e) {
 
         app.getLoopDialog().getLoopPlayer().reset();
-        app.getLoopDialog().getLoopPlayer().updateLoopPlayer( app.getLoopDialog().getLoopsArray()
+        app.getLoopDialog().getLoopPlayer().updateLoopPlayer( (Part) app.getLoopDialog().getLoopsArray()
                 .get(loopComboBox.getSelectedIndex()));
     }
 }

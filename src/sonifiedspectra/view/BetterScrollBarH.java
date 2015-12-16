@@ -9,12 +9,12 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
-public class BetterScrollBar extends BasicScrollBarUI {
+public class BetterScrollBarH extends BasicScrollBarUI {
 
     @Override
     protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
     	 g.setColor(trackColor);
-         g.fillRect(0, 5, 700, 10);
+         g.fillRect(0, 0, 700, 10);
     }
 
     @Override
@@ -30,8 +30,8 @@ public class BetterScrollBar extends BasicScrollBarUI {
         g.translate(thumbBounds.x, thumbBounds.y);
 
         g.setColor(thumbColor);
-        g.drawRoundRect(0, 5, w-1, 10, 10, 10);
-        g.fillRoundRect(0, 5, w-1, 10, 10, 10);
+        g.drawRoundRect(0, 0, w, 10, 10, 10);
+        g.fillRoundRect(0, 0, w, 10, 10, 10);
 
         g.translate(-thumbBounds.x, -thumbBounds.y);
     }

@@ -1,5 +1,6 @@
 package sonifiedspectra.controllers;
 
+import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.PhraseInTrackView;
 import sonifiedspectra.view.Sonify;
@@ -48,6 +49,14 @@ public class MovePitvController implements ActionListener, MouseListener {
                     System.out.println("New time: " + newTime);
 
                     pitv.getPhrase().setStartTime(newX);
+
+                    Phrase temp = pitv.getPhrase().getParentPhrase();
+
+                    while (temp != null) {
+                        temp.setStartTime(newX);
+                        temp = temp.getParentPhrase();
+                    }
+
                     System.out.println("Start time: " + pitv.getPhrase().getStartTime());
                     pitv.setBounds(x, pitv.getY(), pitv.getWidth(), pitv.getHeight());
                     pitv.repaint();

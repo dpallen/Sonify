@@ -45,9 +45,11 @@ public class SoundPlayer {
     private int currentNoteOnIndex;
     private ArrayList<ArrayList<Integer>> projectNoteOnArray;
     private ArrayList<Integer> projectNoteOnIndices;
+    private ArrayList<Integer> phraseNumArray;
+    private ArrayList<Integer> totalNotesArray;
     private ArrayList<Marker> lastMarkerArray;
     private Marker lastMarker;
-    private boolean notePlayer;
+    private boolean notePlayer, loop;
 
     public static final int NOTE_ON = 0x90;
     public static final int NOTE_OFF = 0x80;
@@ -76,9 +78,12 @@ public class SoundPlayer {
             MidiUnavailableException,
             InvalidMidiDataException {
         this.app = app;
+        this.loop = loop;
         currentNoteOnIndex = 0;
         noteOnArray = new ArrayList<>();
         projectNoteOnIndices = new ArrayList<>();
+        totalNotesArray = new ArrayList<>();
+        phraseNumArray = new ArrayList<>();
         projectNoteOnArray = new ArrayList<ArrayList<Integer>>();
         // First, get a Sequencer to play sequences of MIDI events
         // That is, to send events to a Synthesizer at the right time.
@@ -139,15 +144,13 @@ public class SoundPlayer {
             }
         });
 
-        final Sonify app2 = app;
-        final boolean loop2 = loop;
         // When clicked, stop and reset playing the sound
         stop.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 reset();
                 Icon playIcon = new ImageIcon(getClass().getResource("/icons/playicon.png"));
                 play.setIcon(playIcon);
-                if (!loop2) tempo.setValue(app2.getActiveProject().getTempo());
+                if (!loop) tempo.setValue(app.getActiveProject().getTempo());
             }
         });
 
@@ -159,7 +162,7 @@ public class SoundPlayer {
                 // Update the time label
                 if (!notePlayer && app.isProject()) {
                     time.setText(getTimeString((int) sequencer.getMicrosecondPosition(), (int) sequencer.getMicrosecondLength()));
-                    app.getPlaybackLine().setBounds((int) sequencer.getTickPosition() / 20 - app.getTracksScrollPane().getHorizontalScrollBar().getValue(), app.getPlaybackLine().getY(), app.getPlaybackLine().getWidth(), app.getPlaybackLine().getHeight());
+                    if (!loop) app.getPlaybackLine().setBounds((int) sequencer.getTickPosition() / 20 - app.getTracksScrollPane().getHorizontalScrollBar().getValue(), app.getPlaybackLine().getY(), app.getPlaybackLine().getWidth(), app.getPlaybackLine().getHeight());
                     app.getPlaybackLine().repaint();
                 }
                 // If we're not already there, skip there.
@@ -199,14 +202,19 @@ public class SoundPlayer {
     public void reset( ) {
         stop( );
         currentNoteOnIndex = 0;
-        for (int i = 0; i < projectNoteOnIndices.size(); i++) projectNoteOnIndices.set(i, 0);
+        for (int i = 0; i < projectNoteOnIndices.size(); i++) {
+            projectNoteOnIndices.set(i, 0);
+            totalNotesArray.set(i, 0);
+            phraseNumArray.set(i, 0);
+        }
         sequencer.setTickPosition(0);
         audioPosition = 0;
         progress.setValue(0);
         Line line = app.getPlaybackLine();
         line.setBounds(0 - app.getTracksScrollPane().getHorizontalScrollBar().getValue(), line.getY(), line.getWidth(), line.getHeight());
         line.repaint();
-        for (TrackView tv : app.getTrackViewArray()) for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) pitv.getDataChart().getXYPlot().clearDomainMarkers();
+        app.getLayeredPane().moveToFront(app.getPlaybackLinePanel());
+        for (TrackView tv : app.getTrackViewArray()) for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) if (!pitv.getPhrase().isLoop()) pitv.getDataChart().getXYPlot().clearDomainMarkers();
         Icon playIcon = new ImageIcon(getClass().getResource("/icons/playicon.png"));
         app.getPlayButton().setIcon(playIcon);
         app.getPlayButton().repaint();
@@ -235,75 +243,89 @@ public class SoundPlayer {
                 audioPosition = (int) sequencer.getTickPosition();
                 progress.setValue(audioPosition);
 
-                if (app.isProject()) {
+                if (!loop) {
 
-                    Line line = app.getPlaybackLine();
-                    line.setBounds(audioPosition / (500 * 1 / app.getMeasureScale()) - app.getTracksScrollPane().getHorizontalScrollBar().getValue(), line.getY(), line.getWidth(), line.getHeight());
-                    app.getPlaybackLinePanel().repaint();
-                    line.repaint();
+                    if (app.isProject()) {
 
-                    int i = 0;
-                    for (ArrayList array : projectNoteOnArray) {
-                        if (projectNoteOnIndices.get(i) < array.size() && sequencer.getTickPosition() >= (int) array.get(projectNoteOnIndices.get(i))) {
+                        Line line = app.getPlaybackLine();
+                        line.setBounds(audioPosition / (500 * 1 / app.getMeasureScale()) - app.getTracksScrollPane().getHorizontalScrollBar().getValue(), line.getY(), line.getWidth(), line.getHeight());
+                        app.getPlaybackLinePanel().repaint();
+                        line.repaint();
 
-                            int currentIndex = projectNoteOnIndices.get(i);
+                        int i = 0;
+                        for (ArrayList array : projectNoteOnArray) {
+                            if (!app.getActiveProject().getTracksArray().get(i).isLoop()) {
+                                if (projectNoteOnIndices.get(i) < array.size() && sequencer.getTickPosition() >= (int) array.get(projectNoteOnIndices.get(i))) {
 
-                            Note note = app.getActiveProject().getTracksArray().get(i).getPhrases().get(0).getNotesArray().get(currentIndex);
-                            Marker newMarker = app.addNoteMarker(note);
+                                    int notes = app.getActiveProject().getTracksArray().get(i).getPhrases().get(phraseNumArray.get(i)).getNotesArray().size();
 
-                            if (!note.isFiller()) {
-                                XYPlot plot = app.getTrackViewArray().get(i).getPhraseInTrackViewArray().get(0).getDataChart().getXYPlot();
-                                plot.addDomainMarker(newMarker);
-                            }
+                                    if (projectNoteOnIndices.get(i) >= totalNotesArray.get(i) + notes) {
+                                        app.getTrackViewArray().get(i).getPhraseInTrackViewArray().get(phraseNumArray.get(i)).getDataChart().getXYPlot().clearDomainMarkers();
+                                        phraseNumArray.set(i, phraseNumArray.get(i) + 1);
+                                        totalNotesArray.set(i, totalNotesArray.get(i) + notes);
+                                    }
+                                    int currentIndex = projectNoteOnIndices.get(i);
 
-                            if (currentIndex > 0) {
-                                if (app.getActivePhrase() != null && !app.getNoteViewArray().get(currentNoteOnIndex).getNote().isFiller()) {
-                                    XYPlot plot = app.getTrackViewArray().get(i).getPhraseInTrackViewArray().get(0).getDataChart().getXYPlot();
-                                    plot.removeDomainMarker(lastMarkerArray.get(i));
+                                    Note note = app.getActiveProject().getTracksArray().get(i).getPhrases().get(phraseNumArray.get(i)).getNotesArray().get(currentIndex - totalNotesArray.get(i));
+                                    Marker newMarker = app.addNoteMarker(note);
+
+                                    if (!note.isFiller()) {
+                                        XYPlot plot = app.getTrackViewArray().get(i).getPhraseInTrackViewArray().get(phraseNumArray.get(i)).getDataChart().getXYPlot();
+                                        plot.addDomainMarker(newMarker);
+                                    }
+
+                                    if (currentIndex - totalNotesArray.get(i) > 0) {
+                                        if (app.getActivePhrase() != null && !app.getNoteViewArray().get(currentNoteOnIndex).getNote().isFiller()) {
+                                            XYPlot plot = app.getTrackViewArray().get(i).getPhraseInTrackViewArray().get(phraseNumArray.get(i)).getDataChart().getXYPlot();
+                                            plot.removeDomainMarker(lastMarkerArray.get(i));
+                                        }
+                                    }
+
+                                    lastMarkerArray.set(i, newMarker);
+                                    app.getChPanel().repaint();
+                                    app.getFrame().pack();
+                                    projectNoteOnIndices.set(i, projectNoteOnIndices.get(i) + 1);
+
                                 }
+                                if (projectNoteOnIndices.get(i) >= array.size())
+                                    app.getTrackViewArray().get(i).getPhraseInTrackViewArray().get(phraseNumArray.get(i)).getDataChart().getXYPlot().clearDomainMarkers();
+                                i++;
                             }
-
-                            lastMarkerArray.set(i, newMarker);
-                            app.getChPanel().repaint();
-                            app.getFrame().pack();
-                            projectNoteOnIndices.set(i, projectNoteOnIndices.get(i) + 1);
-
                         }
-                        if (projectNoteOnIndices.get(i) >= array.size())
-                            app.getTrackViewArray().get(i).getPhraseInTrackViewArray().get(0).getDataChart().getXYPlot().clearDomainMarkers();
-                        i++;
-                    }
 
-                }
+                        app.getLayeredPane().moveToFront(app.getPlaybackLinePanel());
 
-                else {
-                    if (noteOnArray.size() > 0) {
-                        if (currentNoteOnIndex < noteOnArray.size() && sequencer.getTickPosition() >= noteOnArray.get(currentNoteOnIndex)) {
+                    } else {
+                        if (noteOnArray.size() > 0) {
+                            if (currentNoteOnIndex < noteOnArray.size() && sequencer.getTickPosition() >= noteOnArray.get(currentNoteOnIndex)) {
 
-                            Marker newMarker = app.addNoteMarker(app.getNoteViewArray().get(currentNoteOnIndex).getNote());
+                                Marker newMarker = app.addNoteMarker(app.getNoteViewArray().get(currentNoteOnIndex).getNote());
 
-                            app.getNoteViewArray().get(currentNoteOnIndex).setBackground(app.getActivePhrase().getUnselectedColor());
-                            if (!app.getNoteViewArray().get(currentNoteOnIndex).getNote().isFiller()) {
-                                XYPlot plot = app.getActivePhrase().getCompound().getDataChart().getDataChart().getXYPlot();
-                                plot.addDomainMarker(newMarker);
-                            }
-                            app.getNoteViewArray().get(currentNoteOnIndex).repaint();
-
-                            if (currentNoteOnIndex > 0) {
-                                if (!app.getNoteViewArray().get(currentNoteOnIndex - 1).getNote().isSelected()) app.getNoteViewArray().get(currentNoteOnIndex - 1).setBackground(Color.decode("#F5F5F5"));
-                                if (app.getActivePhrase() != null && !app.getNoteViewArray().get(currentNoteOnIndex - 1).getNote().isFiller()) {
+                                app.getNoteViewArray().get(currentNoteOnIndex).setBackground(app.getActivePhrase().getUnselectedColor());
+                                if (!app.getNoteViewArray().get(currentNoteOnIndex).getNote().isFiller()) {
                                     XYPlot plot = app.getActivePhrase().getCompound().getDataChart().getDataChart().getXYPlot();
-                                    plot.removeDomainMarker(lastMarker);
+                                    plot.addDomainMarker(newMarker);
                                 }
-                                app.getNoteViewArray().get(currentNoteOnIndex - 1).repaint();
-                            }
+                                app.getNoteViewArray().get(currentNoteOnIndex).repaint();
 
-                            lastMarker = newMarker;
-                            app.getChPanel().repaint();
-                            app.getFrame().pack();
-                            currentNoteOnIndex++;
+                                if (currentNoteOnIndex > 0) {
+                                    if (!app.getNoteViewArray().get(currentNoteOnIndex - 1).getNote().isSelected())
+                                        app.getNoteViewArray().get(currentNoteOnIndex - 1).setBackground(Color.decode("#F5F5F5"));
+                                    if (app.getActivePhrase() != null && !app.getNoteViewArray().get(currentNoteOnIndex - 1).getNote().isFiller()) {
+                                        XYPlot plot = app.getActivePhrase().getCompound().getDataChart().getDataChart().getXYPlot();
+                                        plot.removeDomainMarker(lastMarker);
+                                    }
+                                    app.getNoteViewArray().get(currentNoteOnIndex - 1).repaint();
+                                }
+
+                                lastMarker = newMarker;
+                                app.getChPanel().repaint();
+                                app.getFrame().pack();
+                                currentNoteOnIndex++;
+                            }
                         }
                     }
+
                 }
             } else {
                 reset();
@@ -330,12 +352,7 @@ public class SoundPlayer {
     void addMidiControls( ) {
         // Add a slider to control the tempo
         tempo = new JSlider(40, 255);
-        tempo.setValue((int) (app.getActiveProject().getTempo()));
-        java.util.Hashtable labels = new java.util.Hashtable( );
-        labels.put(new Integer(40), new JLabel("40"));
-        labels.put(new Integer(120), new JLabel("120"));
-        labels.put(new Integer(255), new JLabel("255"));
-        tempo.setLabelTable(labels);
+        tempo.setValue(app.getActiveProject().getTempo());
         tempo.setPaintLabels(true);
         // The event listener actually changes the tempo
         tempo.addChangeListener(new ChangeListener( ) {
@@ -344,14 +361,22 @@ public class SoundPlayer {
                 app.getTempoTextField().setText(String.valueOf(tempo.getValue()));
             }
         });
-        tempo.setBounds(507, 80, 168, 50);
+        tempo.setBounds(517, 80, 168, 40);
 
         tempo.setUI(new coloredThumbSliderUI2(tempo, app.getActivePhrase().getSelectedColor()));
         app.getPlaybackPanel().add(tempo);
 
     }
 
-    public void updateLoopPlayer(File midiFile) {
+    public void updateLoopPlayer(Part part) {
+
+        Score score = new Score();
+        score.add(part);
+        score.setTempo(app.getActiveProject().getTempo());
+
+        Write.midi(score, app.getActiveProject().getDirectoryPath() + "/Midi/loop.mid");
+
+        File midiFile = new File( app.getActiveProject().getDirectoryPath() + "/Midi/loop.mid" );   // This is the file we'll be playing
 
         // Read the sequence from the file and tell the sequencer about it
         try {
@@ -375,12 +400,14 @@ public class SoundPlayer {
         getTime().setText((getTimeString((int)
                         getSequencer().getMicrosecondPosition(),
                 (int) getSequencer().getMicrosecondLength())));
+        if (part.getPhraseArray().length > 0) app.getLoopDialog().getMeasureLabel().setText(String.valueOf(part.getPhraseArray()[0].getBeatLength()) + " measures");
+        else app.getLoopDialog().getMeasureLabel().setText("0 measures");
 
         // This timer calls the tick( ) method 10 times a second to keep
         // our slider in sync with the music.
         setTimer(new Timer(100, new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                tick();
+                    public void actionPerformed(ActionEvent e) {
+                        tick();
             }
         }));
 
@@ -424,7 +451,7 @@ public class SoundPlayer {
 
     public void updateSoundPlayer() {
         notePlayer = false;
-        System.out.println("Updating SoundPlayer...");
+        //System.out.println("Updating SoundPlayer...");
 
         int[] scale = getScale(String.valueOf(app.getQualityComboBox().getSelectedItem()));
         double rhythm = getQuantizeRhythmValue(String.valueOf(app.getQrhythmComboBox().getSelectedItem()));
@@ -432,32 +459,43 @@ public class SoundPlayer {
 
         Score score = new Score();
         int channel = 0;
+        int i, j;
+        int k = 0;
         if (app.isProject()) {
             System.out.println("Creating score from Sonify Project...");
             for (sonifiedspectra.model.Track track : app.getActiveProject().getTracksArray()) {
                 Part newPart = new Part("", 0, channel);
+                j = 0;
                 for (sonifiedspectra.model.Phrase phrase : track.getPhrases()) {
                     jm.music.data.Phrase newPhrase = new jm.music.data.Phrase();
+                    i = 0;
                     for (Note note : phrase.getNotesArray()) {
                         jm.music.data.Note newNote = new jm.music.data.Note(note.getPitch() + note.getTranspose(), note.getRhythmValue(), note.getDynamic());
                         newPhrase.add(newNote);
+                        i++;
                     }
                     newPhrase.setInstrument(track.getInstrument());
                     newPhrase.setStartTime(phrase.getStartTime() * 4);
                     newPart.setInstrument(track.getInstrument());
                     newPart.add(newPhrase);
+                    j++;
+                }
+                if (track.isLoop()) {
+                    newPart.setChannel(9);
+                    newPart.setInstrument(128);
                 }
                 score.add(newPart);
                 channel++;
+                k++;
             }
-            System.out.println("Finished creating score. Printing...");
-            int i, j;
-            int k = 0;
+
+            /*System.out.println("Finished creating score. Printing...");
+            k = 0;
             for (Part part : score.getPartArray()) {
-                System.out.println("Track " + k + ", num phrases: " + part.getPhraseArray().length + ", instrument: " + part.getInstrument());
+                System.out.println("Track " + k + ", num phrases: " + part.getPhraseArray().length + ", instrument: " + part.getInstrument() + ", channel: " + part.getChannel());
                 j = 0;
                 for (jm.music.data.Phrase phrase : part.getPhraseArray()) {
-                    System.out.println("    Phrase: " + j + ", num notes: " + phrase.getNoteArray().length);
+                    System.out.println("    Phrase: " + j + ", num notes: " + phrase.getNoteArray().length + ", instrument: " + phrase.getInstrument());
                     i = 0;
                     for (jm.music.data.Note note : phrase.getNoteArray()) {
                         System.out.println("        Note: " + i + ", pitch: " + note.getPitch() + ", rhythm: " + note.getRhythmValue() + ", dynamic: " + note.getDynamic());
@@ -466,12 +504,12 @@ public class SoundPlayer {
                     j++;
                 }
                 k++;
-            }
+            }*/
 
         }
 
         else {
-            System.out.println("Creating score from Active Phrase...");
+            //System.out.println("Creating score from Active Phrase...");
             Part newPart = new Part();
             jm.music.data.Phrase newPhrase = new jm.music.data.Phrase();
             for (Note note : app.getActivePhrase().getNotesArray()) {
@@ -482,12 +520,12 @@ public class SoundPlayer {
             newPart.setInstrument(app.getActivePhrase().getInstrument());
             newPart.add(newPhrase);
             score.add(newPart);
-            System.out.println("    Phrase: " + 0 + ", num notes: " + newPhrase.getNoteArray().length);
+            /*System.out.println("    Phrase: " + 0 + ", num notes: " + newPhrase.getNoteArray().length);
             int i = 0;
             for (jm.music.data.Note note : newPhrase.getNoteArray()) {
                 System.out.println("        Note: " + i + ", pitch: " + note.getPitch() + ", rhythm: " + note.getRhythmValue() + ", dynamic: " + note.getDynamic());
                 i++;
-            }
+            }*/
         }
 
         score.setTempo(app.getActiveProject().getTempo());
@@ -497,8 +535,6 @@ public class SoundPlayer {
             Mod.quantize(score, rhythm, scale, root);
 
         }
-
-        System.out.println("Writing score to midi file...");
 
         Write.midi(score, app.getActiveProject().getDirectoryPath() + "/Midi/active.mid");
 
@@ -525,6 +561,8 @@ public class SoundPlayer {
         noteOnArray = new ArrayList<Integer>();
         projectNoteOnArray = new ArrayList<ArrayList<Integer>>();
         projectNoteOnIndices = new ArrayList<Integer>();
+        totalNotesArray = new ArrayList<Integer>();
+        phraseNumArray = new ArrayList<Integer>();
         lastMarkerArray = new ArrayList<Marker>();
         currentNoteOnIndex = 0;
 
@@ -539,6 +577,8 @@ public class SoundPlayer {
             System.out.println("Track " + trackNumber + ":");
             projectNoteOnArray.add(new ArrayList<Integer>());
             projectNoteOnIndices.add(0);
+            phraseNumArray.add(0);
+            totalNotesArray.add(0);
             lastMarkerArray.add(new Marker() {
                 @Override
                 public Paint getPaint() {
@@ -546,7 +586,7 @@ public class SoundPlayer {
                 }
             });
 
-            for (int i = 0; i < track.size(); i++) {
+            for (i = 0; i < track.size(); i++) {
 
                 MidiEvent event = track.get(i);
                 MidiMessage message = event.getMessage();
@@ -581,8 +621,11 @@ public class SoundPlayer {
             trackNumber++;
         }
 
-        if (app.isProject()) for (ArrayList array : projectNoteOnArray)
+        trackNumber = 0;
+        if (app.isProject()) for (ArrayList array : projectNoteOnArray) {
             System.out.println("Total NoteOn events for track " + trackNumber + ": " + array.size());
+            trackNumber++;
+        }
         else System.out.println("Total NoteOn events for active phrase: " + noteOnArray.size());
 
         // Now create the basic GUI
@@ -601,7 +644,7 @@ public class SoundPlayer {
             }
         }));
 
-        int j = 0;
+        j = 0;
         for (TrackHeadView thv : app.getTrackHeadViewArray()) {
             final int trackNum = j;
             final TrackHeadView thv2 = thv;

@@ -69,6 +69,7 @@ public class AddPhraseToTrackController implements ActionListener, MouseListener
         }
 
         if (!done) {
+            app.getActiveProject().setCurrentTrackId(app.getActiveProject().getTracksArray().size());
             Track newTrack = new Track(app.getActiveProject().getCurrentTrackId());
             newTrack.setInstrument(app.getActivePhrase().getInstrument());
             app.getActiveProject().incrementTrackId();
@@ -94,7 +95,7 @@ public class AddPhraseToTrackController implements ActionListener, MouseListener
             }
 
             TrackView tv = new TrackView(newTrack, app);
-            tv.setBounds(0, 70 * (app.getActiveProject().getTracksArray().size() - 1), 100 * app.getActiveProject().getNumMeasures(), 70);
+            tv.setBounds(0, getNewTrackY(), 100 * app.getActiveProject().getNumMeasures(), 70);
 
             app.getTrackViewArray().add(tv);
             app.getInTracksPanel().add(tv);
@@ -108,7 +109,7 @@ public class AddPhraseToTrackController implements ActionListener, MouseListener
             } catch (FontFormatException e1) {
                 e1.printStackTrace();
             }
-            thv.setBounds(0, 70 * (app.getActiveProject().getTracksArray().size() - 1), 150, 70);
+            thv.setBounds(0, getNewTrackY(), 150, 70);
             thv.getTrackNumberLabel().setText(Integer.toString(thv.getTrack().getId() + 1));
             thv.addMouseListener(new HelpTextController(app, HelpStrings.TRACK_HEAD));
             thv.addMouseListener(new TrackHeadController(app, app.getActiveProject(), thv));
@@ -193,6 +194,19 @@ public class AddPhraseToTrackController implements ActionListener, MouseListener
         app.getAddPhraseToTrackButton().setCol(app.getButtonBackgroundColor());
         app.getAddPhraseToTrackButton().repaint();
         app.getFrame().pack();
+    }
+
+    public int getNewTrackY() {
+        int y = 0;
+
+        for (TrackHeadView thv : app.getTrackHeadViewArray()) {
+            if (thv.getTrack().isExpanded()) y += thv.getExpandedHeight();
+            else y += thv.getHeight();
+        }
+
+        System.out.println(y);
+
+        return y;
     }
 
 }

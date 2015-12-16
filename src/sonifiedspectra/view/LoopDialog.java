@@ -1,7 +1,10 @@
 package sonifiedspectra.view;
 
+import jm.constants.RhythmValues;
 import jm.music.data.*;
+import jm.music.data.Note;
 import jm.music.data.Phrase;
+import jm.music.tools.Mod;
 import jm.util.Read;
 import sonifiedspectra.controllers.*;
 import sonifiedspectra.model.*;
@@ -14,7 +17,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -38,11 +40,11 @@ public class LoopDialog extends JDialog {
 
     private SoundPlayer loopPlayer;
 
-    private ArrayList<File> midiLoops;
+    private ArrayList<Part> loopsArray;
 
     public LoopDialog(Sonify app) throws IOException, FontFormatException, MidiUnavailableException, UnsupportedAudioFileException, LineUnavailableException, InvalidMidiDataException {
         this.app = app;
-        this.midiLoops = new ArrayList<File>();
+        this.loopsArray = new ArrayList();
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -52,10 +54,10 @@ public class LoopDialog extends JDialog {
 
         titleLabel.setFont(hnt20);
 
-        loadLoops();
+        loadLoops(10, 1);
 
-        for (File f : midiLoops) {
-            loopComboBox.addItem(f.getName());
+        for (int i = 0; i < 10; i++) {
+            loopComboBox.addItem(i + 1);
         }
 
         loopComboBox.addItemListener(new LoopComboBoxController(app, app.getActiveProject(), loopComboBox));
@@ -118,12 +120,7 @@ public class LoopDialog extends JDialog {
 
     private void onOK() {
 
-        sonifiedspectra.model.Phrase phrase = new sonifiedspectra.model.Phrase();
-        Read.midi(phrase, String.valueOf(midiLoops.get(loopComboBox.getSelectedIndex())));
-        //phrase.setInstrument(127);
-
-        for (jm.music.data.Note n : phrase.getNoteArray()) System.out.println("Note");
-        System.out.println("Heeeeeel");
+        Part part = loopsArray.get(loopComboBox.getSelectedIndex());
 
         boolean done = false;
 
@@ -134,20 +131,45 @@ public class LoopDialog extends JDialog {
 
                 if (app.getSelectedMeasures().size() > 0) {
                     for (int j = 0; j < app.getSelectedMeasures().size(); j++) {
-                        sonifiedspectra.model.Phrase newPhrase = phrase.copy();
-                        newPhrase.setStartTime(app.getSelectedMeasures().get(j));
-                        newPhrase.setBackgroundCol("");
-                        newPhrase.setLoop(true);
-                        tv.getTrack().getPhrases().add(newPhrase);
+                        int index = -1;
+                        for (Phrase phrase : part.getPhraseArray()) {
+                            sonifiedspectra.model.Phrase newPhrase = new sonifiedspectra.model.Phrase();
+                            newPhrase.setId(index);
+                            if (app.getSelectedMeasures().get(j) > 0) newPhrase.setStartTime(app.getSelectedMeasures().get(j) - 1);
+                            newPhrase.setBackgroundCol("");
+                            int i = 0;
+                            for (Note note : phrase.getNoteArray()) {
+                                sonifiedspectra.model.Note newNote = new sonifiedspectra.model.Note(i, null, false, newPhrase);
+                                newNote.setPitch(note.getPitch());
+                                newNote.setRhythmValue(note.getRhythmValue());
+                                newNote.setDynamic(note.getDynamic());
+                                if (newNote.getDynamic() > 0) newPhrase.getNotesArray().add(newNote);
+                                i++;
+                            }
+                            tv.getTrack().getPhrases().add(newPhrase);
+                            index--;
+                        }
                     }
                 }
 
                 else {
-                    sonifiedspectra.model.Phrase newPhrase = phrase;
-                    newPhrase.setBackgroundCol("");
-                    newPhrase.setLoop(true);
-                    newPhrase.setStartTime(0);
-                    tv.getTrack().getPhrases().add(newPhrase);
+                    int index = -1;
+                    for (Phrase phrase : part.getPhraseArray()) {
+                        sonifiedspectra.model.Phrase newPhrase = new sonifiedspectra.model.Phrase();
+                        newPhrase.setId(index);
+                        newPhrase.setBackgroundCol("");
+                        int i = 0;
+                        for (Note note : phrase.getNoteArray()) {
+                            sonifiedspectra.model.Note newNote = new sonifiedspectra.model.Note(i, null, false, newPhrase);
+                            newNote.setPitch(note.getPitch());
+                            newNote.setRhythmValue(note.getRhythmValue());
+                            newNote.setDynamic(note.getDynamic());
+                            if (newNote.getDynamic() > 0) newPhrase.getNotesArray().add(newNote);
+                            i++;
+                        }
+                        tv.getTrack().getPhrases().add(newPhrase);
+                        index--;
+                    }
                 }
 
                 tv.initialize();
@@ -164,17 +186,62 @@ public class LoopDialog extends JDialog {
         }
 
         if (!done) {
-            Track newTrack = new Track(app.getActiveProject().getCurrentTrackId());
+            Track newTrack = new Track(app.getActiveProject().getTracksArray().size());
             newTrack.setLoop(true);
-            newTrack.setInstrument(phrase.getInstrument());
+            newTrack.setInstrument(128);
+            newTrack.setChannel(part.getChannel());
             app.getActiveProject().incrementTrackId();
             app.getActiveProject().getTracksArray().add(newTrack);
 
-            sonifiedspectra.model.Phrase newPhrase = phrase;
-            newPhrase.setBackgroundCol("");
-            newPhrase.setLoop(true);
-            newPhrase.setStartTime(0);
-            newTrack.getPhrases().add(newPhrase);
+            if (app.getSelectedMeasures().size() > 0) {
+                for (int j = 0; j < app.getSelectedMeasures().size(); j++) {
+                    int index = -1;
+                    for (Phrase phrase : part.getPhraseArray()) {
+                        sonifiedspectra.model.Phrase newPhrase = new sonifiedspectra.model.Phrase();
+                        newPhrase.setId(index);
+                        if (app.getSelectedMeasures().get(j) > 0) newPhrase.setStartTime(app.getSelectedMeasures().get(j) - 1);
+                        newPhrase.setInstrument(newTrack.getInstrument());
+                        newPhrase.setBackgroundCol("");
+                        int i = 0;
+                        for (Note note : phrase.getNoteArray()) {
+                            sonifiedspectra.model.Note newNote = new sonifiedspectra.model.Note(i, null, false, newPhrase);
+                            newNote.setPitch(note.getPitch());
+                            newNote.setRhythmValue(note.getRhythmValue());
+                            newNote.setDynamic(note.getDynamic());
+                            if (newNote.getDynamic() > 0) newPhrase.getNotesArray().add(newNote);
+                            i++;
+                        }
+                        newTrack.getPhrases().add(newPhrase);
+                        index--;
+                    }
+                }
+            }
+
+            else {
+                int index = -1;
+                sonifiedspectra.model.Phrase lastPhrase = null;
+                for (Phrase phrase : part.getPhraseArray()) {
+                    sonifiedspectra.model.Phrase newPhrase = new sonifiedspectra.model.Phrase();
+                    if (index < -1) lastPhrase.setParentPhrase(newPhrase);
+                    newPhrase.setId(index);
+                    newPhrase.setBackgroundCol("");
+                    newPhrase.setInstrument(newTrack.getInstrument());
+                    int i = 0;
+                    for (Note note : phrase.getNoteArray()) {
+                        sonifiedspectra.model.Note newNote = new sonifiedspectra.model.Note(i, null, false, newPhrase);
+                        newNote.setPitch(note.getPitch());
+                        newNote.setRhythmValue(note.getRhythmValue());
+                        newNote.setDynamic(note.getDynamic());
+                        if (newNote.getDynamic() > 0) newPhrase.getNotesArray().add(newNote);
+                        i++;
+                    }
+                    newTrack.getPhrases().add(newPhrase);
+                    lastPhrase = newPhrase;
+                    index--;
+                }
+            }
+
+            for (Phrase p : newTrack.getPhrases()) for (Note n : p.getNoteArray()) System.out.println(n.toString());
 
             TrackView tv = new TrackView(newTrack, app);
             tv.setBounds(0, 70 * (app.getActiveProject().getTracksArray().size() - 1), 100 * app.getActiveProject().getNumMeasures(), 70);
@@ -253,19 +320,70 @@ public class LoopDialog extends JDialog {
         setVisible(false);
     }
 
-    public void loadLoops() {
+    public void loadLoops(int num, int repeat) {
 
-        File[] directoryListing = new File(app.getActiveProject().getDirectoryPath() + "/Midi/Loops").listFiles();
-        if (directoryListing != null) {
-            for (File dataFile : directoryListing) {
-                if (!dataFile.isHidden()) {
-                    System.out.println("Added loop: " + dataFile.getName());
-                    midiLoops.add(dataFile);
-                }
+        for (int j = 0; j < num; j++) {
+
+            int length = 32;
+
+            // 25 = TR808 General MIDI kit. 9 = MIDI channel 10.
+            Part drums = new Part("Drums", 25, 9);
+
+            //create the appropriate length phrases filled up with note objects
+            int pitch = 36;
+            jm.music.data.Phrase phrBD = phraseFill(length, pitch);
+            pitch = 38;
+            jm.music.data.Phrase phrSD = phraseFill(length, pitch);
+            pitch = 42;
+            jm.music.data.Phrase phrHH = phraseFill(length, pitch);
+            CPhrase phrEnd = EndPattern();
+
+            // get the on-off values
+            for (int i = 0; i < length; i++) {
+                if (Math.random() > 0.3) {
+                    phrBD.getNote(i).setPitch(sonifiedspectra.model.Note.REST);
+                } else phrBD.getNote(i).setPitch(36);
+                if (Math.random() > 0.5) {
+                    phrSD.getNote(i).setPitch(sonifiedspectra.model.Note.REST);
+                } else phrSD.getNote(i).setPitch(38);
+                if (Math.random() > 0.8) {
+                    phrHH.getNote(i).setPitch(sonifiedspectra.model.Note.REST);
+                } else phrHH.getNote(i).setPitch(42);
             }
-        }
-        else System.out.println("Loop directory is null.");
 
+            // loop the drum pattern
+            Mod.repeat(phrBD, repeat);
+            Mod.repeat(phrSD, repeat);
+            Mod.repeat(phrHH, repeat);
+
+            // add phrases to the instrument (part)
+            drums.addPhrase(phrBD);
+            drums.addPhrase(phrSD);
+            drums.addPhrase(phrHH);
+            //drums.addCPhrase(phrEnd);
+
+            loopsArray.add(drums);
+
+        }
+
+    }
+
+    private jm.music.data.Phrase phraseFill(int length, int pitch) {
+        jm.music.data.Phrase phrase = new jm.music.data.Phrase(0.0);
+        for(int i=0;i<length;i++){
+            jm.music.data.Note note = new jm.music.data.Note(pitch, 0.5, (int)(Math.random() * 70 + 50));
+            phrase.addNote(note);
+        }
+        return phrase;
+    }
+
+    private CPhrase EndPattern() {
+        // make crash ending
+        CPhrase cphrase = new CPhrase();
+        int[] pitchArray1a = {36,49}; // kick and crash cymbal
+        cphrase.addChord(pitchArray1a, RhythmValues.SB);
+
+        return cphrase;
     }
 
     public JComboBox getLoopComboBox() {
@@ -284,12 +402,12 @@ public class LoopDialog extends JDialog {
         this.selectedLabel = selectedLabel;
     }
 
-    public ArrayList<File> getLoopsArray() {
-        return midiLoops;
+    public ArrayList getLoopsArray() {
+        return loopsArray;
     }
 
-    public void setLoopsArray(ArrayList<File> midiLoops) {
-        this.midiLoops = midiLoops;
+    public void setLoopsArray(ArrayList midiLoops) {
+        this.loopsArray = midiLoops;
     }
 
     public JLabel getMeasureLabel() {
@@ -339,4 +457,6 @@ public class LoopDialog extends JDialog {
     public void setLoopPlayer(SoundPlayer loopPlayer) {
         this.loopPlayer = loopPlayer;
     }
+
+
 }

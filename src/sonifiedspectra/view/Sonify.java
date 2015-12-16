@@ -54,6 +54,7 @@ public class Sonify {
     private BetterButton editPhraseButton;
     private BetterButton removePhraseButton;
     private BetterButton measuresButton;
+    private JLayeredPane layeredPane;
 
     private JButton removePhraseButton2;
     private BetterButton playProjectButton;
@@ -170,6 +171,28 @@ public class Sonify {
 
     public Sonify() throws FileNotFoundException, FontFormatException, IOException, MidiUnavailableException,
             UnsupportedAudioFileException, LineUnavailableException, InvalidMidiDataException, URISyntaxException {
+
+        /*final SplashScreen splash = SplashScreen.getSplashScreen();
+        if (splash == null) {
+            System.out.println("SplashScreen.getSplashScreen() returned null");
+            return;
+        }
+
+        Graphics2D g = splash.createGraphics();
+        if (g == null) {
+            System.out.println("g is null");
+            return;
+        }
+        for(int i = 0; i < 100; i++) {
+            renderSplashFrame(g, i);
+            splash.update();
+            try {
+                Thread.sleep(30);
+            }
+            catch (InterruptedException e) {
+            }
+        }
+        splash.close();*/
 
         try {
             initialize();
@@ -330,7 +353,8 @@ public class Sonify {
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setTitle("Sonified Spectra - Musical Spectroscopic Analysis");
-        frame.setSize(1280, 740);
+        frame.setSize(1280, 780);
+        frame.setPreferredSize(new Dimension(1280, 780));
         frame.setLocationRelativeTo(null);
         //frame.setResizable(false);
         frame.setUndecorated(false);
@@ -342,7 +366,7 @@ public class Sonify {
         frame.getContentPane().setBackground(Color.decode("#E5E5E5"));
 
         this.mainView = (JPanel) frame.getContentPane();
-        mainView.setPreferredSize(new Dimension(1280, 740));
+        mainView.setPreferredSize(new Dimension(1280, 780));
 
         buttonBackgroundColor = Color.decode("#F5F5F5");
         buttonHighlightColor = Color.decode("#CAEFFF");
@@ -351,18 +375,18 @@ public class Sonify {
         compoundLabel = new JLabel("Compound:");
         Font hnt20 = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/HelveticaNeue-Thin.otf")).deriveFont(Font.PLAIN, 20);
         compoundLabel.setFont(hnt20);
-        compoundLabel.setBounds(20, 15, 101, 24);
+        compoundLabel.setBounds(10, 15, 101, 24);
         frame.getContentPane().add(compoundLabel);
 
         compoundComboBox = new JComboBox();
         for (Compound c : activeProject.getCompoundsArray()) {
             compoundComboBox.addItem(c.getName());
         }
-        compoundComboBox.setBounds(123, 11, 158, 32);
+        compoundComboBox.setBounds(113, 15, 158, 32);
         frame.getContentPane().add(compoundComboBox);
 
         spectrumLabel = new JLabel("Spectrum");
-        spectrumLabel.setBounds(289, 18, 75, 20);
+        spectrumLabel.setBounds(279, 18, 75, 20);
         frame.getContentPane().add(spectrumLabel);
 
         leftOrRightCheckbox = new JCheckBox();
@@ -372,13 +396,13 @@ public class Sonify {
         leftOrRightCheckbox.setSelectedIcon(rightIcon);
         leftOrRightCheckbox.setSelected(false);
         leftOrRightCheckbox.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        leftOrRightCheckbox.setBounds(406, 11, 32, 32);
+        leftOrRightCheckbox.setBounds(396, 11, 32, 32);
         frame.getContentPane().add(leftOrRightCheckbox);
 
         Icon importIcon = new ImageIcon(getClass().getResource("/icons/importcompound.png"));
         importCompoundButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         importCompoundButton.setIcon(importIcon);
-        importCompoundButton.setBounds(445, 11, 32, 32);
+        importCompoundButton.setBounds(435, 11, 32, 32);
         importCompoundButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         importCompoundButton.setBorderPainted(true);
         importCompoundButton.setFocusPainted(false);
@@ -387,7 +411,7 @@ public class Sonify {
         Icon editIcon = new ImageIcon(getClass().getResource("/icons/editcompound.png"));
         editCompoundButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         editCompoundButton.setIcon(editIcon);
-        editCompoundButton.setBounds(486, 11, 32, 32);
+        editCompoundButton.setBounds(476, 11, 32, 32);
         editCompoundButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         editCompoundButton.setBorderPainted(true);
         editCompoundButton.setFocusPainted(false);
@@ -399,7 +423,7 @@ public class Sonify {
         chPanel.setBounds(0, 0, 500, 400);
         chPanel.setDomainZoomable(true);
         graphPanel.setLayout(new BorderLayout());
-        graphPanel.setBounds(20, 52, 500, 400);
+        graphPanel.setBounds(10, 52, 500, 400);
         graphPanel.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         graphPanel.removeAll();
         graphPanel.add(chPanel, BorderLayout.CENTER);
@@ -407,7 +431,7 @@ public class Sonify {
 
         notesLabel = new JLabel("Notes:");
         notesLabel.setFont(hnt20);
-        notesLabel.setBounds(20, 460, 60, 24);
+        notesLabel.setBounds(10, 460, 60, 24);
         frame.getContentPane().add(notesLabel);
 
         selectAllOrNoneCheckbox = new JCheckBox();
@@ -415,7 +439,7 @@ public class Sonify {
         selectAllOrNoneCheckbox.setIcon(selicon);
         selectAllOrNoneCheckbox.setSelected(false);
         selectAllOrNoneCheckbox.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        selectAllOrNoneCheckbox.setBounds(200, 457, 32, 32);
+        selectAllOrNoneCheckbox.setBounds(190, 457, 32, 32);
         frame.getContentPane().add(selectAllOrNoneCheckbox);
 
         multipleSelectionCheckBox = new JCheckBox();
@@ -424,18 +448,18 @@ public class Sonify {
         multipleSelectionCheckBox.setIcon(selicon);
         multipleSelectionCheckBox.setSelected(activeProject.isNotesPanelMultipleSelection());
         multipleSelectionCheckBox.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        multipleSelectionCheckBox.setBounds(235, 457, 32, 32);
+        multipleSelectionCheckBox.setBounds(225, 457, 32, 32);
         frame.getContentPane().add(multipleSelectionCheckBox);
 
         transposeLabel = new JLabel("Transpose:");
-        transposeLabel.setBounds(270, 468, 75, 20);
+        transposeLabel.setBounds(260, 468, 75, 20);
         frame.getContentPane().add(transposeLabel);
 
         transposeTextField = new JTextField();
         transposeTextField.setHorizontalAlignment(SwingConstants.CENTER);
         transposeTextField.setBackground(Color.decode("#F5F5F5"));
         transposeTextField.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        transposeTextField.setBounds(345, 457, 64, 32);
+        transposeTextField.setBounds(335, 457, 64, 32);
         TextPrompt transposePrompt = new TextPrompt(String.valueOf("-"), transposeTextField);
         transposePrompt.setHorizontalAlignment(TextPrompt.CENTER);
         frame.getContentPane().add(transposeTextField);
@@ -443,7 +467,7 @@ public class Sonify {
         Icon plusIcon = new ImageIcon(getClass().getResource("/icons/plusicon.png"));
         transposeUpButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         transposeUpButton.setIcon(plusIcon);
-        transposeUpButton.setBounds(418, 457, 32, 32);
+        transposeUpButton.setBounds(408, 457, 32, 32);
         transposeUpButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         transposeUpButton.setBorderPainted(true);
         transposeUpButton.setFocusPainted(false);
@@ -452,7 +476,7 @@ public class Sonify {
         Icon minusIcon = new ImageIcon(getClass().getResource("/icons/minusicon.png"));
         transposeDownButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         transposeDownButton.setIcon(minusIcon);
-        transposeDownButton.setBounds(453, 457, 32, 32);
+        transposeDownButton.setBounds(443, 457, 32, 32);
         transposeDownButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         transposeDownButton.setBorderPainted(true);
         transposeDownButton.setFocusPainted(false);
@@ -461,7 +485,7 @@ public class Sonify {
         Icon fillerIcon = new ImageIcon(getClass().getResource("/icons/fillericon.png"));
         fillerButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         fillerButton.setIcon(fillerIcon);
-        fillerButton.setBounds(489, 457, 32, 32);
+        fillerButton.setBounds(479, 457, 32, 32);
         fillerButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         fillerButton.setBorderPainted(true);
         fillerButton.setFocusPainted(false);
@@ -474,14 +498,15 @@ public class Sonify {
 
         JScrollPane notesScrollPane = new JScrollPane();
         notesScrollPane.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        notesScrollPane.getHorizontalScrollBar().setUI(new BetterScrollBar());
+        notesScrollPane.getHorizontalScrollBar().setUI(new BetterScrollBarH());
         notesScrollPane.setViewportView(notesPanel);
         notesScrollPane.getHorizontalScrollBar().setUnitIncrement(20);
+        notesScrollPane.getHorizontalScrollBar().setPreferredSize(new Dimension(450, 10));
         notesScrollPane
                 .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         notesScrollPane
                 .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-        notesScrollPane.setBounds(20, 493, 450, 100);
+        notesScrollPane.setBounds(10, 493, 450, 95);
         frame.getContentPane().add(notesScrollPane);
 
         noteViewArray = new ArrayList<NoteView>();
@@ -500,7 +525,7 @@ public class Sonify {
         notesPanel.setPreferredSize(new Dimension(10 + 44 * activePhrase.getNotesArray().size(), 100));
 
         noteVolumeSlider = new JSlider();
-        noteVolumeSlider.setBounds(472, 490, 55, 100);
+        noteVolumeSlider.setBounds(462, 490, 55, 100);
         noteVolumeSlider.setUI(new coloredThumbSliderUI1(noteVolumeSlider, activePhrase.getSelectedColor()));
         noteVolumeSlider.setOrientation(SwingConstants.VERTICAL);
         noteVolumeSlider.setMinimum(0);
@@ -514,12 +539,12 @@ public class Sonify {
         frame.getContentPane().add(noteVolumeSlider);
 
         noteVolumeLabel = new JLabel(String.valueOf(noteVolumeSlider.getValue()));
-        noteVolumeLabel.setBounds(495, 530, 30, 20);
+        noteVolumeLabel.setBounds(485, 530, 30, 20);
         frame.getContentPane().add(noteVolumeLabel);
 
         phrasesLabel = new JLabel("Phrases:");
         phrasesLabel.setFont(hnt20);
-        phrasesLabel.setBounds(20, 599, 100, 24);
+        phrasesLabel.setBounds(10, 599, 100, 24);
         frame.getContentPane().add(phrasesLabel);
 
         instrumentComboBox = new JComboBox();
@@ -527,11 +552,11 @@ public class Sonify {
             instrumentComboBox.addItem(instruments[j].getName());
         }
         instrumentComboBox.setSelectedIndex(activePhrase.getInstrument());
-        instrumentComboBox.setBounds(174, 600, 200, 32);
+        instrumentComboBox.setBounds(164, 600, 200, 32);
         frame.getContentPane().add(instrumentComboBox);
 
         colorButton = new BetterButton(activePhrase.getUnselectedColor(), 32, 32, 6);
-        colorButton.setBounds(377, 600, 32, 32);
+        colorButton.setBounds(367, 600, 32, 32);
         colorButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         colorButton.setBorderPainted(true);
         colorButton.setFocusPainted(false);
@@ -539,7 +564,7 @@ public class Sonify {
 
         editPhraseButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         editPhraseButton.setIcon(editIcon);
-        editPhraseButton.setBounds(414, 600, 32, 32);
+        editPhraseButton.setBounds(404, 600, 32, 32);
         editPhraseButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         editPhraseButton.setBorderPainted(true);
         editPhraseButton.setFocusPainted(false);
@@ -547,7 +572,7 @@ public class Sonify {
 
         addPhraseButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         addPhraseButton.setIcon(plusIcon);
-        addPhraseButton.setBounds(450, 600, 32, 32);
+        addPhraseButton.setBounds(440, 600, 32, 32);
         addPhraseButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         addPhraseButton.setBorderPainted(true);
         addPhraseButton.setFocusPainted(false);
@@ -555,7 +580,7 @@ public class Sonify {
 
         removePhraseButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         removePhraseButton.setIcon(minusIcon);
-        removePhraseButton.setBounds(486, 600, 32, 32);
+        removePhraseButton.setBounds(476, 600, 32, 32);
         removePhraseButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         removePhraseButton.setBorderPainted(true);
         removePhraseButton.setFocusPainted(false);
@@ -564,20 +589,21 @@ public class Sonify {
         phrasesPanel = new JPanel();
         phrasesPanel.setLayout(null);
         phrasesPanel.setBorder(null);
-        phrasesPanel.setBounds(20, 639, 500, 100);
+        phrasesPanel.setBounds(10, 639, 500, 100);
         phrasesPanel.setBackground(Color.decode("#F5F5F5"));
 
         JScrollPane phrasesScrollPane = new JScrollPane();
         phrasesScrollPane.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         phrasesScrollPane.setBackground(Color.decode("#000000"));
-        phrasesScrollPane.getHorizontalScrollBar().setUI(new BetterScrollBar());
+        phrasesScrollPane.getHorizontalScrollBar().setUI(new BetterScrollBarH());
         phrasesScrollPane.getHorizontalScrollBar().setUnitIncrement(20);
+        phrasesScrollPane.getHorizontalScrollBar().setPreferredSize(new Dimension(450, 10));
         phrasesScrollPane.setViewportView(phrasesPanel);
         phrasesScrollPane
                 .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         phrasesScrollPane
                 .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-        phrasesScrollPane.setBounds(20, 639, 450, 100);
+        phrasesScrollPane.setBounds(10, 639, 450, 92);
         frame.getContentPane().add(phrasesScrollPane);
 
         phraseViewArray = new ArrayList<PhraseView>();
@@ -599,7 +625,7 @@ public class Sonify {
         Icon addphrasetotrackicon = new ImageIcon(getClass().getResource("/icons/addphrasetotrackicon.png"));
         addPhraseToTrackButton = new BetterButton(Color.decode("#F5F5F5"), 40, 40, 6);
         addPhraseToTrackButton.setIcon(addphrasetotrackicon);
-        addPhraseToTrackButton.setBounds(475, 669, 40, 40);
+        addPhraseToTrackButton.setBounds(465, 669, 40, 40);
         addPhraseToTrackButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         addPhraseToTrackButton.setBorderPainted(true);
         addPhraseToTrackButton.setFocusPainted(false);
@@ -607,14 +633,14 @@ public class Sonify {
 
         projectLabel = new JLabel("Project:");
         projectLabel.setFont(hnt20);
-        projectLabel.setBounds(535, 15, 70, 24);
+        projectLabel.setBounds(525, 15, 70, 24);
         frame.getContentPane().add(projectLabel);
 
         titleTextField = new JTextField();
         titleTextField.setHorizontalAlignment(SwingConstants.CENTER);
         titleTextField.setBackground(Color.decode("#F5F5F5"));
         titleTextField.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        titleTextField.setBounds(609, 11, 140, 32);
+        titleTextField.setBounds(599, 11, 140, 32);
         titleTextField.setText(activeProject.getName());
         titleTextField.setHorizontalAlignment(SwingConstants.HORIZONTAL);
         frame.getContentPane().add(titleTextField);
@@ -622,7 +648,7 @@ public class Sonify {
         Icon newIcon = new ImageIcon(getClass().getResource("/icons/newicon.png"));
         newButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         newButton.setIcon(newIcon);
-        newButton.setBounds(758, 11, 32, 32);
+        newButton.setBounds(748, 11, 32, 32);
         newButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         newButton.setBorderPainted(true);
         newButton.setFocusPainted(false);
@@ -631,7 +657,7 @@ public class Sonify {
         Icon openIcon = new ImageIcon(getClass().getResource("/icons/openicon.png"));
         openButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         openButton.setIcon(openIcon);
-        openButton.setBounds(800, 11, 32, 32);
+        openButton.setBounds(790, 11, 32, 32);
         openButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         openButton.setBorderPainted(true);
         openButton.setFocusPainted(false);
@@ -640,7 +666,7 @@ public class Sonify {
         Icon saveIcon = new ImageIcon(getClass().getResource("/icons/saveicon.png"));
         saveButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         saveButton.setIcon(saveIcon);
-        saveButton.setBounds(842, 11, 32, 32);
+        saveButton.setBounds(832, 11, 32, 32);
         saveButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         saveButton.setBorderPainted(true);
         saveButton.setFocusPainted(false);
@@ -649,7 +675,7 @@ public class Sonify {
         Icon settingsIcon = new ImageIcon(getClass().getResource("/icons/settingsicon.png"));
         settingsButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         settingsButton.setIcon(settingsIcon);
-        settingsButton.setBounds(884, 11, 32, 32);
+        settingsButton.setBounds(874, 11, 32, 32);
         settingsButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         settingsButton.setBorderPainted(true);
         settingsButton.setFocusPainted(false);
@@ -662,18 +688,18 @@ public class Sonify {
         helpTextPane.setFont(f);
         helpTextPane.setAlignmentX(JTextArea.RIGHT_ALIGNMENT);
         helpTextPane.setAlignmentY(JTextArea.BOTTOM_ALIGNMENT);
-        helpTextPane.setBounds(924, 11, 350, 32);
+        helpTextPane.setBounds(914, 11, 350, 32);
         frame.getContentPane().add(helpTextPane);
 
-        JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.setBounds(535, 52, 700, 477);
+        layeredPane = new JLayeredPane();
+        layeredPane.setBounds(525, 52, 700, 510);
         layeredPane.setLayout(null);
         frame.getContentPane().add(layeredPane);
 
         outTracksPanel = new JPanel();
         outTracksPanel.setLayout(null);
         outTracksPanel.setBorder(null);
-        outTracksPanel.setBounds(0, 0, 700, 477);
+        outTracksPanel.setBounds(0, 0, 700, 510);
         outTracksPanel.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         outTracksPanel.setBackground(Color.decode("#F5F5F5"));
         layeredPane.add(outTracksPanel, 0);
@@ -727,14 +753,14 @@ public class Sonify {
         trackHeadScrollPane = new JScrollPane();
         trackHeadScrollPane.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         trackHeadScrollPane.getVerticalScrollBar().setUnitIncrement(20);
-        trackHeadScrollPane.getHorizontalScrollBar().setUI(new BetterScrollBar());
+        trackHeadScrollPane.getHorizontalScrollBar().setUI(new BetterScrollBarH());
         trackHeadScrollPane.setViewportView(trackHeadPanel);
         trackHeadScrollPane
                 .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         trackHeadScrollPane
                 .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         trackHeadScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
-        trackHeadScrollPane.setBounds(0, 33, 150, 424);
+        trackHeadScrollPane.setBounds(0, 33, 150, 465);
         outTracksPanel.add(trackHeadScrollPane);
 
         trackHeadViewArray = new ArrayList<TrackHeadView>();
@@ -764,7 +790,7 @@ public class Sonify {
         measureHeadScrollPane.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         measureHeadScrollPane.setBackground(Color.decode("#000000"));
         measureHeadScrollPane.getHorizontalScrollBar().setUnitIncrement(20);
-        measureHeadScrollPane.getHorizontalScrollBar().setUI(new BetterScrollBar());
+        measureHeadScrollPane.getHorizontalScrollBar().setUI(new BetterScrollBarH());
         measureHeadScrollPane.setViewportView(measureHeadPanel);
         measureHeadScrollPane
                 .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -796,17 +822,19 @@ public class Sonify {
 
         tracksScrollPane = new JScrollPane();
         tracksScrollPane.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        tracksScrollPane.setBackground(Color.decode("#000000"));
+        tracksScrollPane.setBackground(Color.decode("#F5F5F5"));
         tracksScrollPane.getHorizontalScrollBar().setUnitIncrement(20);
         tracksScrollPane.getVerticalScrollBar().setUnitIncrement(20);
-        tracksScrollPane.getHorizontalScrollBar().setUI(new BetterScrollBar());
-        tracksScrollPane.getVerticalScrollBar().setUI(new BetterScrollBar());
+        tracksScrollPane.getHorizontalScrollBar().setUI(new BetterScrollBarH());
+        tracksScrollPane.getVerticalScrollBar().setUI(new BetterScrollBarV());
+        tracksScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(10, 700));
+        tracksScrollPane.getHorizontalScrollBar().setPreferredSize(new Dimension(700, 10));
         tracksScrollPane.setViewportView(inTracksPanel);
         tracksScrollPane
                 .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         tracksScrollPane
                 .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        tracksScrollPane.setBounds(150, 33, 550, 444);
+        tracksScrollPane.setBounds(150, 33, 550, 477);
         outTracksPanel.add(tracksScrollPane);
 
         trackViewArray = new ArrayList<TrackView>();
@@ -830,8 +858,8 @@ public class Sonify {
         playbackLinePanel = new JPanel();
         playbackLinePanel.setBackground(new Color(0, 0, 0, 0));
         playbackLinePanel.setLayout(null);
-        playbackLinePanel.setPreferredSize(new Dimension(550, 477));
-        playbackLinePanel.setBounds(150, 0, 550, 477);
+        playbackLinePanel.setPreferredSize(new Dimension(550, 510));
+        playbackLinePanel.setBounds(150, 0, 550, 510);
         playbackLinePanel.setOpaque(false);
         layeredPane.add(playbackLinePanel, 100);
         layeredPane.moveToFront(playbackLinePanel);
@@ -843,13 +871,13 @@ public class Sonify {
 
         playbackLabel = new JLabel("Playback:");
         playbackLabel.setFont(hnt20);
-        playbackLabel.setBounds(535, 536, 81, 24);
+        playbackLabel.setBounds(525, 566, 81, 24);
         frame.getContentPane().add(playbackLabel);
 
         playbackPanel = new JPanel();
         playbackPanel.setLayout(null);
         playbackPanel.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        playbackPanel.setBounds(535, 569, 700, 170);
+        playbackPanel.setBounds(525, 600, 700, 132);
         playbackPanel.setBackground(Color.decode("#F5F5F5"));
         frame.getContentPane().add(playbackPanel);
 
@@ -883,7 +911,7 @@ public class Sonify {
         Icon playicon = new ImageIcon(getClass().getResource("/icons/playicon.png"));
         playButton = new BetterButton(Color.decode("#F5F5F5"), 40, 40, 16);
         playButton.setIcon(playicon);
-        playButton.setBounds(88, 63, 40, 40);
+        playButton.setBounds(83, 51, 40, 40);
         playButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         playButton.setBorderPainted(true);
         playButton.setFocusPainted(false);
@@ -892,29 +920,29 @@ public class Sonify {
         Icon stopicon = new ImageIcon(getClass().getResource("/icons/stopicon.png"));
         stopButton = new BetterButton(Color.decode("#F5F5F5"), 40, 40, 16);
         stopButton.setIcon(stopicon);
-        stopButton.setBounds(134, 63, 40, 40);
+        stopButton.setBounds(129, 51, 40, 40);
         stopButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         stopButton.setBorderPainted(true);
         stopButton.setFocusPainted(false);
         playbackPanel.add(stopButton);
 
         quantizeCheckBox = new JCheckBox();
-        quantizeCheckBox.setSelected(activePhrase.isQuantized());
+        quantizeCheckBox.setSelected(false);
         quantizeCheckBox.setText("Quantize");
         quantizeCheckBox.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        quantizeCheckBox.setBounds(13, 132, 105, 20);
+        quantizeCheckBox.setBounds(83, 99, 105, 20);
         playbackPanel.add(quantizeCheckBox);
 
         keyComboBox = new JComboBox();
         keysArray.forEach(keyComboBox::addItem);
-        keyComboBox.setBounds(97, 125, 95, 28);
+        keyComboBox.setBounds(163, 96, 95, 28);
         keyComboBox.setSelectedItem("C");
         playbackPanel.add(keyComboBox);
 
         qualityComboBox = new JComboBox();
 
         qualityArray.forEach(qualityComboBox::addItem);
-        qualityComboBox.setBounds(207, 125, 150, 28);
+        qualityComboBox.setBounds(258, 96, 150, 28);
         qualityComboBox.setSelectedItem( "Major" );
         playbackPanel.add(qualityComboBox);
 
@@ -922,31 +950,31 @@ public class Sonify {
         for (String s : rhythmArray) {
             qrhythmComboBox.addItem(s);
         }
-        qrhythmComboBox.setBounds(372, 125, 95, 28);
+        qrhythmComboBox.setBounds(410, 96, 95, 28);
         qrhythmComboBox.setSelectedItem("1/16");
         playbackPanel.add(qrhythmComboBox);
 
         JLabel tempoLabel = new JLabel("Tempo:");
-        tempoLabel.setBounds(517, 57, 60, 17);
+        tempoLabel.setBounds(524, 57, 60, 17);
         playbackPanel.add(tempoLabel);
 
         tempoTextField = new JTextField();
         tempoTextField.setHorizontalAlignment(SwingConstants.CENTER);
         tempoTextField.setBackground(Color.decode("#F5F5F5"));
         tempoTextField.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        tempoTextField.setBounds(575, 50, 51, 28);
+        tempoTextField.setBounds(582, 50, 51, 28);
         tempoTextField.setText(String.valueOf(activeProject.getTempo()));
         tempoTextField.setHorizontalAlignment(SwingConstants.HORIZONTAL);
         playbackPanel.add(tempoTextField);
 
         JLabel bpmLabel = new JLabel("bpm");
-        bpmLabel.setBounds(638, 57, 40, 17);
+        bpmLabel.setBounds(645, 57, 40, 17);
         playbackPanel.add(bpmLabel);
 
         Icon movepitvrighticon = new ImageIcon(getClass().getResource("/icons/movepitvrighticon.png"));
         movePitvRightButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         movePitvRightButton.setIcon(movepitvrighticon);
-        movePitvRightButton.setBounds(1240, 52, 32, 32);
+        movePitvRightButton.setBounds(1230, 52, 32, 32);
         movePitvRightButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         movePitvRightButton.setBorderPainted(true);
         movePitvRightButton.setFocusPainted(false);
@@ -956,7 +984,7 @@ public class Sonify {
         movePitvTextField.setHorizontalAlignment(SwingConstants.CENTER);
         movePitvTextField.setBackground(Color.decode("#F5F5F5"));
         movePitvTextField.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
-        movePitvTextField.setBounds(1240, 85, 32, 32);
+        movePitvTextField.setBounds(1230, 85, 32, 32);
         movePitvTextField.setText(String.valueOf(activeProject.getMovePitvFactor()));
         movePitvTextField.setHorizontalAlignment(SwingConstants.HORIZONTAL);
         frame.getContentPane().add(movePitvTextField);
@@ -964,7 +992,7 @@ public class Sonify {
         Icon movepitvlefticon = new ImageIcon(getClass().getResource("/icons/movepitvlefticon.png"));
         movePitvLeftButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         movePitvLeftButton.setIcon(movepitvlefticon);
-        movePitvLeftButton.setBounds(1240, 119, 32, 32);
+        movePitvLeftButton.setBounds(1230, 119, 32, 32);
         movePitvLeftButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         movePitvLeftButton.setBorderPainted(true);
         movePitvLeftButton.setFocusPainted(false);
@@ -973,7 +1001,7 @@ public class Sonify {
         Icon duplicatephraseicon = new ImageIcon(getClass().getResource("/icons/duplicatephraseicon.png"));
         duplicatePhraseButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         duplicatePhraseButton.setIcon(duplicatephraseicon);
-        duplicatePhraseButton.setBounds(1240, 153, 32, 32);
+        duplicatePhraseButton.setBounds(1230, 153, 32, 32);
         duplicatePhraseButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         duplicatePhraseButton.setBorderPainted(true);
         duplicatePhraseButton.setFocusPainted(false);
@@ -982,14 +1010,14 @@ public class Sonify {
         Icon measuresIcon = new ImageIcon(getClass().getResource("/icons/measuresicon.png"));
         measuresButton = new BetterButton(Color.decode("#F5F5F5"), 32, 32, 6);
         measuresButton.setIcon(measuresIcon);
-        measuresButton.setBounds(1240, 188, 32, 32);
+        measuresButton.setBounds(1230, 188, 32, 32);
         measuresButton.setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));
         measuresButton.setBorderPainted(true);
         measuresButton.setFocusPainted(false);
         frame.getContentPane().add(measuresButton);
 
         measureZoomSlider = new JSlider();
-        measureZoomSlider.setBounds(1240, 225, 32, 100);
+        measureZoomSlider.setBounds(1230, 225, 32, 100);
         measureZoomSlider.setUI(new coloredThumbSliderUI1(noteVolumeSlider, activePhrase.getSelectedColor()));
         measureZoomSlider.setOrientation(SwingConstants.VERTICAL);
         measureZoomSlider.setMinimum(5);
@@ -1143,6 +1171,9 @@ public class Sonify {
         addPhraseToTrackButton.addActionListener(addPhraseToTrackController);
         addPhraseToTrackButton.addMouseListener(addPhraseToTrackController);
 
+        trackHeadPanel.addMouseListener(new DeselectController(this));
+        inTracksPanel.addMouseListener(new DeselectController(this));
+
         for (TrackHeadView thv : trackHeadViewArray) {
             thv.addMouseListener(new HelpTextController(this, HelpStrings.TRACK_HEAD));
             thv.addMouseListener(new TrackHeadController(this, activeProject, thv));
@@ -1160,6 +1191,7 @@ public class Sonify {
         }
 
         for (TrackView tv : trackViewArray) {
+            tv.addMouseListener(new DeselectController(this));
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                 pitv.getTopPanel().addMouseListener(new PhraseInTrackController(this, activeProject, pitv));
                 pitv.getTopPanel().addMouseListener(new HelpTextController(this, HelpStrings.PITV));
@@ -1323,17 +1355,22 @@ public class Sonify {
 
         int i = 0;
 
-        for (Note note : activePhrase.getNotesArray()) {
-            NoteView noteView = new NoteView(note);
-            noteView.setBounds(10 + 44 * i, 10, 34, 67);
-            noteView.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 1, true));
-            noteView.updatePanel();
-            i++;
-            if (!noteView.getNote().isFiller()) noteView.addMouseListener(new HelpTextController(this, HelpStrings.NOTE_VIEW));
-            else noteView.addMouseListener(new HelpTextController(this, HelpStrings.FILLER_NOTE_VIEW));
-            noteView.addMouseListener(new NoteController(activeProject, this, noteView));
-            noteViewArray.add(noteView);
-            notesPanel.add(noteView);
+        if (!activePhrase.isLoop()) {
+
+            for (Note note : activePhrase.getNotesArray()) {
+                NoteView noteView = new NoteView(note);
+                noteView.setBounds(10 + 44 * i, 10, 34, 67);
+                noteView.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 1, true));
+                noteView.updatePanel();
+                i++;
+                if (!noteView.getNote().isFiller())
+                    noteView.addMouseListener(new HelpTextController(this, HelpStrings.NOTE_VIEW));
+                else noteView.addMouseListener(new HelpTextController(this, HelpStrings.FILLER_NOTE_VIEW));
+                noteView.addMouseListener(new NoteController(activeProject, this, noteView));
+                noteViewArray.add(noteView);
+                notesPanel.add(noteView);
+            }
+
         }
 
         notesPanel.setPreferredSize(new Dimension(10 + 44 * activePhrase.getNotesArray().size(), 100));
@@ -1352,17 +1389,16 @@ public class Sonify {
 
         for (TrackView tv : trackViewArray) {
             if (tv.getTrack().isSelected()) {
-                //tv.setBackground(activePhrase.getUnselectedColor());
                 tv.setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 3, false));
             }
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                 pitv.adjustSize(tv.getTrack().isExpanded());
-                if (pitv.getPhrase().isLoop()) pitv.getNameLabel().setForeground(Color.WHITE);
+                if (pitv.getPhrase().isLoop()) pitv.getNameLabel().setForeground(Color.BLACK);
                 if (activePhrase.getId() == pitv.getPhrase().getId() || (pitv.getPhrase().getParentPhrase() != null && activePhrase.getId() == pitv.getPhrase().getParentPhrase().getId())) {
                     if (!pitv.getPhrase().isLoop()) {
                         pitv.getNameLabel().setText(activePhrase.getCompound().getName());
+                        pitv.getTopPanel().setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 2, false));
                     }
-                    pitv.getTopPanel().setBorder(BorderFactory.createLineBorder(activePhrase.getBorderColor(), 2, false));
                     pitv.repaint();
                 }
                 else {
@@ -1515,47 +1551,19 @@ public class Sonify {
 
     public static void main(String[] args) throws FileNotFoundException, FontFormatException, IOException,
             MidiUnavailableException, UnsupportedAudioFileException, LineUnavailableException,
-            InvalidMidiDataException {
+            InvalidMidiDataException, URISyntaxException {
 
-        //showSplashScreen();
-
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    Sonify app = new Sonify();
-                    app.frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        Sonify app = new Sonify();
+        app.frame.setVisible(true);
 
     }
 
-    public static void showSplashScreen() {
-        /*JWindow splash = new JWindow();
-        BufferedImage splashScreenImg;
-        try {
-            splashScreenImg = ImageIO.read(new File(getClass().getResource("/icons/sonifysplashscreen.png"));
-            splash.getContentPane().add(new JLabel(new ImageIcon(splashScreenImg)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        int width = 500;
-        int height = 380;
-        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screen.width - width) / 2;
-        int y = (screen.height - height) / 2;
-        splash.setBounds(x, y, width, height);
-        splash.setVisible(true);
-        splash.toFront();
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        splash.dispose();*/
+    static void renderSplashFrame(Graphics2D g, int frame) {
+        final String[] comps = {"foo", "bar", "baz"};
+        g.setComposite(AlphaComposite.Clear);
+        g.fillRect(120, 140, 200, 40);
+        g.setPaintMode();
+        g.setColor(Color.BLACK);
     }
 
     class coloredThumbSliderUI1 extends BasicSliderUI {
@@ -2558,5 +2566,13 @@ public class Sonify {
 
     public void setSelectAllOrNoneCheckbox(JCheckBox selectAllOrNoneCheckbox) {
         this.selectAllOrNoneCheckbox = selectAllOrNoneCheckbox;
+    }
+
+    public JLayeredPane getLayeredPane() {
+        return layeredPane;
+    }
+
+    public void setLayeredPane(JLayeredPane layeredPane) {
+        this.layeredPane = layeredPane;
     }
 }

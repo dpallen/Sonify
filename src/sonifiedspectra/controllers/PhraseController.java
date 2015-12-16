@@ -46,17 +46,12 @@ public class PhraseController implements MouseListener {
             app.getChPanel().addChartMouseListener(new GraphController(app, project));
             app.getChPanel().addMouseListener(new HelpTextController(app, HelpStrings.CHART_PANEL));
             app.getGraphPanel().setLayout(new BorderLayout());
-            app.getGraphPanel().setBounds(20, 52, 500, 400);
+            app.getGraphPanel().setBounds(10, 52, 500, 400);
             app.getGraphPanel().removeAll();
             app.getGraphPanel().addMouseListener(new HelpTextController(app, HelpStrings.GRAPH_PANEL));
             app.getGraphPanel().add(app.getChPanel(), BorderLayout.CENTER);
             app.getGraphPanel().repaint();
             app.updateIntervalMarker();
-        }
-        else {
-            phraseView.getPhrase().setSelected(false);
-            app.setActivePhrase(null);
-            phraseView.updatePanel();
         }
 
         app.getFrame().pack();

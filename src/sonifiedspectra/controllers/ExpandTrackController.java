@@ -85,8 +85,8 @@ public class ExpandTrackController implements ActionListener, MouseListener {
             for (int i = thv.getTrack().getId() + 1; i < app.getTrackViewArray().size(); i++) {
                 TrackHeadView temp = app.getTrackHeadViewArray().get(i);
                 TrackView trackView = app.getTrackViewArray().get(i);
-                trackView.setBounds(trackView.getX(), trackView.getY() - (thv.getExpandedHeight() - 70), trackView.getWidth(), trackView.getHeight());
-                temp.setBounds(temp.getX(), temp.getY() - (thv.getExpandedHeight() - 70), temp.getWidth(), temp.getHeight());
+                trackView.setBounds(trackView.getX(), trackView.getY() - (200 - 70), trackView.getWidth(), trackView.getHeight());
+                temp.setBounds(temp.getX(), temp.getY() - (200 - 70), temp.getWidth(), temp.getHeight());
                 for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
                     pitv.adjustSize(false);
                     pitv.repaint();
@@ -96,9 +96,9 @@ public class ExpandTrackController implements ActionListener, MouseListener {
             }
 
             app.getTrackHeadPanel().setPreferredSize(new Dimension(app.getTrackHeadPanel().getWidth(),
-                    app.getTrackHeadPanel().getHeight() - (thv.getExpandedHeight() - 70)));
+                    app.getTrackHeadPanel().getHeight() - (200 - 70)));
             app.getInTracksPanel().setPreferredSize(new Dimension(app.getInTracksPanel().getWidth(),
-                    app.getInTracksPanel().getHeight() - (thv.getExpandedHeight() - 70)));
+                    app.getInTracksPanel().getHeight() - (200 - 70)));
 
         }
 

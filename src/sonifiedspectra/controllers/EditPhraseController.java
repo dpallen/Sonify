@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.DecimalFormat;
 
 /**
  * Created by Hvandenberg on 6/1/15.
@@ -24,10 +25,12 @@ public class  EditPhraseController implements ActionListener, MouseListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        DecimalFormat formatter = new DecimalFormat("#0000.00");
+
         app.getEditPhraseDialog().getMinPitchTextField().setText(String.valueOf(app.getActivePhrase().getMinPitch()));
         app.getEditPhraseDialog().getMaxPitchTextField().setText(String.valueOf(app.getActivePhrase().getMaxPitch()));
-        app.getEditPhraseDialog().getX1TextField().setText(String.valueOf(app.getActivePhrase().getX1()));
-        app.getEditPhraseDialog().getX2TextField().setText(String.valueOf(app.getActivePhrase().getX2()));
+        app.getEditPhraseDialog().getX1TextField().setText(String.valueOf(formatter.format(app.getActivePhrase().getX1())));
+        app.getEditPhraseDialog().getX2TextField().setText(String.valueOf(formatter.format(app.getActivePhrase().getX2())));
         app.getEditPhraseDialog().getCompoundNameLabel().setText(app.getActivePhrase().getCompound().getName());
 
         app.getEditPhraseDialog().setVisible(!app.getEditPhraseDialog().isVisible());

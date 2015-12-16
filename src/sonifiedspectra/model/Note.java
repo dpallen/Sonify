@@ -39,7 +39,7 @@ public class Note extends jm.music.data.Note {
 
         int peakId = -1;
 
-        if (!filler) peakId = peak.getId();
+        if (!phrase.isLoop() && !filler) peakId = peak.getId();
 
         String saveString = id + "," + transpose + "," + peakId + "," + phrase.getId() + "," + filler + "," + selected
                 + "," + getPitch() + "," + getRhythmValue() + "," + getDynamic();

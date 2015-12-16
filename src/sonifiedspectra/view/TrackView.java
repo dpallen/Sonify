@@ -37,14 +37,32 @@ public class TrackView extends JPanel {
 
         removeAll();
 
-        for (Phrase phrase : track.getPhrases()) {
-            PhraseInTrackView pitv = new PhraseInTrackView(app, phrase);
-            if (!phrase.isLoop()) pitv.getNameLabel().setText(phrase.getCompound().getName());
-            else pitv.getNameLabel().setText("Loop");
-            pitv.setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), 0, pitv.getAdjustedWidth(), 70);
-            phraseInTrackViewArray.add(pitv);
-            add(pitv);
-            i++;
+        if (!track.isLoop()) {
+
+            for (Phrase phrase : track.getPhrases()) {
+                PhraseInTrackView pitv = new PhraseInTrackView(app, phrase);
+                pitv.getNameLabel().setText(phrase.getCompound().getName());
+                pitv.setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), 0, pitv.getAdjustedWidth(), 70);
+                phraseInTrackViewArray.add(pitv);
+                add(pitv);
+                i++;
+            }
+
+        }
+
+        else {
+
+            for (Phrase phrase : track.getPhrases()) {
+                if (phrase.getId() == -1) {
+                    PhraseInTrackView pitv = new PhraseInTrackView(app, phrase);
+                    pitv.getNameLabel().setText("Loop");
+                    pitv.setBounds((int) ((phrase.getStartTime() * 4) * app.getMeasureScale()), 0, pitv.getAdjustedWidth(), 70);
+                    phraseInTrackViewArray.add(pitv);
+                    add(pitv);
+                }
+                i++;
+            }
+
         }
 
         setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
@@ -91,13 +109,19 @@ public class TrackView extends JPanel {
 
     public void updatePanel() {
         if (track.isSelected()) {
-            setBackground(Color.decode("#B8B8B8"));
+            //setBackground(Color.decode("#B8B8B8"));
             setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
         }
         else {
-            //setBackground(backColor);
+            setBackground(backColor);
             setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
         }
+    }
+
+    public int getExpandedHeight() {
+
+        if (track.isExpanded()) return 200;
+        else return 70;
     }
 
     public JLabel getNameLabel() {

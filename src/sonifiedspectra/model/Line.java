@@ -12,7 +12,7 @@ public class Line extends JPanel {
 
     public Line(int increment) {
         this.increment = increment;
-        setBounds(40, 0, 2, 462);
+        setBounds(40, 0, 2, 495);
     }
 
     public int getIncrement() {

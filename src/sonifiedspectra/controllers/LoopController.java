@@ -1,5 +1,6 @@
 package sonifiedspectra.controllers;
 
+import jm.music.data.Part;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.PhraseInTrackView;
 import sonifiedspectra.view.Sonify;
@@ -32,10 +33,12 @@ public class LoopController implements ActionListener, MouseListener {
                 + " tracks, " + app.getSelectedMeasures().size() + " measures");
 
         for (TrackView tv : app.getTrackViewArray()) {
-            for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
-                if (pitv.isSelected()) {
-                    if (pitv.getPhrase().isLoop()) app.getLoopDialog().getLoopComboBox()
-                            .setSelectedIndex(app.getLoopDialog().getLoopsArray().indexOf(pitv.getPhrase()));
+            if (!tv.getTrack().isLoop()) {
+                for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
+                    if (pitv.isSelected()) {
+                        if (pitv.getPhrase().isLoop()) app.getLoopDialog().getLoopComboBox()
+                                .setSelectedIndex(app.getLoopDialog().getLoopsArray().indexOf(pitv.getPhrase()));
+                    }
                 }
             }
         }
@@ -43,8 +46,8 @@ public class LoopController implements ActionListener, MouseListener {
         //app.getLoopDialog().getMeasureLabel().setText((app.getLoopDialog().getLoopsArray()
         //        .get(app.getLoopDialog().getLoopComboBox().getSelectedIndex()).getBeatLength2() / 4) + " measures");
 
-        /*app.getLoopDialog().getLoopPlayer().updateLoopPlayer(app.getLoopDialog().getLoopsArray()
-                .get(app.getLoopDialog().getLoopComboBox().getSelectedIndex()));*/
+        app.getLoopDialog().getLoopPlayer().updateLoopPlayer((Part) app.getLoopDialog().getLoopsArray()
+                .get(app.getLoopDialog().getLoopComboBox().getSelectedIndex()));
 
         app.getLoopDialog().setVisible(!app.getLoopDialog().isVisible());
     }

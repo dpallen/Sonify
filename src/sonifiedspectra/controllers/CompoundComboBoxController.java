@@ -47,7 +47,7 @@ public class CompoundComboBoxController implements ItemListener {
         chPanel.setBounds(0, 0, 500, 400);
         chPanel.setDomainZoomable(true);
         app.getGraphPanel().setLayout(new BorderLayout());
-        app.getGraphPanel().setBounds(20, 52, 500, 400);
+        app.getGraphPanel().setBounds(10, 52, 500, 400);
         app.getGraphPanel().removeAll();
         app.getGraphPanel().add(chPanel, BorderLayout.CENTER);
         app.getGraphPanel().setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, true));

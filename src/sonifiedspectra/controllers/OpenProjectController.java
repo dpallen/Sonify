@@ -47,6 +47,7 @@ public class OpenProjectController implements ActionListener, MouseListener {
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
             fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+            fileChooser.setVisible(true);
             int result = fileChooser.showOpenDialog(null);
             if (result == JFileChooser.APPROVE_OPTION) {
                 System.out.println("getCurrentDirectory(): "

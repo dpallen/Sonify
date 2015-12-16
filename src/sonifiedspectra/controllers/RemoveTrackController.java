@@ -55,7 +55,7 @@ public class RemoveTrackController implements ActionListener, MouseListener {
             for (TrackView tv : app.getTrackViewArray()) {
                 tv.setBounds(tv.getX(), y1, tv.getWidth(), tv.getHeight());
                 tv.repaint();
-                y1 += 70;
+                y1 += tv.getExpandedHeight();
             }
 
             int y2 = 0;
@@ -69,7 +69,7 @@ public class RemoveTrackController implements ActionListener, MouseListener {
                 else thv.setBackColor(Color.decode("#F5F5F5"));
                 thv.updatePanel();
                 thv.repaint();
-                y2 += 70;
+                y2 += thv.getExpandedHeight();
                 j1++;
             }
 
@@ -88,9 +88,9 @@ public class RemoveTrackController implements ActionListener, MouseListener {
             app.getTrackHeadPanel().repaint();
 
             app.getTrackHeadPanel().setPreferredSize(new Dimension(app.getTrackHeadPanel().getWidth(),
-                    70 * app.getActiveProject().getTracksArray().size()));
+                    getNewTrackY()));
             app.getInTracksPanel().setPreferredSize(new Dimension(app.getInTracksPanel().getWidth(),
-                    70 * app.getActiveProject().getTracksArray().size()));
+                    getNewTrackY()));
             app.getFrame().pack();
 
         }
@@ -125,6 +125,19 @@ public class RemoveTrackController implements ActionListener, MouseListener {
         app.getRemoveTrackButton().setCol(app.getButtonBackgroundColor());
         app.getRemoveTrackButton().repaint();
         app.getFrame().pack();
+    }
+
+    public int getNewTrackY() {
+        int y = 0;
+
+        for (TrackHeadView thv : app.getTrackHeadViewArray()) {
+            if (thv.getTrack().isExpanded()) y += thv.getExpandedHeight();
+            else y += thv.getHeight();
+        }
+
+        System.out.println(y);
+
+        return y;
     }
 
 }

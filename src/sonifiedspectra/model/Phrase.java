@@ -42,6 +42,7 @@ public class Phrase extends jm.music.data.Phrase {
 
     public Phrase() {
         this.loop = true;
+        this.notesArray = new ArrayList<Note>();
     }
 
     public Phrase(int id, Compound compound, String color, double x1, double x2) {
@@ -80,6 +81,21 @@ public class Phrase extends jm.music.data.Phrase {
             Note newNote = new Note(note.getId(), note.getPeak(), note.isFiller(), newPhrase);
             newNote.setPitch(note.getPitch());
             newNote.setTranspose(note.getTranspose());
+            newNote.setRhythmValue(note.getRhythmValue());
+            newNote.setDynamic(note.getDynamic());
+            newPhrase.getNotesArray().add(newNote);
+
+        }
+        return newPhrase;
+    }
+
+    public Phrase copyLoop() {
+        Phrase newPhrase = new Phrase();
+        newPhrase.setId(id);
+        newPhrase.setBackgroundCol("");
+        for (Note note : notesArray) {
+            Note newNote = new Note(note.getId(), null, false, newPhrase);
+            newNote.setPitch(note.getPitch());
             newNote.setRhythmValue(note.getRhythmValue());
             newNote.setDynamic(note.getDynamic());
             newPhrase.getNotesArray().add(newNote);

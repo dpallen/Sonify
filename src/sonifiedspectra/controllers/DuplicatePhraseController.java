@@ -28,8 +28,31 @@ public class DuplicatePhraseController implements MouseListener {
         for (TrackView tv : app.getTrackViewArray()) {
 
             for (PhraseInTrackView pitv : tv.getPhraseInTrackViewArray()) {
-                if (pitv.isSelected()) {
+                if (!tv.getTrack().isLoop()) {
+                    if (pitv.isSelected()) {
 
+                        int x = pitv.getX() + pitv.getAdjustedWidth();
+                        if (x < 0) x = 0;
+
+                        double newTime = pitv.getPhrase().getBeatLength2() / 4;
+                        double newX = pitv.getPhrase().getStartTime() + newTime;
+                        if (newX < 0) newX = 0;
+
+                        for (int i = 0; i < multiplier; i++) {
+
+                            Phrase newPhrase = pitv.getPhrase().copy();
+                            //newPhrase.setId(app.getActiveProject().getCurrentPhraseId());
+                            newPhrase.setStartTime(newX);
+                            newTime = ((i + 2) * pitv.getPhrase().getBeatLength2()) / 4;
+                            newX = pitv.getPhrase().getStartTime() + newTime;
+                            //app.getActiveProject().incrementPhraseId();
+                            tv.getTrack().getPhrases().add(newPhrase);
+
+                        }
+
+                    }
+                }
+                else {
                     int x = pitv.getX() + pitv.getAdjustedWidth();
                     if (x < 0) x = 0;
 
@@ -38,15 +61,26 @@ public class DuplicatePhraseController implements MouseListener {
                     if (newX < 0) newX = 0;
 
                     for (int i = 0; i < multiplier; i++) {
-                        Phrase newPhrase = pitv.getPhrase().copy();
-                        //newPhrase.setId(app.getActiveProject().getCurrentPhraseId());
-                        newPhrase.setStartTime(newX);
-                        newTime = ((i + 2) * pitv.getPhrase().getBeatLength2()) / 4;
-                        newX = pitv.getPhrase().getStartTime() + newTime;
-                        //app.getActiveProject().incrementPhraseId();
-                        tv.getTrack().getPhrases().add(newPhrase);
-                    }
 
+                        Phrase newPhrase = pitv.getPhrase().copyLoop();
+                        newPhrase.setStartTime(newX);
+                        tv.getTrack().getPhrases().add(newPhrase);
+
+                        Phrase temp = pitv.getPhrase().getParentPhrase();
+                        Phrase lastPhrase = newPhrase;
+
+                        while (temp != null) {
+                            Phrase newPhrase2 = temp.copyLoop();
+                            lastPhrase.setParentPhrase(newPhrase2);
+                            newPhrase2.setStartTime(newX);
+                            tv.getTrack().getPhrases().add(newPhrase2);
+                            temp = temp.getParentPhrase();
+                            lastPhrase = newPhrase2;
+                        }
+
+                        newX += pitv.getPhrase().getBeatLength2() / 4;
+
+                    }
                 }
             }
 
@@ -61,7 +95,6 @@ public class DuplicatePhraseController implements MouseListener {
                 pitv2.getRemoveButton().addMouseListener(new HelpTextController(app, HelpStrings.REMOVE_PHRASE_FROM_TRACK));
                 pitv2.getRemoveButton().addActionListener(removePhraseFromTrackController);
                 pitv2.getRemoveButton().addMouseListener(removePhraseFromTrackController);
-                System.out.println("Pitv " + pitv2.getPhrase().getId() + "-  Start time: " + pitv2.getPhrase().getStartTime() + ", End time: " + pitv2.getPhrase().getEndTime());
                 i++;
 
             }

@@ -152,8 +152,8 @@ public class PhraseInTrackView extends JPanel {
 
     public int getAdjustedWidth() {
         if (!phrase.isLoop()) return (int) (app.getMeasureScale() * phrase.getBeatLength2());
-        //else return (int) (app.getMeasureScale() * phrase.getBeatLength());
-        else return 200;
+        else return (int) (app.getMeasureScale() * phrase.getBeatLength2());
+        //else return 200;
     }
 
     public void setAlpha(float value) {

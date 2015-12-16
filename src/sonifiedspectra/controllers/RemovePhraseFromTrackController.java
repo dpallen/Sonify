@@ -1,5 +1,6 @@
 package sonifiedspectra.controllers;
 
+import sonifiedspectra.model.Phrase;
 import sonifiedspectra.model.Project;
 import sonifiedspectra.view.*;
 
@@ -29,16 +30,31 @@ public class RemovePhraseFromTrackController implements ActionListener, MouseLis
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        int index = tv.getTrack().getPhrases().indexOf(pitv.getPhrase());
+        if (!tv.getTrack().isLoop()) {
 
-        tv.getTrack().getPhrases().remove(index);
-        tv.getPhraseInTrackViewArray().remove(index);
-        tv.remove(index);
+            int index = tv.getTrack().getPhrases().indexOf(pitv.getPhrase());
 
-        for (int i = index; i < tv.getPhraseInTrackViewArray().size(); i++) {
-            PhraseInTrackView pitv2 = tv.getPhraseInTrackViewArray().get(i);
-            pitv2.setBounds(pitv2.getX(), pitv2.getY() - 15, pitv2.getWidth(), pitv2.getHeight());
-            pitv2.repaint();
+            tv.getTrack().getPhrases().remove(index);
+            tv.getPhraseInTrackViewArray().remove(index);
+            tv.remove(index);
+
+        }
+
+        else {
+
+            Phrase temp = pitv.getPhrase();
+
+            int index = tv.getPhraseInTrackViewArray().indexOf(pitv) * 3;
+
+            System.out.println("Removing phrase: " + index + ", Id: " + temp.getId());
+            tv.getPhraseInTrackViewArray().remove(pitv);
+            tv.remove(pitv);
+
+            while (temp != null) {
+                tv.getTrack().getPhrases().remove(index);
+                temp = temp.getParentPhrase();
+            }
+
         }
 
         app.getInTracksPanel().repaint();

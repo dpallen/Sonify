@@ -202,7 +202,7 @@ public class Project {
                         for (Peak p : compound.getPeaks()) {
                             if (peakId == p.getId()) {
                                 peak = p;
-                                System.out.println(peak.toString());
+                                //System.out.println(peak.toString());
                             }
                         }
 

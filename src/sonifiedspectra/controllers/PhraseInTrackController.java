@@ -32,10 +32,10 @@ public class PhraseInTrackController implements MouseListener {
 
         for (TrackView tv : app.getTrackViewArray()) {
             for (PhraseInTrackView pitv2 : tv.getPhraseInTrackViewArray()) {
-                System.out.println(pitv2.getPhrase().getId());
                 pitv2.setSelected(false);
                 Color unselectedColor = pitv2.getPhrase().getUnselectedColor();
                 pitv2.getTopPanel().setBackground(new Color(unselectedColor.getRed(), unselectedColor.getGreen(), unselectedColor.getBlue()));
+                pitv.getTopPanel().setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
                 pitv2.repaint();
             }
         }
@@ -55,7 +55,7 @@ public class PhraseInTrackController implements MouseListener {
             Color unselectedColor = pitv.getPhrase().getUnselectedColor();
             pitv.getTopPanel().setBackground(new Color(unselectedColor.getRed(), unselectedColor.getGreen(), unselectedColor.getBlue()));
             if (pitv.getPhrase().isLoop()) {
-                pitv.getNameLabel().setForeground(Color.WHITE);
+                pitv.getNameLabel().setForeground(Color.BLACK);
                 pitv.getTopPanel().setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
             }
             pitv.repaint();
@@ -63,39 +63,38 @@ public class PhraseInTrackController implements MouseListener {
 
         pitv.getLayeredPane().moveToFront(pitv.getTopPanel());
 
-        Phrase tempPhrase;
+        if (!pitv.getPhrase().isLoop()) {
 
-        tempPhrase = pitv.getPhrase();
+            Phrase tempPhrase;
 
-        System.out.println("Temp: " + tempPhrase.getId() + ", selected: " + tempPhrase.isSelected());
-        if (tempPhrase.getParentPhrase() != null) System.out.println("Temp parent: " + tempPhrase.getParentPhrase().getId() + ", selected: " + tempPhrase.getParentPhrase().isSelected());
+            tempPhrase = pitv.getPhrase();
+            if (!tempPhrase.isSelected() || (tempPhrase.getParentPhrase() != null && !tempPhrase.getParentPhrase().isSelected())) {
+                tempPhrase.setSelected(true);
 
-        if (!tempPhrase.isSelected() || (tempPhrase.getParentPhrase() != null && !tempPhrase.getParentPhrase().isSelected())) {
-            tempPhrase.setSelected(true);
+                app.updateActivePhrase(tempPhrase);
 
-            app.updateActivePhrase(tempPhrase);
+                app.getColorButton().setCol(app.getActivePhrase().getUnselectedColor());
+                app.getColorButton().repaint();
 
-            app.getColorButton().setCol(app.getActivePhrase().getUnselectedColor());
-            app.getColorButton().repaint();
+                app.getSpectrumLabel().setText(app.getActivePhrase().getCompound().getSpectrumType());
+                app.getSpectrumLabel().repaint();
 
-            app.getSpectrumLabel().setText(app.getActivePhrase().getCompound().getSpectrumType());
-            app.getSpectrumLabel().repaint();
-
-            app.setChPanel(new ChartPanel(app.getActivePhrase().getCompound().getDataChart().getDataChart()));
-            app.getChPanel().setPreferredSize(new Dimension(500, 500));
-            app.getChPanel().setVisible(true);
-            app.getChPanel().setBounds(0, 0, 500, 400);
-            app.getChPanel().setDomainZoomable(true);
-            app.getChPanel().addChartMouseListener(new GraphController(app, project));
-            app.getGraphPanel().setLayout(new BorderLayout());
-            app.getGraphPanel().setBounds(20, 52, 500, 400);
-            app.getGraphPanel().removeAll();
-            app.getGraphPanel().add(app.getChPanel(), BorderLayout.CENTER);
-            app.getGraphPanel().repaint();
-            app.updateIntervalMarker();
-            app.getSoundPlayer().reset();
-            app.getSoundPlayer().updateSoundPlayer();
-            app.getFrame().pack();
+                app.setChPanel(new ChartPanel(app.getActivePhrase().getCompound().getDataChart().getDataChart()));
+                app.getChPanel().setPreferredSize(new Dimension(500, 500));
+                app.getChPanel().setVisible(true);
+                app.getChPanel().setBounds(0, 0, 500, 400);
+                app.getChPanel().setDomainZoomable(true);
+                app.getChPanel().addChartMouseListener(new GraphController(app, project));
+                app.getGraphPanel().setLayout(new BorderLayout());
+                app.getGraphPanel().setBounds(10, 52, 500, 400);
+                app.getGraphPanel().removeAll();
+                app.getGraphPanel().add(app.getChPanel(), BorderLayout.CENTER);
+                app.getGraphPanel().repaint();
+                app.updateIntervalMarker();
+                app.getSoundPlayer().reset();
+                app.getSoundPlayer().updateSoundPlayer();
+                app.getFrame().pack();
+            }
         }
 
     }
@@ -114,7 +113,6 @@ public class PhraseInTrackController implements MouseListener {
     public void mouseEntered(MouseEvent e) {
         if (!pitv.isSelected()) {
             Color selectedColor = pitv.getPhrase().getSelectedColor();
-            System.out.println(selectedColor.toString());
             pitv.getTopPanel().setBackground(new Color(selectedColor.getRed(), selectedColor.getGreen(), selectedColor.getBlue(), 200));
             pitv.getTopPanel().setBorder(BorderFactory.createLineBorder(pitv.getPhrase().getBorderColor(), 2, false));
             if (pitv.getPhrase().isLoop()) pitv.getNameLabel().setForeground(Color.BLACK);
@@ -128,10 +126,9 @@ public class PhraseInTrackController implements MouseListener {
     public void mouseExited(MouseEvent e) {
         if (!pitv.isSelected()) {
             Color unselectedColor = pitv.getPhrase().getUnselectedColor();
-            System.out.println(unselectedColor.toString());
             pitv.getTopPanel().setBackground(new Color(unselectedColor.getRed(), unselectedColor.getGreen(), unselectedColor.getBlue()));
             pitv.getTopPanel().setBorder(BorderFactory.createLineBorder(Color.decode("#979797"), 1, false));
-            if (pitv.getPhrase().isLoop()) pitv.getNameLabel().setForeground(Color.WHITE);
+            if (pitv.getPhrase().isLoop()) pitv.getNameLabel().setForeground(Color.BLACK);
             pitv.getLayeredPane().moveToFront(pitv.getTopPanel());
             pitv.repaint();
             app.getFrame().pack();

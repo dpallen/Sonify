@@ -82,8 +82,7 @@ public class TrackHeadView extends JPanel {
 
     public int getExpandedHeight() {
 
-        int expandedHeight = 200;
-        if (expandedHeight > 70) return expandedHeight;
+        if (track.isExpanded()) return 200;
         else return 70;
     }
 

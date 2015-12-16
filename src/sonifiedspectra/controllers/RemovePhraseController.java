@@ -33,7 +33,7 @@ public class RemovePhraseController implements ActionListener, MouseListener {
 
         if (!last) {
             for (int i = index; i < app.getPhraseViewArray().size(); i++) {
-                app.getPhraseViewArray().get(i).setBounds(app.getPhraseViewArray().get(i).getX() - 110,
+                app.getPhraseViewArray().get(i).setBounds(app.getPhraseViewArray().get(i).getX() - 130,
                         app.getPhraseViewArray().get(i).getY(), app.getPhraseViewArray().get(i).getWidth(),
                         app.getPhraseViewArray().get(i).getHeight());
                 app.getPhraseViewArray().get(i).repaint();

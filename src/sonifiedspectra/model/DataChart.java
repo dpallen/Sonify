@@ -270,7 +270,7 @@ public class DataChart {
             }
         }
 
-        for (Peak p : peaksArray) System.out.println(p.toString());
+        //for (Peak p : peaksArray) System.out.println(p.toString());
 
         return peaksArray;
 
